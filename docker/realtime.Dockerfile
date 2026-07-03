@@ -3,7 +3,9 @@
 # ========================================
 FROM oven/bun:1.3.13-alpine AS base
 
-RUN apk add --no-cache libc6-compat curl
+ARG APK_MIRROR=mirrors.aliyun.com
+RUN sed -i "s/dl-cdn.alpinelinux.org/${APK_MIRROR}/g" /etc/apk/repositories && \
+    apk add --no-cache libc6-compat curl
 
 # ========================================
 # Pruner Stage: Emit a minimal monorepo subset that @sim/realtime depends on
@@ -11,7 +13,8 @@ RUN apk add --no-cache libc6-compat curl
 FROM base AS pruner
 WORKDIR /app
 
-RUN bun add -g turbo
+ARG NPM_MIRROR=https://registry.npmmirror.com
+RUN npm_config_registry=${NPM_MIRROR} bun add -g turbo
 
 COPY . .
 
@@ -26,8 +29,10 @@ WORKDIR /app
 COPY --from=pruner /app/out/json/ ./
 COPY --from=pruner /app/out/bun.lock ./bun.lock
 
+ARG NPM_MIRROR=https://registry.npmmirror.com
+
 RUN --mount=type=cache,id=bun-cache,target=/root/.bun/install/cache \
-    bun install --linker=hoisted --omit=dev --ignore-scripts
+    npm_config_registry=${NPM_MIRROR} bun install --linker=hoisted --omit=dev --ignore-scripts
 
 # ========================================
 # Runner Stage: Run the Socket Server

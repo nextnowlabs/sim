@@ -3,6 +3,9 @@
 # ========================================
 FROM oven/bun:1.3.13-alpine AS base
 
+ARG APK_MIRROR=mirrors.aliyun.com
+RUN sed -i "s/dl-cdn.alpinelinux.org/${APK_MIRROR}/g" /etc/apk/repositories
+
 # ========================================
 # Dependencies Stage: Install Dependencies
 # ========================================
@@ -17,9 +20,11 @@ COPY packages/logger/package.json ./packages/logger/package.json
 COPY packages/tsconfig/package.json ./packages/tsconfig/package.json
 COPY packages/utils/package.json ./packages/utils/package.json
 
+ARG NPM_MIRROR=https://registry.npmmirror.com
+
 # Install dependencies with cache mount for faster builds
 RUN --mount=type=cache,id=bun-cache,target=/root/.bun/install/cache \
-    bun install --ignore-scripts
+    npm_config_registry=${NPM_MIRROR} bun install --ignore-scripts
 
 # ========================================
 # Runner Stage: Production Environment

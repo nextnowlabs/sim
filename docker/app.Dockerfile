@@ -3,12 +3,18 @@
 # ========================================
 FROM oven/bun:1.3.13-slim AS base
 
+ARG APT_MIRROR=mirrors.aliyun.com
+ARG NODE_MIRROR=https://npmmirror.com/mirrors/node
+
+RUN sed -i "s/deb.debian.org/${APT_MIRROR}/g" /etc/apt/sources.list.d/debian.sources && \
+    sed -i "s|security.debian.org|${APT_MIRROR}/debian-security|g" /etc/apt/sources.list.d/debian.sources
+
 # Install Node.js 22 and common dependencies once in base stage
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
     python3 python3-pip python3-venv make g++ curl ca-certificates bash ffmpeg \
-    && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
+    && curl -fsSL https://deb.nodesource.com/setup_22.x | NODE_MIRROR=${NODE_MIRROR} bash - \
     && apt-get install -y nodejs
 
 # ========================================
@@ -17,7 +23,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 FROM base AS pruner
 WORKDIR /app
 
-RUN bun install -g turbo@2.9.6
+ARG NPM_MIRROR=https://registry.npmmirror.com
+RUN npm_config_registry=${NPM_MIRROR} bun install -g turbo@2.9.6
 
 COPY . .
 
@@ -38,13 +45,15 @@ COPY --from=pruner /app/out/json/ ./
 # only installs what the pruned package.jsons reference.
 COPY --from=pruner /app/bun.lock ./bun.lock
 
+ARG NPM_MIRROR=https://registry.npmmirror.com
+
 # Install all dependencies (including devDependencies — tailwindcss/postcss are
 # devDeps but required at build time). Then rebuild isolated-vm against Node.js.
 # JOBS=4 caps node-gyp parallelism — higher values OOM isolated-vm (laverdet/isolated-vm#428).
 RUN --mount=type=cache,id=bun-cache,target=/root/.bun/install/cache \
     --mount=type=cache,id=npm-cache,target=/root/.npm \
-    HUSKY=0 bun install --ignore-scripts --linker=hoisted && \
-    cd node_modules/isolated-vm && JOBS=4 npx node-gyp rebuild --release
+    HUSKY=0 npm_config_registry=${NPM_MIRROR} bun install --ignore-scripts --linker=hoisted && \
+    cd node_modules/isolated-vm && JOBS=4 npx --registry=${NPM_MIRROR} node-gyp rebuild --release
 
 # ========================================
 # Builder Stage: Build the Application

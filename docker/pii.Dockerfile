@@ -3,6 +3,12 @@
 # ========================================
 FROM python:3.12-slim-bookworm AS base
 
+ARG APT_MIRROR=mirrors.aliyun.com
+ARG PYPI_MIRROR=https://mirrors.aliyun.com/pypi/simple/
+
+RUN sed -i "s/deb.debian.org/${APT_MIRROR}/g" /etc/apt/sources.list.d/debian.sources && \
+    sed -i "s|security.debian.org|${APT_MIRROR}/debian-security|g" /etc/apt/sources.list.d/debian.sources
+
 WORKDIR /app
 
 # build-essential for any sdist that compiles native deps (e.g. blis/thinc).
@@ -15,7 +21,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Pinned Python deps. Separate layer so source edits don't reinstall them.
 COPY apps/pii/requirements.txt ./requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install -r requirements.txt
+    pip install -i ${PYPI_MIRROR} -r requirements.txt
 
 # Pinned spaCy models (en + es/it/pl/fi, ~2.2GB total). Downloaded with
 # retries/resume — the large wheels truncate on flaky networks if pip fetches
@@ -28,7 +34,7 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         -o "/tmp/${whl}" \
         "https://github.com/explosion/spacy-models/releases/download/${model}/${whl}" || exit 1; \
     done && \
-    pip install /tmp/*.whl && \
+    pip install -i ${PYPI_MIRROR} /tmp/*.whl && \
     rm /tmp/*.whl
 
 COPY apps/pii/server.py ./server.py
