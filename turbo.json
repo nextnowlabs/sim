@@ -39,6 +39,19 @@
     "type-check": {
       "dependsOn": ["transit"],
       "outputs": []
+    },
+    "go:dev": {
+      "persistent": true,
+      "cache": false
+    },
+    "go:build": {
+      "outputs": ["apps/copilot/bin/**"]
+    },
+    "go:test": {
+      "outputs": []
+    },
+    "go:lint": {
+      "outputs": []
     }
   }
 }

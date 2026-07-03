@@ -21,9 +21,16 @@ services:
       - ENCRYPTION_KEY=${ENCRYPTION_KEY}
       - API_ENCRYPTION_KEY=${API_ENCRYPTION_KEY:-}
       - INTERNAL_API_SECRET=${INTERNAL_API_SECRET}
-      - REDIS_URL=${REDIS_URL:-}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
       - COPILOT_API_KEY=${COPILOT_API_KEY}
-      - SIM_AGENT_API_URL=${SIM_AGENT_API_URL}
+      - SIM_AGENT_API_URL=${SIM_AGENT_API_URL:-http://copilot:3002}
+      # Wand / AI generation
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - WAND_LLM_API_KEY=${WAND_LLM_API_KEY:-}
+      - WAND_LLM_BASE_URL=${WAND_LLM_BASE_URL:-}
+      - WAND_LLM_MODEL=${WAND_LLM_MODEL:-}
+      # /Wand
       - OLLAMA_URL=${OLLAMA_URL:-http://localhost:11434}
       - SOCKET_SERVER_URL=${SOCKET_SERVER_URL:-http://realtime:3002}
       # NEXT_PUBLIC_SOCKET_URL is read by the browser. Leaving it unset lets the
@@ -39,8 +46,36 @@ services:
         condition: service_completed_successfully
       realtime:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     healthcheck:
       test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:3000']
+      interval: 90s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  copilot:
+    image: ${COPILOT_IMAGE:-simstudio/copilot:latest}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+    environment:
+      - COPILOT_LLM_PROVIDER=${COPILOT_LLM_PROVIDER:-deepseek}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY:-}
+      - CUSTOM_LLM_API_KEY=${CUSTOM_LLM_API_KEY:-}
+      - CUSTOM_LLM_BASE_URL=${CUSTOM_LLM_BASE_URL:-}
+      - COPILOT_DEFAULT_MODEL=${COPILOT_DEFAULT_MODEL:-deepseek-v4-pro}
+      - SIM_INTERNAL_URL=http://simstudio:3000
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET}
+      - COPILOT_PROMPT_PATH=${COPILOT_PROMPT_PATH:-}
+    healthcheck:
+      test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:3002/health']
       interval: 90s
       timeout: 5s
       retries: 3
@@ -62,9 +97,11 @@ services:
       - BETTER_AUTH_URL=${BETTER_AUTH_URL:-http://localhost:3000}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - INTERNAL_API_SECRET=${INTERNAL_API_SECRET}
-      - REDIS_URL=${REDIS_URL:-}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: ['CMD', 'curl', '-fsS', 'http://127.0.0.1:3002/health']
@@ -101,5 +138,17 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
 volumes:
   postgres_data:
+  redis_data:

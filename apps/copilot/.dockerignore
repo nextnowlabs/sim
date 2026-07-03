@@ -1,0 +1,7 @@
+*.md
+.git
+bin/
+testdata/
+.env*
+Makefile
+docker-compose.yml
