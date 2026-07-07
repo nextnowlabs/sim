@@ -138,13 +138,13 @@ const STATIC_FRAME_SRC = [
 export const buildTimeCSPDirectives: CSPDirectives = {
   'default-src': ["'self'"],
   'script-src': [...STATIC_SCRIPT_SRC],
-  'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+  'style-src': ["'self'", "'unsafe-inline'"],
 
   'img-src': [...STATIC_IMG_SRC],
 
   'media-src': ["'self'", 'blob:'],
   'worker-src': ["'self'", 'blob:'],
-  'font-src': ["'self'", 'https://fonts.gstatic.com'],
+  'font-src': ["'self'"],
 
   'connect-src': [
     ...STATIC_CONNECT_SRC,

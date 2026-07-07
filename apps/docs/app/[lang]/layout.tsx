@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { defineI18nUI } from 'fumadocs-ui/i18n'
 import { DocsLayout } from 'fumadocs-ui/layouts/docs'
 import { RootProvider } from 'fumadocs-ui/provider/next'
-import { Geist_Mono, Inter } from 'next/font/google'
+import { inter, geistMono } from '@/app/fonts/geist'
 import { AskAI } from '@/components/ai/ask-ai'
 import {
   SidebarFolder,
@@ -17,18 +17,6 @@ import { source } from '@/lib/source'
 import { DOCS_BASE_URL } from '@/lib/urls'
 import { season } from '@/app/fonts/season'
 import '../global.css'
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-geist-sans',
-  display: 'swap',
-})
-
-const geistMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-geist-mono',
-  display: 'swap',
-})
 
 const { provider } = defineI18nUI(i18n, {
   translations: {

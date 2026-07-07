@@ -120,8 +120,6 @@ describe('getMainCSPPolicy', () => {
   it('should include necessary external resources', () => {
     const policy = getMainCSPPolicy()
 
-    expect(policy).toContain('https://fonts.googleapis.com')
-    expect(policy).toContain('https://fonts.gstatic.com')
     expect(policy).toContain('https://*.google.com')
   })
 })
@@ -269,9 +267,9 @@ describe('buildTimeCSPDirectives', () => {
     expect(buildTimeCSPDirectives['default-src']).toContain("'self'")
   })
 
-  it('should allow Google fonts', () => {
-    expect(buildTimeCSPDirectives['style-src']).toContain('https://fonts.googleapis.com')
-    expect(buildTimeCSPDirectives['font-src']).toContain('https://fonts.gstatic.com')
+  it('should not allow Google fonts', () => {
+    expect(buildTimeCSPDirectives['style-src']).not.toContain('https://fonts.googleapis.com')
+    expect(buildTimeCSPDirectives['font-src']).not.toContain('https://fonts.gstatic.com')
   })
 
   it('should allow data: and blob: for images', () => {

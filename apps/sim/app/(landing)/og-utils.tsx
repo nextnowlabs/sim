@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs'
+import { join } from 'path'
 import { ImageResponse } from 'next/og'
 import { SimLogoFull } from '@/app/(landing)/components/og-sim-logo'
 
@@ -18,27 +20,15 @@ function getTitleFontSize(title: string): number {
   return TITLE_FONT_SIZE.large
 }
 
-async function loadGoogleFont(
-  font: string,
-  weights: string,
-  text: string
-): Promise<ArrayBuffer | null> {
-  try {
-    const url = `https://fonts.googleapis.com/css2?family=${font}:wght@${weights}&text=${encodeURIComponent(text)}`
-    const css = await (await fetch(url)).text()
-    const resource = css.match(/src: url\(([^)]+)\) format\('(opentype|truetype|woff2?)'\)/)
+const geist400Path = join(process.cwd(), 'app/_styles/fonts/geist/geist-400.ttf')
+const geist500Path = join(process.cwd(), 'app/_styles/fonts/geist/geist-500.ttf')
 
-    if (resource) {
-      const response = await fetch(resource[1])
-      if (response.status === 200) {
-        return await response.arrayBuffer()
-      }
-    }
-  } catch {
-    return null
-  }
+function loadGeistFont400(): ArrayBuffer {
+  return readFileSync(geist400Path).buffer as ArrayBuffer
+}
 
-  return null
+function loadGeistFont500(): ArrayBuffer {
+  return readFileSync(geist500Path).buffer as ArrayBuffer
 }
 
 interface LandingOgImageProps {
@@ -58,10 +48,10 @@ export async function createLandingOgImage({
   domainLabel = 'sim.ai',
 }: LandingOgImageProps) {
   const text = `${eyebrow}${title}${subtitle}${pills.join('')}${domainLabel}`
-  const [regularFontData, mediumFontData] = await Promise.all([
-    loadGoogleFont('Geist', '400', text),
-    loadGoogleFont('Geist', '500', text),
-  ])
+  const [regularFontData, mediumFontData] = [
+    loadGeistFont400(),
+    loadGeistFont500(),
+  ]
 
   return new ImageResponse(
     <div

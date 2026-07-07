@@ -9,7 +9,6 @@ const TITLE_FONT_SIZE = {
   medium: 56,
   small: 48,
 } as const
-const FONT_CACHE_REVALIDATE_SECONDS = 60 * 60 * 24 * 30
 const OG_CONTAINER_STYLE = {
   height: '100%',
   width: '100%',
@@ -52,31 +51,15 @@ function getTitleStyle(title: string): CSSProperties {
 }
 
 /**
- * Loads a Google Font dynamically by fetching the CSS and extracting the font URL.
+ * Loads the Geist font in TTF format from local static assets.
  */
-async function loadGoogleFont(font: string, weights: string, text: string): Promise<ArrayBuffer> {
-  const url = `https://fonts.googleapis.com/css2?family=${font}:wght@${weights}&text=${encodeURIComponent(text)}`
-  const cssResponse = await fetch(url, {
-    next: { revalidate: FONT_CACHE_REVALIDATE_SECONDS },
-  })
-
-  if (!cssResponse.ok) {
-    throw new Error(`Failed to load font CSS: ${cssResponse.status} ${cssResponse.statusText}`)
+async function loadLocalFont(request: NextRequest, weight: 400 | 500 | 600): Promise<ArrayBuffer> {
+  const fontUrl = new URL(`/fonts/geist-${weight}.ttf`, request.url)
+  const response = await fetch(fontUrl)
+  if (!response.ok) {
+    throw new Error(`Failed to load font weight ${weight}: ${response.status}`)
   }
-
-  const css = await cssResponse.text()
-  const resource = css.match(/src: url\((.+)\) format\('(opentype|truetype)'\)/)
-
-  if (resource) {
-    const response = await fetch(resource[1], {
-      next: { revalidate: FONT_CACHE_REVALIDATE_SECONDS },
-    })
-    if (response.ok) {
-      return await response.arrayBuffer()
-    }
-  }
-
-  throw new Error('Failed to load font data')
+  return await response.arrayBuffer()
 }
 
 /**
@@ -114,8 +97,11 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
   const title = searchParams.get('title') || 'Documentation'
 
-  const allText = `${title}docs.sim.ai`
-  const fontData = await loadGoogleFont('Geist', '400;500;600', allText)
+  const [fontData400, fontData500, fontData600] = await Promise.all([
+    loadLocalFont(request, 400),
+    loadLocalFont(request, 500),
+    loadLocalFont(request, 600),
+  ])
 
   return new ImageResponse(
     <div style={OG_CONTAINER_STYLE}>
@@ -134,8 +120,21 @@ export async function GET(request: NextRequest) {
       fonts: [
         {
           name: 'Geist',
-          data: fontData,
+          data: fontData400,
           style: 'normal',
+          weight: 400,
+        },
+        {
+          name: 'Geist',
+          data: fontData500,
+          style: 'normal',
+          weight: 500,
+        },
+        {
+          name: 'Geist',
+          data: fontData600,
+          style: 'normal',
+          weight: 600,
         },
       ],
     }
