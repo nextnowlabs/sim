@@ -21,6 +21,7 @@ interface TeamSeatsOverviewProps {
   usedSeats: number
   /** Outstanding invites that have not been accepted yet (do not consume a seat). */
   pendingSeats?: number
+  isSelfHostedOrgEnabled?: boolean
 }
 
 export function TeamSeatsOverview({
@@ -29,6 +30,7 @@ export function TeamSeatsOverview({
   totalSeats,
   usedSeats,
   pendingSeats = 0,
+  isSelfHostedOrgEnabled = false,
 }: TeamSeatsOverviewProps) {
   const router = useRouter()
   const params = useParams<{ workspaceId: string }>()
@@ -43,23 +45,31 @@ export function TeamSeatsOverview({
       <SettingsSection label='Seats'>
         <div className='flex items-center justify-between gap-3'>
           <div className='flex min-w-0 flex-col'>
-            <span className='text-[var(--text-body)] text-small'>No active Team subscription</span>
+            <span className='text-[var(--text-body)] text-small'>
+              {isSelfHostedOrgEnabled
+                ? 'Self-hosted organization'
+                : 'No active Team subscription'}
+            </span>
             <span className='text-[var(--text-muted)] text-small'>
-              Purchase a Team plan to invite teammates to this organization.
+              {isSelfHostedOrgEnabled
+                ? 'Organization management is enabled on your self-hosted instance.'
+                : 'Purchase a Team plan to invite teammates to this organization.'}
             </span>
           </div>
-          <Chip
-            variant='primary'
-            flush
-            onClick={() => {
-              if (workspaceId) {
-                router.push(`/workspace/${workspaceId}/settings/billing`)
-              }
-            }}
-            disabled={!workspaceId}
-          >
-            View plans
-          </Chip>
+          {!isSelfHostedOrgEnabled && (
+            <Chip
+              variant='primary'
+              flush
+              onClick={() => {
+                if (workspaceId) {
+                  router.push(`/workspace/${workspaceId}/settings/billing`)
+                }
+              }}
+              disabled={!workspaceId}
+            >
+              View plans
+            </Chip>
+          )}
         </div>
       </SettingsSection>
     )

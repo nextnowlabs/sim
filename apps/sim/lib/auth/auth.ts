@@ -3322,7 +3322,7 @@ export const auth = betterAuth({
     ...(isOrganizationsEnabled
       ? [
           organization({
-            allowUserToCreateOrganization: async () => false,
+            allowUserToCreateOrganization: async () => !isHosted,
             disableOrganizationDeletion: true,
             requireEmailVerificationOnInvitation: isEmailVerificationEnabled,
             organizationHooks: {

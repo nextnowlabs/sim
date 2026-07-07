@@ -14,6 +14,7 @@ import { useSettingsNavigation } from '@/hooks/use-settings-navigation'
 interface NoOrganizationViewProps {
   hasTeamPlan: boolean
   hasEnterprisePlan: boolean
+  isSelfHostedOrgEnabled: boolean
   orgName: string
   orgSlug: string
   setOrgSlug: (slug: string) => void
@@ -28,6 +29,7 @@ interface NoOrganizationViewProps {
 export function NoOrganizationView({
   hasTeamPlan,
   hasEnterprisePlan,
+  isSelfHostedOrgEnabled,
   orgName,
   orgSlug,
   setOrgSlug,
@@ -50,8 +52,9 @@ export function NoOrganizationView({
               Create Your Team Workspace
             </h4>
             <p className='mt-1 text-[var(--text-muted)] text-small'>
-              You're subscribed to a {hasEnterprisePlan ? 'enterprise' : 'team'} plan. Create your
-              workspace to start collaborating with your team.
+              {isSelfHostedOrgEnabled
+                ? 'Organizations are enabled. Create an organization to manage members and access enterprise features.'
+                : `You're subscribed to a ${hasEnterprisePlan ? 'enterprise' : 'team'} plan. Create your workspace to start collaborating with your team.`}
             </p>
           </div>
 

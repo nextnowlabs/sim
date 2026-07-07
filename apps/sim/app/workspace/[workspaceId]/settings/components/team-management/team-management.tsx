@@ -26,6 +26,7 @@ import {
   useTransferOwnership,
 } from '@/hooks/queries/organization'
 import { useOpenBillingPortal, useSubscriptionData } from '@/hooks/queries/subscription'
+import { getEnv, isTruthy } from '@/lib/core/config/env'
 import { usePermissionConfig } from '@/hooks/use-permission-config'
 
 const logger = createLogger('TeamManagement')
@@ -37,10 +38,12 @@ export function TeamManagement() {
   const { data: organizationsData } = useOrganizations()
   const activeOrganization = organizationsData?.activeOrganization
 
+  const isSelfHostedOrgEnabled = isTruthy(getEnv('NEXT_PUBLIC_ORGANIZATIONS_ENABLED'))
+
   const { data: userSubscriptionData } = useSubscriptionData()
   const subscriptionAccess = getSubscriptionAccessState(userSubscriptionData?.data)
-  const hasTeamPlan = subscriptionAccess.hasUsableTeamAccess
-  const hasEnterprisePlan = subscriptionAccess.hasUsableEnterpriseAccess
+  const hasTeamPlan = subscriptionAccess.hasUsableTeamAccess || isSelfHostedOrgEnabled
+  const hasEnterprisePlan = subscriptionAccess.hasUsableEnterpriseAccess || isSelfHostedOrgEnabled
 
   const {
     data: organization,
@@ -293,6 +296,7 @@ export function TeamManagement() {
       <NoOrganizationView
         hasTeamPlan={hasTeamPlan}
         hasEnterprisePlan={hasEnterprisePlan}
+        isSelfHostedOrgEnabled={isSelfHostedOrgEnabled}
         orgName={orgName}
         orgSlug={orgSlug}
         setOrgSlug={setOrgSlug}
@@ -330,6 +334,7 @@ export function TeamManagement() {
           totalSeats={totalSeats}
           usedSeats={usedSeats}
           pendingSeats={pendingSeats}
+          isSelfHostedOrgEnabled={isSelfHostedOrgEnabled}
         />
 
         <OrganizationMemberLists

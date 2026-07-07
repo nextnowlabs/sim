@@ -27,6 +27,7 @@ import {
   attachOwnedWorkspacesToOrganization,
   WorkspaceOrganizationMembershipConflictError,
 } from '@/lib/workspaces/organization-workspaces'
+import { isHosted, isOrganizationsEnabled } from '@/lib/core/config/env-flags'
 
 const logger = createLogger('OrganizationsAPI')
 
@@ -161,21 +162,23 @@ export const POST = withRouteHandler(async (request: Request) => {
       ) ??
       activeOrgSubscriptions.find((subscription) => isOrgPlan(subscription.plan))
 
-    if (!activeOrgSubscription) {
+    if (!activeOrgSubscription && (isHosted || !isOrganizationsEnabled)) {
       return NextResponse.json(
         { error: 'Organization creation requires an active Team or Enterprise subscription.' },
         { status: 403 }
       )
     }
 
-    logger.info('Creating organization for team plan', {
+    const hasSubscription = !!activeOrgSubscription
+
+    logger.info('Creating organization', {
       userId: user.id,
       userName: user.name,
       userEmail: user.email,
       organizationName,
       organizationSlug,
       existingOrganizationId: existingAdminMembership?.organizationId ?? null,
-      subscriptionReferenceId: activeOrgSubscription.referenceId,
+      hasSubscription,
     })
 
     let organizationId: string
@@ -184,12 +187,12 @@ export const POST = withRouteHandler(async (request: Request) => {
     if (existingAdminMembership) {
       organizationId = existingAdminMembership.organizationId
 
-      if (activeOrgSubscription.referenceId === organizationId) {
+      if (hasSubscription && activeOrgSubscription.referenceId === organizationId) {
         await attachOwnedWorkspacesToOrganization({
           ownerUserId: user.id,
           organizationId,
         })
-      } else {
+      } else if (hasSubscription) {
         const resolvedSubscription =
           await ensureOrganizationForTeamSubscription(activeOrgSubscription)
 
@@ -212,17 +215,19 @@ export const POST = withRouteHandler(async (request: Request) => {
         organizationSlug
       )
 
-      const resolvedSubscription =
-        await ensureOrganizationForTeamSubscription(activeOrgSubscription)
+      if (hasSubscription) {
+        const resolvedSubscription =
+          await ensureOrganizationForTeamSubscription(activeOrgSubscription)
 
-      if (resolvedSubscription.referenceId !== organizationId) {
-        logger.error('Newly created organization was not attached to the active subscription', {
-          userId: user.id,
-          expectedOrganizationId: organizationId,
-          resolvedReferenceId: resolvedSubscription.referenceId,
-          subscriptionId: activeOrgSubscription.id,
-        })
-        throw new Error('Failed to link the new organization to the active subscription')
+        if (resolvedSubscription.referenceId !== organizationId) {
+          logger.error('Newly created organization was not attached to the active subscription', {
+            userId: user.id,
+            expectedOrganizationId: organizationId,
+            resolvedReferenceId: resolvedSubscription.referenceId,
+            subscriptionId: activeOrgSubscription.id,
+          })
+          throw new Error('Failed to link the new organization to the active subscription')
+        }
       }
     }
 

@@ -112,7 +112,7 @@ export function SettingsPage({ section }: SettingsPageProps) {
   const normalizedSection: SettingsSection =
     (section as string) === 'subscription' ? 'billing' : section
   const effectiveSection =
-    !isBillingEnabled && (normalizedSection === 'billing' || normalizedSection === 'organization')
+    normalizedSection === 'billing' && !isBillingEnabled
       ? 'general'
       : normalizedSection === 'credential-sets' && !isCredentialSetsEnabled
         ? 'general'
@@ -137,7 +137,7 @@ export function SettingsPage({ section }: SettingsPageProps) {
       {effectiveSection === 'apikeys' && <ApiKeys />}
       {isBillingEnabled && effectiveSection === 'billing' && <Billing />}
       {effectiveSection === 'teammates' && <Teammates />}
-      {isBillingEnabled && effectiveSection === 'organization' && <TeamManagement />}
+      {effectiveSection === 'organization' && <TeamManagement />}
       {effectiveSection === 'sso' && <SSO />}
       {effectiveSection === 'data-retention' && <DataRetentionSettings />}
       {effectiveSection === 'data-drains' && <DataDrainsSettings />}

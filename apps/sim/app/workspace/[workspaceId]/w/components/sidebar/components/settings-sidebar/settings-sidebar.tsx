@@ -95,7 +95,7 @@ export function SettingsSidebar({
 
   const navigationItems = useMemo(() => {
     return allNavigationItems.filter((item) => {
-      if (item.hideWhenBillingDisabled && !isBillingEnabled) {
+      if (item.hideWhenBillingDisabled && !isBillingEnabled && !(item.selfHostedOverride && !isHosted)) {
         return false
       }
 
