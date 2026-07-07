@@ -35,8 +35,10 @@ func newOpenAIAdapterWithBaseURL(apiKey, baseURL string) *openaiAdapter {
 }
 
 type openaiMessage struct {
-	Role    string       `json:"role"`
-	Content string       `json:"content"`
+	Role       string     `json:"role"`
+	Content    string     `json:"content"`
+	ToolCallID string     `json:"tool_call_id,omitempty"`
+	ToolCalls  []ToolCall `json:"tool_calls,omitempty"`
 }
 
 type openaiRequest struct {
@@ -99,8 +101,10 @@ func (a *openaiAdapter) StreamChat(ctx context.Context, model string, systemProm
 			role = "tool"
 		}
 		openaiMessages = append(openaiMessages, openaiMessage{
-			Role:    role,
-			Content: m.Content,
+			Role:       role,
+			Content:    m.Content,
+			ToolCallID: m.ToolCallID,
+			ToolCalls:  m.ToolCalls,
 		})
 	}
 

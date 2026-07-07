@@ -43,15 +43,32 @@ type ChatRequest struct {
 	MessageID        string                   `json:"messageId"`
 	UserID           string                   `json:"userId"`
 	Model            string                   `json:"model"`
+	Provider         string                   `json:"provider"`
 	Mode             string                   `json:"mode"`
 	ChatID           string                   `json:"chatId"`
 	WorkflowID       string                   `json:"workflowId"`
+	WorkflowName     string                   `json:"workflowName"`
 	WorkspaceID      string                   `json:"workspaceId"`
 	IntegrationTools []ToolSchema             `json:"integrationTools"`
+	MothershipTools  []ToolSchema             `json:"mothershipTools"`
+	Commands         []string                 `json:"commands"`
 	VFS              interface{}              `json:"vfs"`
-	WorkspaceContext interface{}              `json:"workspaceContext"`
+	WorkspaceContext string                   `json:"workspaceContext"`
 	Context          []map[string]interface{} `json:"context"`
 	History          []provider.Message       `json:"history"`
+	Prefetch         bool                     `json:"prefetch"`
+	ImplicitFeedback string                   `json:"implicitFeedback"`
+	UserPermission   string                   `json:"userPermission"`
+	UserTimezone     string                   `json:"userTimezone"`
+	UserMetadata     *UserMetadata            `json:"userMetadata"`
+	DocCompiler      string                   `json:"docCompiler"`
+	IsHosted         bool                     `json:"isHosted"`
+}
+
+type UserMetadata struct {
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Timezone string `json:"timezone"`
 }
 
 type ToolSchema struct {
@@ -95,11 +112,28 @@ func (a *Agent) RunFromCheckpoint(ctx context.Context, req *ChatRequest, sw *str
 	defer cancel()
 
 	model := a.defaultModel
-	logger.Infof("[agent] Using model=%s (requested=%s)", model, req.Model)
+	logger.Infof("[agent] Using model=%s (requested=%s) provider=%s", model, req.Model, req.Provider)
 
 	mode := req.Mode
 	if mode == "" {
 		mode = "build"
+	}
+
+	logger.Infof("[agent] Request: workflowId=%s workflowName=%s workspaceId=%s chatId=%s mode=%s isHosted=%v prefetch=%v messageId=%s",
+		req.WorkflowID, req.WorkflowName, req.WorkspaceID, req.ChatID, mode, req.IsHosted, req.Prefetch, req.MessageID)
+	logger.Infof("[agent] User: userId=%s timezone=%s permission=%s", req.UserID, req.UserTimezone, req.UserPermission)
+	if req.UserMetadata != nil {
+		logger.Infof("[agent] UserMetadata: name=%s email=%s timezone=%s", req.UserMetadata.Name, req.UserMetadata.Email, req.UserMetadata.Timezone)
+	}
+	logger.Infof("[agent] Context items: %d VFS: %v", len(req.Context), req.VFS != nil)
+	if len(req.Commands) > 0 {
+		logger.Infof("[agent] Commands: %v", req.Commands)
+	}
+	if req.ImplicitFeedback != "" {
+		logger.Infof("[agent] ImplicitFeedback: %s", req.ImplicitFeedback)
+	}
+	if req.DocCompiler != "" {
+		logger.Infof("[agent] DocCompiler: %s", req.DocCompiler)
 	}
 
 	toolInfos := make([]prompt.ToolInfo, 0, len(req.IntegrationTools))
@@ -110,6 +144,15 @@ func (a *Agent) RunFromCheckpoint(ctx context.Context, req *ChatRequest, sw *str
 			toolToBlockType[t.Name] = t.Service
 		}
 	}
+	logger.Infof("[agent] IntegrationTools received: %d", len(req.IntegrationTools))
+	for _, t := range req.IntegrationTools {
+		logger.Infof("[agent]   tool: name=%s service=%s executor=%s deferLoading=%v", t.Name, t.Service, t.Executor, t.DeferLoading)
+	}
+	logger.Infof("[agent] MothershipTools received: %d", len(req.MothershipTools))
+	for _, t := range req.MothershipTools {
+		logger.Infof("[agent]   mothership: name=%s service=%s", t.Name, t.Service)
+	}
+	logger.Infof("[agent] WorkspaceContext length: %d", len(req.WorkspaceContext))
 
 	systemPrompt := a.prompt.Build(mode, req.WorkflowID != "", req.VFS, req.WorkspaceContext, toolInfos)
 	toolDefs := a.buildToolDefs(req, mode)
@@ -237,7 +280,7 @@ func (a *Agent) runLoop(ctx context.Context, sw *stream.StreamWriter, model stri
 			}
 		}
 
-		allMessages = append(allMessages, provider.Message{Role: "assistant", Content: currentText})
+		allMessages = append(allMessages, provider.Message{Role: "assistant", Content: currentText, ToolCalls: completedToolCalls})
 
 		if len(completedToolCalls) == 0 {
 			_ = sw.Write(protocol.EventTypeComplete, &protocol.CompletePayload{
@@ -324,7 +367,7 @@ func (a *Agent) emitToolResult(messages []provider.Message, toolCallID, toolName
 	if result.Error != "" {
 		content = fmt.Sprintf("Tool %s error: %s", toolName, result.Error)
 	}
-	messages = append(messages, provider.Message{Role: "tool", Content: content})
+	messages = append(messages, provider.Message{Role: "tool", Content: content, ToolCallID: toolCallID})
 	return messages
 }
 
@@ -349,7 +392,7 @@ func (a *Agent) addToolResult(messages []provider.Message, result *CheckpointRes
 	if result.Error != "" {
 		content = fmt.Sprintf("Tool %s error: %s", result.ToolName, result.Error)
 	}
-	messages = append(messages, provider.Message{Role: "tool", Content: content})
+	messages = append(messages, provider.Message{Role: "tool", Content: content, ToolCallID: result.ToolCallID})
 	return messages
 }
 
@@ -387,27 +430,31 @@ func (a *Agent) buildToolDefs(req *ChatRequest, mode string) []provider.ToolDefi
 	tools = append(tools, provider.ToolDefinition{
 		Type: "function",
 		Function: provider.ToolFuncDef{
-			Name:        "edit_workflow",
-			Description: "Modify the Sim workflow canvas. Use to add, edit, delete blocks. To connect blocks, use 'connections' inside the add operation params: { \"connections\": [{ \"source\": \"src_id\", \"target\": \"tgt_id\" }] }. All operations in a single call are executed atomically.",
+			Name: "edit_workflow",
+			Description: "Modify the Sim workflow canvas. Use to add, edit, or delete blocks in a single atomic call. " +
+				"CRITICAL: The entire request MUST be a single JSON object with an \"operations\" array — never emit multiple top-level JSON objects. " +
+				"Each element in the \"operations\" array MUST have an \"op\" field (add | edit | delete). " +
+				"Use block types from the Available Blocks list in the system prompt. " +
+				"To connect two blocks, nest a \"connections\" object inside the source block's add operation (inside the \"block\" object) as a handle-keyed map: " +
+				"\"connections\": {\"source\": \"targetBlockId\"}. The key is the output handle (default \"source\"), the value is the target block ID string or array of strings. " +
+				"Do NOT create separate operation items just for connections, and do NOT use an array of {source, target} pairs. " +
+				"Example: {\"operations\":[{\"op\":\"add\",\"block\":{\"type\":\"<block_type>\",\"id\":\"step1\",\"name\":\"Step 1\",\"subBlocks\":{\"field\":\"value\"},\"connections\":{\"source\":\"step2\"}}},{\"op\":\"add\",\"block\":{\"type\":\"<block_type>\",\"id\":\"step2\",\"name\":\"Step 2\",\"subBlocks\":{\"field\":\"value\"}}}]}",
 			Parameters: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
 					"operations": map[string]interface{}{
-						"type": "array", "description": "Array of operations",
+						"type": "array", "description": "Array of operations. Every item MUST have an \"op\" field. Nest connections inside the block object, not as separate items.",
 						"items": map[string]interface{}{
 							"type": "object",
 							"properties": map[string]interface{}{
-								"op":          map[string]interface{}{"type": "string", "description": "add | edit | delete", "enum": []string{"add", "edit", "delete"}},
+								"op":          map[string]interface{}{"type": "string", "description": "Operation type. Every operation item MUST include this field.", "enum": []string{"add", "edit", "delete"}},
 								"id":          map[string]interface{}{"type": "string", "description": "Block ID (required for edit, delete)"},
 								"type":        map[string]interface{}{"type": "string", "description": "Block type from the available blocks list (for add)"},
 								"name":        map[string]interface{}{"type": "string", "description": "Block display name (for add)"},
 								"subBlocks":   map[string]interface{}{"type": "object", "description": "Block configuration"},
 								"connections": map[string]interface{}{
-									"type": "array", "description": "Edge connections for this block; each entry: { source: 'src_id', target: 'tgt_id' }",
-									"items": map[string]interface{}{"type": "object", "properties": map[string]interface{}{
-										"source": map[string]interface{}{"type": "string"},
-										"target": map[string]interface{}{"type": "string"},
-									}},
+									"type": "object", "description": "Handle-keyed map of connections FROM this block to target blocks. The key is the output handle (default \"source\"), the value is the target block ID string or an array of target block ID strings. Example: {\"source\": \"targetBlockId\"} or {\"source\": [\"id1\", \"id2\"]}. Nest inside the block object, not as a standalone operation.",
+									"additionalProperties": map[string]interface{}{},
 								},
 							},
 							"required": []string{"op"},
@@ -421,6 +468,17 @@ func (a *Agent) buildToolDefs(req *ChatRequest, mode string) []provider.ToolDefi
 
 	if req.IntegrationTools != nil {
 		for _, t := range req.IntegrationTools {
+			tools = append(tools, provider.ToolDefinition{
+				Type: "function",
+				Function: provider.ToolFuncDef{
+					Name: t.Name, Description: t.Description, Parameters: t.InputSchema,
+				},
+			})
+		}
+	}
+
+	if req.MothershipTools != nil {
+		for _, t := range req.MothershipTools {
 			tools = append(tools, provider.ToolDefinition{
 				Type: "function",
 				Function: provider.ToolFuncDef{
@@ -491,7 +549,104 @@ func parseArguments(args string) protocol.AdditionalPropertiesMap {
 	if json.Unmarshal([]byte(args), &m) == nil && m != nil {
 		return protocol.AdditionalPropertiesMap(m)
 	}
+	// Fallback: some LLMs emit multiple top-level JSON objects concatenated
+	// (e.g. {"operations":[...]},{"op":"add",...},{"connections":[...]}).
+	// json.Unmarshal rejects this ("invalid character ',' after top-level
+	// value"), which would lose the entire payload. Split the input into
+	// individual objects and merge them so the tool call survives.
+	if merged := parseConcatenatedJSONObjects(args); merged != nil {
+		return merged
+	}
 	return protocol.AdditionalPropertiesMap{"raw": args}
+}
+
+// parseConcatenatedJSONObjects splits an input that contains one or more
+// top-level JSON objects (possibly separated by commas) and merges them into
+// a single map. When the first object has an "operations" array, every
+// subsequent object is appended to that array — this is the common case where
+// an LLM generates {"operations":[...]} followed by stray operation objects.
+// Returns nil when no valid JSON object can be extracted.
+func parseConcatenatedJSONObjects(input string) protocol.AdditionalPropertiesMap {
+	objects := splitTopLevelJSONObjects(input)
+	if len(objects) == 0 {
+		return nil
+	}
+
+	var first map[string]interface{}
+	if err := json.Unmarshal([]byte(objects[0]), &first); err != nil || first == nil {
+		return nil
+	}
+
+	if len(objects) == 1 {
+		return protocol.AdditionalPropertiesMap(first)
+	}
+
+	ops, hasOps := first["operations"].([]interface{})
+	for i := 1; i < len(objects); i++ {
+		var obj map[string]interface{}
+		if err := json.Unmarshal([]byte(objects[i]), &obj); err != nil || obj == nil {
+			continue
+		}
+		if hasOps {
+			ops = append(ops, obj)
+		} else {
+			for k, v := range obj {
+				if _, exists := first[k]; !exists {
+					first[k] = v
+				}
+			}
+		}
+	}
+	if hasOps {
+		first["operations"] = ops
+	}
+	return protocol.AdditionalPropertiesMap(first)
+}
+
+// splitTopLevelJSONObjects scans the input and returns each top-level JSON
+// object as a substring. It tracks brace depth and string/escape state so
+// braces inside strings or nested objects do not break the split. Non-object
+// tokens (commas, whitespace) between objects are treated as separators.
+func splitTopLevelJSONObjects(input string) []string {
+	var objects []string
+	depth := 0
+	start := -1
+	inString := false
+	escaped := false
+
+	for i := 0; i < len(input); i++ {
+		c := input[i]
+		if escaped {
+			escaped = false
+			continue
+		}
+		if inString {
+			if c == '\\' {
+				escaped = true
+			} else if c == '"' {
+				inString = false
+			}
+			continue
+		}
+		switch c {
+		case '"':
+			inString = true
+		case '{':
+			if depth == 0 {
+				start = i
+			}
+			depth++
+		case '}':
+			if depth > 0 {
+				depth--
+				if depth == 0 && start >= 0 {
+					objects = append(objects, input[start:i+1])
+					start = -1
+				}
+			}
+		}
+	}
+	return objects
 }
 
 // translateEditWorkflowArgs converts LLM-friendly format to Sim's edit_workflow format.
@@ -514,7 +669,7 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 	}
 
 	translated := make([]interface{}, 0, len(ops))
-	edgeOps := make(map[string][]map[string]interface{}) // source block ID -> connections
+	edgeOps := make(map[string][]string) // source block ID -> target IDs
 
 	for i, rawOp := range ops {
 		opMap, ok := rawOp.(map[string]interface{})
@@ -531,18 +686,35 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 		opType, _ := opMap["op"].(string)
 		blockID, _ := opMap["id"].(string)
 
-		// Handle edge operations: convert to connections on source block
-		if opType == "add_edge" {
-			source, _ := opMap["source"].(string)
-			target, _ := opMap["target"].(string)
-			if source == "" || target == "" {
-				continue
+		// Handle edge operations: convert to connections on source block.
+		// Also handles bare connection items — some LLMs emit a standalone
+		// {"connections":[{"source":"a","target":"b"}]} object without an "op"
+		// field instead of nesting connections inside a block operation.
+		if opType == "add_edge" || (opType == "" && hasConnectionsArray(opMap)) {
+			if opType == "add_edge" {
+				source, _ := opMap["source"].(string)
+				target, _ := opMap["target"].(string)
+				if source == "" || target == "" {
+					continue
+				}
+				sourceID := sanitizeID(source)
+				edgeOps[sourceID] = append(edgeOps[sourceID], sanitizeID(target))
+			} else {
+				conns, _ := opMap["connections"].([]interface{})
+				for _, conn := range conns {
+					connMap, ok := conn.(map[string]interface{})
+					if !ok {
+						continue
+					}
+					source, _ := connMap["source"].(string)
+					target, _ := connMap["target"].(string)
+					if source == "" || target == "" {
+						continue
+					}
+					sourceID := sanitizeID(source)
+					edgeOps[sourceID] = append(edgeOps[sourceID], sanitizeID(target))
+				}
 			}
-			sourceID := sanitizeID(source)
-			edgeOps[sourceID] = append(edgeOps[sourceID], map[string]interface{}{
-				"source": sourceID,
-				"target": sanitizeID(target),
-			})
 			continue
 		}
 
@@ -555,7 +727,34 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 		// Check for nested "block" object format
 		if block, ok := opMap["block"].(map[string]interface{}); ok {
 			for k, v := range block {
+				if k == "connections" {
+					continue
+				}
+				if k == "subBlocks" {
+					params["inputs"] = v
+					continue
+				}
 				params[k] = v
+			}
+			if conns, ok := block["connections"]; ok {
+				switch c := conns.(type) {
+				case []interface{}:
+					for _, conn := range c {
+						connMap, ok := conn.(map[string]interface{})
+						if !ok {
+							continue
+						}
+						source, _ := connMap["source"].(string)
+						target, _ := connMap["target"].(string)
+						if source == "" || target == "" {
+							continue
+						}
+						sourceID := sanitizeID(source)
+						edgeOps[sourceID] = append(edgeOps[sourceID], sanitizeID(target))
+					}
+				case map[string]interface{}:
+					params["connections"] = c
+				}
 			}
 			// Resolve tool-id-as-block-type to the real block type.
 			if rawType, _ := params["type"].(string); rawType != "" {
@@ -576,8 +775,33 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 		} else {
 			// Flat format
 			for k, v := range opMap {
-				if k != "op" && k != "id" {
-					params[k] = v
+				if k == "op" || k == "id" || k == "connections" {
+					continue
+				}
+				if k == "subBlocks" {
+					params["inputs"] = v
+					continue
+				}
+				params[k] = v
+			}
+			if conns, ok := opMap["connections"]; ok {
+				switch c := conns.(type) {
+				case []interface{}:
+					for _, conn := range c {
+						connMap, ok := conn.(map[string]interface{})
+						if !ok {
+							continue
+						}
+						source, _ := connMap["source"].(string)
+						target, _ := connMap["target"].(string)
+						if source == "" || target == "" {
+							continue
+						}
+						sourceID := sanitizeID(source)
+						edgeOps[sourceID] = append(edgeOps[sourceID], sanitizeID(target))
+					}
+				case map[string]interface{}:
+					params["connections"] = c
 				}
 			}
 			// Resolve tool-id-as-block-type to the real block type.
@@ -604,15 +828,45 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 	for i, op := range translated {
 		opMap, _ := op.(map[string]interface{})
 		blockID, _ := opMap["block_id"].(string)
-		if conns, ok := edgeOps[blockID]; ok && len(conns) > 0 {
-			params, _ := opMap["params"].(map[string]interface{})
-			if params == nil {
-				params = make(map[string]interface{})
-			}
-			params["connections"] = conns
-			opMap["params"] = params
-			translated[i] = opMap
+		targets, ok := edgeOps[blockID]
+		if !ok || len(targets) == 0 {
+			continue
 		}
+		params, _ := opMap["params"].(map[string]interface{})
+		if params == nil {
+			params = make(map[string]interface{})
+		}
+		if existing, ok := params["connections"].(map[string]interface{}); ok {
+			var combined []string
+			switch src := existing["source"].(type) {
+			case string:
+				combined = append(combined, src)
+			case []string:
+				combined = append(combined, src...)
+			case []interface{}:
+				for _, s := range src {
+					if str, ok := s.(string); ok {
+						combined = append(combined, str)
+					}
+				}
+			}
+			combined = append(combined, targets...)
+			if len(combined) == 1 {
+				existing["source"] = combined[0]
+			} else {
+				existing["source"] = combined
+			}
+		} else if len(targets) == 1 {
+			params["connections"] = map[string]interface{}{
+				"source": targets[0],
+			}
+		} else {
+			params["connections"] = map[string]interface{}{
+				"source": targets,
+			}
+		}
+		opMap["params"] = params
+		translated[i] = opMap
 	}
 
 	return protocol.AdditionalPropertiesMap{"operations": translated}
@@ -631,4 +885,12 @@ func sanitizeID(name string) string {
 		}
 	}
 	return result.String()
+}
+
+// hasConnectionsArray reports whether the operation map has a non-empty
+// "connections" array. Used to detect bare connection items emitted by some
+// LLMs (a {"connections":[...]} object with no "op" field).
+func hasConnectionsArray(opMap map[string]interface{}) bool {
+	conns, ok := opMap["connections"].([]interface{})
+	return ok && len(conns) > 0
 }

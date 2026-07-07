@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"sim/copilot/internal/logger"
 	"net/http"
 	"os"
@@ -118,8 +119,16 @@ func handleChat(w http.ResponseWriter, r *http.Request, ag *agent.Agent, promptB
 		return
 	}
 
+	bodyBytes, err := io.ReadAll(r.Body)
+	r.Body.Close()
+	if err != nil {
+		http.Error(w, "failed to read body", http.StatusBadRequest)
+		return
+	}
+	logger.Infof("[chat] Raw request body (%d bytes): %s", len(bodyBytes), string(bodyBytes))
+
 	var req agent.ChatRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+	if err := json.Unmarshal(bodyBytes, &req); err != nil {
 		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -230,6 +239,14 @@ func handleResume(w http.ResponseWriter, r *http.Request, ag *agent.Agent) {
 		return
 	}
 
+	bodyBytes, err := io.ReadAll(r.Body)
+	r.Body.Close()
+	if err != nil {
+		http.Error(w, "failed to read body", http.StatusBadRequest)
+		return
+	}
+	logger.Infof("[resume] Raw request body (%d bytes): %s", len(bodyBytes), string(bodyBytes))
+
 	var req struct {
 		StreamID     string                   `json:"streamId"`
 		CheckpointID string                   `json:"checkpointId"`
@@ -237,8 +254,8 @@ func handleResume(w http.ResponseWriter, r *http.Request, ag *agent.Agent) {
 		WorkspaceID  string                   `json:"workspaceId"`
 		Results      []map[string]interface{} `json:"results"`
 	}
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid request body", http.StatusBadRequest)
+	if err := json.Unmarshal(bodyBytes, &req); err != nil {
+		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -271,6 +288,24 @@ func handleResume(w http.ResponseWriter, r *http.Request, ag *agent.Agent) {
 		}
 		if data, ok := r0["data"]; ok {
 			result.Output = data
+			// Sim nests the error message inside the data object on failure
+			// (e.g. {"data":{"error":"[edit_workflow] ..."}}). Extract it so
+			// the LLM receives a meaningful error message instead of an empty
+			// string, which would leave it unable to self-correct.
+			if !result.Success {
+				if dataMap, ok := data.(map[string]interface{}); ok {
+					if errMsg, ok := dataMap["error"].(string); ok && errMsg != "" {
+						result.Error = errMsg
+					}
+				}
+			}
+		}
+		// Some tool results carry the error at the top level instead of nested
+		// inside data.
+		if !result.Success && result.Error == "" {
+			if errMsg, ok := r0["error"].(string); ok && errMsg != "" {
+				result.Error = errMsg
+			}
 		}
 	}
 	if result.ToolCallID == "" && result.ToolName == "" {

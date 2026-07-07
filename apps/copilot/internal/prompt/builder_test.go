@@ -16,7 +16,7 @@ func TestPromptBuilder_VariableSubstitution(t *testing.T) {
 		{Name: "http_request", Description: "Make HTTP requests"},
 	}
 
-	result := pb.Build("build", false, nil, nil, tools)
+	result := pb.Build("build", false, nil, "", tools)
 
 	if !strings.Contains(result, "Mode: build") {
 		t.Error("should contain Mode: build")
@@ -39,7 +39,7 @@ func TestPromptBuilder_SectionRemoval(t *testing.T) {
 		hasCatalog: false,
 	}
 
-	result := pb.Build("ask", false, nil, nil, nil)
+	result := pb.Build("ask", false, nil, "", nil)
 
 	if strings.Contains(result, "Workflow:") {
 		t.Error("workflow state section should be removed when hasWorkflow is false")

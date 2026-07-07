@@ -24,11 +24,13 @@ func NewAnthropicAdapter(apiKey string) ProviderAdapter {
 }
 
 type anthropicContentBlock struct {
-	Type string `json:"type"`
-	Text string `json:"text,omitempty"`
-	ID   string `json:"id,omitempty"`
-	Name string `json:"name,omitempty"`
-	Input json.RawMessage `json:"input,omitempty"`
+	Type      string          `json:"type"`
+	Text      string          `json:"text,omitempty"`
+	ID        string          `json:"id,omitempty"`
+	Name      string          `json:"name,omitempty"`
+	Input     json.RawMessage `json:"input,omitempty"`
+	ToolUseID string          `json:"tool_use_id,omitempty"`
+	Result    string          `json:"content,omitempty"`
 }
 
 type anthropicMessage struct {
@@ -99,20 +101,48 @@ func (a *anthropicAdapter) StreamChat(ctx context.Context, model string, systemP
 	anthMessages := make([]anthropicMessage, 0, len(messages))
 	for _, m := range messages {
 		role := m.Role
-		content := m.Content
-		if role == "function" || role == "tool" {
-			role = "user"
-		}
 		if role == "system" {
 			continue
 		}
-		block := anthropicContentBlock{
-			Type: "text",
-			Text: content,
+
+		var blocks []anthropicContentBlock
+
+		if role == "function" || role == "tool" {
+			role = "user"
+			blocks = []anthropicContentBlock{{
+				Type:      "tool_result",
+				ToolUseID: m.ToolCallID,
+				Result:    m.Content,
+			}}
+		} else if role == "assistant" && len(m.ToolCalls) > 0 {
+			if m.Content != "" {
+				blocks = append(blocks, anthropicContentBlock{
+					Type: "text",
+					Text: m.Content,
+				})
+			}
+			for _, tc := range m.ToolCalls {
+				input := json.RawMessage(tc.Function.Arguments)
+				if tc.Function.Arguments == "" {
+					input = json.RawMessage("{}")
+				}
+				blocks = append(blocks, anthropicContentBlock{
+					Type:  "tool_use",
+					ID:    tc.ID,
+					Name:  tc.Function.Name,
+					Input: input,
+				})
+			}
+		} else {
+			blocks = []anthropicContentBlock{{
+				Type: "text",
+				Text: m.Content,
+			}}
 		}
+
 		anthMessages = append(anthMessages, anthropicMessage{
 			Role:    role,
-			Content: []anthropicContentBlock{block},
+			Content: blocks,
 		})
 	}
 
