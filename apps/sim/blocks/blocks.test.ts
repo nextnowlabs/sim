@@ -510,13 +510,12 @@ describe.concurrent('Blocks Module', () => {
         expect(modelSubBlock).toBeDefined()
         expect(modelSubBlock?.type).toBe('combobox')
         expect(modelSubBlock?.required).toBe(true)
-        expect(modelSubBlock?.defaultValue).toBe('claude-sonnet-5')
+        expect(modelSubBlock?.defaultValue).toBe('deepseek-v4-pro')
       })
 
       it('should have LLM tool access', () => {
-        expect(block?.tools.access).toContain('openai_chat')
-        expect(block?.tools.access).toContain('anthropic_chat')
-        expect(block?.tools.access).toContain('google_chat')
+        expect(block?.tools.access).toContain('deepseek_chat')
+        expect(block?.tools.access).toHaveLength(1)
       })
 
       it('should have tools.config with tool selector function', () => {

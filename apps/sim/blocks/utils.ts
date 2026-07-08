@@ -19,6 +19,8 @@ import { isPiSupportedProvider } from '@/providers/pi-providers'
 import { getProviderFromModel } from '@/providers/utils'
 import { useProvidersStore } from '@/stores/providers/store'
 
+const CHINESE_PROVIDER_IDS = new Set(['deepseek'])
+
 export const VERTEX_MODELS = getProviderModels('vertex')
 export const BEDROCK_MODELS = getProviderModels('bedrock')
 export const AZURE_MODELS = [
@@ -51,26 +53,22 @@ export const SERVICE_ACCOUNT_SUBBLOCKS: SubBlockConfig[] = [
  */
 export function getModelOptions() {
   const providersState = useProvidersStore.getState()
-  const baseModels = orderModelIdsByReleaseDate(providersState.providers.base.models)
-  const ollamaModels = providersState.providers.ollama.models
-  const ollamaCloudModels = providersState.providers['ollama-cloud'].models
+  const baseModels = orderModelIdsByReleaseDate(providersState.providers.base.models).filter(
+    (model) => {
+      try {
+        return CHINESE_PROVIDER_IDS.has(getProviderFromModel(model))
+      } catch {
+        return false
+      }
+    }
+  )
   const vllmModels = providersState.providers.vllm.models
   const litellmModels = providersState.providers.litellm.models
-  const openrouterModels = providersState.providers.openrouter.models
-  const fireworksModels = providersState.providers.fireworks.models
-  const togetherModels = providersState.providers.together.models
-  const basetenModels = providersState.providers.baseten.models
   const allModels = Array.from(
     new Set([
       ...baseModels,
-      ...ollamaModels,
-      ...ollamaCloudModels,
       ...vllmModels,
       ...litellmModels,
-      ...openrouterModels,
-      ...fireworksModels,
-      ...togetherModels,
-      ...basetenModels,
     ])
   )
 

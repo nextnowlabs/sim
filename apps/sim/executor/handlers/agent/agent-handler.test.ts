@@ -313,7 +313,7 @@ describe('AgentBlockHandler', () => {
 
     it('should reject files for providers without attachment support', async () => {
       const inputs = {
-        model: 'deepseek-chat',
+        model: 'deepseek-v4-flash',
         messages: [{ role: 'user' as const, content: 'Analyze this file' }],
         files: [
           {

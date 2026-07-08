@@ -171,7 +171,7 @@ export const RouterBlock: BlockConfig<RouterResponse> = {
       type: 'combobox',
       placeholder: 'Type or select a model...',
       required: true,
-      defaultValue: 'claude-sonnet-5',
+      defaultValue: 'deepseek-v4-pro',
       options: getModelOptions,
     },
     ...getProviderCredentialSubBlocks(),
@@ -194,17 +194,10 @@ export const RouterBlock: BlockConfig<RouterResponse> = {
     },
   ],
   tools: {
-    access: [
-      'openai_chat',
-      'anthropic_chat',
-      'google_chat',
-      'xai_chat',
-      'deepseek_chat',
-      'deepseek_reasoner',
-    ],
+    access: ['deepseek_chat'],
     config: {
       tool: (params: Record<string, any>) => {
-        const model = params.model || 'gpt-4o'
+        const model = params.model || 'deepseek-v4-pro'
         if (!model) {
           throw new Error('No model selected')
         }
@@ -298,23 +291,16 @@ export const RouterV2Block: BlockConfig<RouterV2Response> = {
       type: 'combobox',
       placeholder: 'Type or select a model...',
       required: true,
-      defaultValue: 'claude-sonnet-5',
+      defaultValue: 'deepseek-v4-pro',
       options: getModelOptions,
     },
     ...getProviderCredentialSubBlocks(),
   ],
   tools: {
-    access: [
-      'openai_chat',
-      'anthropic_chat',
-      'google_chat',
-      'xai_chat',
-      'deepseek_chat',
-      'deepseek_reasoner',
-    ],
+    access: ['deepseek_chat'],
     config: {
       tool: (params: Record<string, any>) => {
-        const model = params.model || 'gpt-4o'
+        const model = params.model || 'deepseek-v4-pro'
         if (!model) {
           throw new Error('No model selected')
         }

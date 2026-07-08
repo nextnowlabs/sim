@@ -11,11 +11,11 @@ NO_CACHE="${NO_CACHE:-false}"
 PLATFORM="${PLATFORM:-}"
 
 declare -A SERVICES=(
-  ["app"]="${ROOT_DIR}|docker/app.Dockerfile|simstudio"
-  ["copilot"]="${ROOT_DIR}/apps/copilot|docker/copilot.Dockerfile|simstudio/copilot"
-  ["db"]="${ROOT_DIR}|docker/db.Dockerfile|simstudio/migrations"
-  ["pii"]="${ROOT_DIR}|docker/pii.Dockerfile|simstudio/pii"
-  ["realtime"]="${ROOT_DIR}|docker/realtime.Dockerfile|simstudio/realtime"
+  ["app"]="${ROOT_DIR}|docker/app.Dockerfile|simstudioai/simstudio"
+  ["copilot"]="${ROOT_DIR}/apps/copilot|docker/copilot.Dockerfile|simstudioai/copilot"
+  ["db"]="${ROOT_DIR}|docker/db.Dockerfile|simstudioai/migrations"
+  ["pii"]="${ROOT_DIR}|docker/pii.Dockerfile|simstudioai/pii"
+  ["realtime"]="${ROOT_DIR}|docker/realtime.Dockerfile|simstudioai/realtime"
 )
 
 ALL_SERVICES=("app" "copilot" "db" "pii" "realtime")

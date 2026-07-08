@@ -200,8 +200,7 @@ describe('Model Capabilities', () => {
         'claude-opus-4-0',
         'grok-3-latest',
         'grok-3-fast-latest',
-        'deepseek-v3',
-        'deepseek-chat',
+        'deepseek-v4-flash',
         'groq/meta-llama/llama-4-scout-17b-16e-instruct',
         'mistral-large-latest',
       ]
@@ -221,7 +220,7 @@ describe('Model Capabilities', () => {
         'o4-mini',
         'azure/o3',
         'azure/o4-mini',
-        'deepseek-r1',
+        'deepseek-v4-pro',
         'azure/model-router',
         'gpt-5.1',
         'azure/gpt-5.1',
@@ -264,8 +263,7 @@ describe('Model Capabilities', () => {
         'azure/gpt-5-chat',
         'gemini-2.5-pro',
         'gemini-2.5-flash',
-        'deepseek-v3',
-        'deepseek-chat',
+        'deepseek-v4-flash',
         'grok-3-latest',
         'grok-3-fast-latest',
         'groq/meta-llama/llama-4-scout-17b-16e-instruct',
@@ -300,7 +298,7 @@ describe('Model Capabilities', () => {
       expect(getMaxTemperature('o4-mini')).toBeUndefined()
       expect(getMaxTemperature('azure/o3')).toBeUndefined()
       expect(getMaxTemperature('azure/o4-mini')).toBeUndefined()
-      expect(getMaxTemperature('deepseek-r1')).toBeUndefined()
+      expect(getMaxTemperature('deepseek-v4-pro')).toBeUndefined()
       expect(getMaxTemperature('gpt-5.1')).toBeUndefined()
       expect(getMaxTemperature('azure/gpt-5.1')).toBeUndefined()
       expect(getMaxTemperature('azure/gpt-5.1-mini')).toBeUndefined()
@@ -422,7 +420,7 @@ describe('Model Capabilities', () => {
       expect(supportsThinking('gpt-4o')).toBe(false)
       expect(supportsThinking('gpt-5')).toBe(false)
       expect(supportsThinking('o3')).toBe(false)
-      expect(supportsThinking('deepseek-v3')).toBe(false)
+      expect(supportsThinking('deepseek-v4-pro')).toBe(false)
       expect(supportsThinking('unknown-model')).toBe(false)
     })
 
@@ -436,7 +434,7 @@ describe('Model Capabilities', () => {
     it.concurrent('should have correct models in MODELS_TEMP_RANGE_0_2', () => {
       expect(MODELS_TEMP_RANGE_0_2).toContain('gpt-4o')
       expect(MODELS_TEMP_RANGE_0_2).toContain('gemini-2.5-flash')
-      expect(MODELS_TEMP_RANGE_0_2).toContain('deepseek-v3')
+      expect(MODELS_TEMP_RANGE_0_2).toContain('deepseek-v4-flash')
       expect(MODELS_TEMP_RANGE_0_2).toContain('grok-3-latest')
       expect(MODELS_TEMP_RANGE_0_2).not.toContain('claude-sonnet-4-0')
     })
@@ -725,7 +723,7 @@ describe('Max Output Tokens', () => {
     })
 
     it.concurrent('should return standard default for models without maxOutputTokens', () => {
-      expect(getMaxOutputTokensForModel('deepseek-reasoner')).toBe(4096)
+      expect(getMaxOutputTokensForModel('deepseek-v4-pro')).toBe(4096)
       expect(getMaxOutputTokensForModel('grok-4-latest')).toBe(4096)
     })
 
@@ -879,7 +877,7 @@ describe('getHostedModels', () => {
     expect(hostedModels).toContain('gemini-2.5-pro')
     expect(hostedModels).toContain('gemini-2.5-flash')
 
-    expect(hostedModels).not.toContain('deepseek-v3')
+    expect(hostedModels).not.toContain('deepseek-v4-pro')
     expect(hostedModels).not.toContain('grok-4-latest')
   })
 
@@ -907,7 +905,7 @@ describe('shouldBillModelUsage', () => {
   })
 
   it.concurrent('should return false for non-hosted models', () => {
-    expect(shouldBillModelUsage('deepseek-v3')).toBe(false)
+    expect(shouldBillModelUsage('deepseek-v4-pro')).toBe(false)
     expect(shouldBillModelUsage('grok-4-latest')).toBe(false)
 
     expect(shouldBillModelUsage('unknown-model')).toBe(false)
