@@ -5,7 +5,10 @@
  *
  * Excludes providers Pi's key-based flow can't drive: ones needing richer config
  * (Vertex OAuth, Bedrock IAM, Azure endpoint+key) and base-URL providers
- * (Ollama, vLLM, LiteLLM, Together, Baseten, Ollama Cloud).
+ * (Ollama, vLLM, Together, Baseten, Ollama Cloud).
+ *
+ * LiteLLM is included because self-hosted deployments set both LITELLM_API_KEY
+ * and LITELLM_BASE_URL, which is sufficient for Pi's local mode.
  */
 export const PI_SUPPORTED_PROVIDER_IDS = [
   'anthropic',
@@ -17,6 +20,7 @@ export const PI_SUPPORTED_PROVIDER_IDS = [
   'groq',
   'cerebras',
   'openrouter',
+  'litellm',
 ] as const
 
 export type PiSupportedProvider = (typeof PI_SUPPORTED_PROVIDER_IDS)[number]

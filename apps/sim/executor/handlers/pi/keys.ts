@@ -107,6 +107,7 @@ const PROVIDER_API_KEY_ENV_VARS: Record<PiSupportedProvider, string> = {
   groq: 'GROQ_API_KEY',
   cerebras: 'CEREBRAS_API_KEY',
   openrouter: 'OPENROUTER_API_KEY',
+  litellm: 'LITELLM_API_KEY',
 }
 
 /**
