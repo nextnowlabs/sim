@@ -20,7 +20,7 @@ import { Check, ChevronDown, Clipboard, Eye, EyeOff } from 'lucide-react'
 import type { SsoRegistrationBody } from '@/lib/api/contracts/auth'
 import { useSession } from '@/lib/auth/auth-client'
 import { getSubscriptionAccessState } from '@/lib/billing/client/utils'
-import { isBillingEnabled } from '@/lib/core/config/env-flags'
+import { isBillingEnabled, isSsoEnabled } from '@/lib/core/config/env-flags'
 import { getBaseUrl } from '@/lib/core/utils/urls'
 import { getUserRole } from '@/lib/workspaces/organization/utils'
 import { saveDiscardActions } from '@/app/workspace/[workspaceId]/settings/components/save-discard-actions/save-discard-actions'
@@ -65,7 +65,6 @@ interface SSOProvider {
   domain: string
   issuer: string
   organizationId: string
-  userId?: string
   oidcConfig?: string
   samlConfig?: string
   providerType: 'oidc' | 'saml'
@@ -106,6 +105,15 @@ export function SSO() {
   const { data: orgsData } = useOrganizations()
   const { data: subscriptionData } = useSubscriptionData()
 
+  if (isSsoEnabled) {
+    return (
+      <SettingsEmptyState>
+        Single Sign-On is managed by your deployment configuration. To make changes, update the
+        environment variables and re-run the SSO registration script.
+      </SettingsEmptyState>
+    )
+  }
+
   const activeOrganization = orgsData?.activeOrganization
 
   const { data: providersData, isLoading: isLoadingProviders } = useSSOProviders({
@@ -116,16 +124,12 @@ export function SSO() {
   const existingProvider = providers[0] as SSOProvider | undefined
 
   const userEmail = session?.user?.email
-  const userId = session?.user?.id
   const userRole = getUserRole(orgsData?.activeOrganization, userEmail)
   const isOwner = userRole === 'owner'
   const isAdmin = userRole === 'admin'
   const canManageSSO = isOwner || isAdmin
   const subscriptionAccess = getSubscriptionAccessState(subscriptionData?.data)
   const hasEnterprisePlan = subscriptionAccess.hasUsableEnterpriseAccess
-
-  const isSSOProviderOwner =
-    !isBillingEnabled && userId ? providers.some((p) => p.userId === userId) : null
 
   const configureSSOMutation = useConfigureSSO()
 
@@ -174,18 +178,6 @@ export function SSO() {
       return (
         <SettingsEmptyState>
           Only organization owners and admins can configure Single Sign-On settings.
-        </SettingsEmptyState>
-      )
-    }
-    if (
-      !activeOrganization &&
-      !isLoadingProviders &&
-      isSSOProviderOwner === false &&
-      providers.length > 0
-    ) {
-      return (
-        <SettingsEmptyState>
-          Only the user who configured SSO can manage these settings.
         </SettingsEmptyState>
       )
     }

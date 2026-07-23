@@ -28,7 +28,6 @@ const {
     providerId: 'sso.providerId',
     domain: 'sso.domain',
     issuer: 'sso.issuer',
-    userId: 'sso.userId',
     organizationId: 'sso.organizationId',
     oidcConfig: 'sso.oidcConfig',
     samlConfig: 'sso.samlConfig',
@@ -138,7 +137,7 @@ describe('POST /api/auth/sso/register', () => {
 
   it('rejects a domain already registered by another organization', async () => {
     dbState.members = [{ organizationId: 'org-attacker', role: 'owner' }]
-    dbState.providers = [{ domain: 'acme.com', userId: 'u-victim', organizationId: 'org-victim' }]
+    dbState.providers = [{ domain: 'acme.com', organizationId: 'org-victim' }]
     const res = await POST(request({ ...OIDC_BODY, orgId: 'org-attacker' }))
     const json = await res.json()
     expect(res.status).toBe(409)
@@ -148,7 +147,7 @@ describe('POST /api/auth/sso/register', () => {
 
   it('matches conflicts across casing variants', async () => {
     dbState.members = [{ organizationId: 'org-attacker', role: 'owner' }]
-    dbState.providers = [{ domain: 'ACME.com', userId: 'u-victim', organizationId: 'org-victim' }]
+    dbState.providers = [{ domain: 'ACME.com', organizationId: 'org-victim' }]
     const res = await POST(request({ ...OIDC_BODY, orgId: 'org-attacker' }))
     expect(res.status).toBe(409)
     expect(mockRegisterSSOProvider).not.toHaveBeenCalled()
@@ -163,26 +162,10 @@ describe('POST /api/auth/sso/register', () => {
 
   it('allows the owning tenant to update its own provider for the same domain', async () => {
     dbState.members = [{ organizationId: 'org1', role: 'owner' }]
-    dbState.providers = [{ domain: 'acme.com', userId: 'u1', organizationId: 'org1' }]
+    dbState.providers = [{ domain: 'acme.com', organizationId: 'org1' }]
     const res = await POST(request({ ...OIDC_BODY, orgId: 'org1' }))
     expect(res.status).toBe(200)
     expect(mockRegisterSSOProvider).toHaveBeenCalledTimes(1)
-  })
-
-  it('lets an org admin adopt their own user-scoped provider for the same domain', async () => {
-    dbState.members = [{ organizationId: 'org1', role: 'owner' }]
-    dbState.providers = [{ domain: 'acme.com', userId: 'u1', organizationId: null }]
-    const res = await POST(request({ ...OIDC_BODY, orgId: 'org1' }))
-    expect(res.status).toBe(200)
-    expect(mockRegisterSSOProvider).toHaveBeenCalledTimes(1)
-  })
-
-  it("still blocks an org admin from claiming another user's user-scoped domain", async () => {
-    dbState.members = [{ organizationId: 'org1', role: 'owner' }]
-    dbState.providers = [{ domain: 'acme.com', userId: 'someone-else', organizationId: null }]
-    const res = await POST(request({ ...OIDC_BODY, orgId: 'org1' }))
-    expect(res.status).toBe(409)
-    expect(mockRegisterSSOProvider).not.toHaveBeenCalled()
   })
 
   it('normalizes the domain before persisting it', async () => {

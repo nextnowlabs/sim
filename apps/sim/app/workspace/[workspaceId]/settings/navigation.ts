@@ -78,7 +78,6 @@ export interface NavigationItem {
   docsLink?: string
 }
 
-const isSSOEnabled = isTruthy(getEnv('NEXT_PUBLIC_SSO_ENABLED'))
 const isCredentialSetsEnabled = isTruthy(getEnv('NEXT_PUBLIC_CREDENTIAL_SETS_ENABLED'))
 const isAccessControlEnabled = isTruthy(getEnv('NEXT_PUBLIC_ACCESS_CONTROL_ENABLED'))
 const isInboxEnabled = isTruthy(getEnv('NEXT_PUBLIC_INBOX_ENABLED'))
@@ -244,7 +243,6 @@ export const allNavigationItems: NavigationItem[] = [
     section: 'enterprise',
     requiresHosted: true,
     requiresEnterprise: true,
-    selfHostedOverride: isSSOEnabled,
     docsLink: 'https://docs.sim.ai/platform/enterprise/sso',
   },
   {

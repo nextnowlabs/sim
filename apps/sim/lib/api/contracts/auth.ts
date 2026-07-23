@@ -97,7 +97,6 @@ const ssoProviderListEntrySchema = z.object({
   issuer: z.string().nullable().optional(),
   oidcConfig: z.string().nullable().optional(),
   samlConfig: z.string().nullable().optional(),
-  userId: z.string().nullable().optional(),
   organizationId: z.string().nullable().optional(),
   providerType: z.enum(['oidc', 'saml']).optional(),
 })

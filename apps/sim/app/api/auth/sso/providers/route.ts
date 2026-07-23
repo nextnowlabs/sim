@@ -5,7 +5,6 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { listSsoProvidersContract } from '@/lib/api/contracts/auth'
 import { parseRequest } from '@/lib/api/server'
 import { getSession } from '@/lib/auth'
-import { enforceIpRateLimit } from '@/lib/core/rate-limiter'
 import { REDACTED_MARKER } from '@/lib/core/security/redaction'
 import { withRouteHandler } from '@/lib/core/utils/with-route-handler'
 
@@ -14,24 +13,14 @@ const logger = createLogger('SSOProvidersRoute')
 export const GET = withRouteHandler(async (request: NextRequest) => {
   try {
     const session = await getSession()
-    if (!session?.user?.id) {
-      const rateLimited = await enforceIpRateLimit('sso-providers', request, {
-        maxTokens: 20,
-        refillRate: 20,
-        refillIntervalMs: 60_000,
-      })
-      if (rateLimited) return rateLimited
-    }
     const parsed = await parseRequest(listSsoProvidersContract, request, {})
     if (!parsed.success) return parsed.response
     const { organizationId } = parsed.data.query
 
     let providers
     if (session?.user?.id) {
-      const userId = session.user.id
-
-      let verifiedOrganizationId: string | null = null
       if (organizationId) {
+        const userId = session.user.id
         const [membership] = await db
           .select({ organizationId: member.organizationId, role: member.role })
           .from(member)
@@ -43,14 +32,13 @@ export const GET = withRouteHandler(async (request: NextRequest) => {
         if (membership.role !== 'owner' && membership.role !== 'admin') {
           return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         }
-        verifiedOrganizationId = membership.organizationId
       }
 
-      const whereClause = verifiedOrganizationId
-        ? eq(ssoProvider.organizationId, verifiedOrganizationId)
-        : eq(ssoProvider.userId, userId)
+      const whereClause = organizationId
+        ? eq(ssoProvider.organizationId, organizationId)
+        : undefined
 
-      const results = await db
+      const query = db
         .select({
           id: ssoProvider.id,
           providerId: ssoProvider.providerId,
@@ -58,11 +46,11 @@ export const GET = withRouteHandler(async (request: NextRequest) => {
           issuer: ssoProvider.issuer,
           oidcConfig: ssoProvider.oidcConfig,
           samlConfig: ssoProvider.samlConfig,
-          userId: ssoProvider.userId,
           organizationId: ssoProvider.organizationId,
         })
         .from(ssoProvider)
-        .where(whereClause)
+
+      const results = whereClause ? await query.where(whereClause) : await query
 
       providers = results.map((provider) => {
         let oidcConfig = provider.oidcConfig
@@ -94,8 +82,8 @@ export const GET = withRouteHandler(async (request: NextRequest) => {
     }
 
     logger.info('Fetched SSO providers', {
-      userId: session?.user?.id,
       authenticated: !!session?.user?.id,
+      organizationId,
       providerCount: providers.length,
     })
 

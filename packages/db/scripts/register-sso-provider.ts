@@ -1,11 +1,11 @@
 #!/usr/bin/env bun
 
 /**
- * Direct Database SSO Registration Script (Better Auth Best Practice)
+ * Direct Database SSO Registration Script
  *
- * This script bypasses the authentication requirement by directly inserting
- * SSO provider records into the database, following the exact same logic
- * as Better Auth's registerSSOProvider endpoint.
+ * This script directly inserts SSO provider records into the database.
+ * SSO configuration is controlled purely by environment variables at deployment
+ * time — no user association is required.
  *
  * Usage: bun run packages/db/scripts/register-sso-provider.ts
  *
@@ -15,7 +15,6 @@
  *   SSO_PROVIDER_ID=your-provider-id
  *   SSO_ISSUER=https://your-idp-url
  *   SSO_DOMAIN=your-email-domain.com
- *   SSO_USER_EMAIL=admin@yourdomain.com (must be existing user)
  *
  * OIDC Providers:
  *   SSO_OIDC_CLIENT_ID=your_client_id
@@ -38,7 +37,7 @@ import { generateId } from '@sim/utils/id'
 import { eq } from 'drizzle-orm'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import { ssoProvider, user } from '../schema'
+import { ssoProvider } from '../schema'
 
 interface SSOMapping {
   id: string
@@ -154,7 +153,6 @@ interface SSOProviderData {
   domain: string
   oidcConfig?: string
   samlConfig?: string
-  userId: string
   providerId: string
   organizationId?: string
 }
@@ -381,33 +379,17 @@ function getExampleEnvVars(
   }
 }
 
-async function getAdminUser(): Promise<{ id: string; email: string } | null> {
-  const adminEmail = process.env.SSO_USER_EMAIL
-  if (!adminEmail) {
-    logger.error('SSO_USER_EMAIL is required to identify the admin user')
-    return null
-  }
-
-  try {
-    const users = await db.select().from(user).where(eq(user.email, adminEmail))
-    if (users.length === 0) {
-      logger.error(`No user found with email: ${adminEmail}`)
-      logger.error('Please ensure this user exists in your database first')
-      return null
-    }
-    return { id: users[0].id, email: users[0].email }
-  } catch (error) {
-    logger.error('Failed to query user:', error)
-    return null
-  }
-}
-
 async function registerSSOProvider(): Promise<boolean> {
   try {
     const ssoConfig = buildSSOConfigFromEnv()
 
     if (!ssoConfig) {
-      logger.error('❌ No valid SSO configuration found in environment variables')
+      const ssoEnabled = process.env.SSO_ENABLED === 'true'
+      if (!ssoEnabled) {
+        logger.info('SSO is not enabled. Skipping SSO provider registration.')
+        return true
+      }
+      logger.error('❌ SSO_ENABLED is true but required environment variables are missing')
       logger.error('')
       logger.error('📝 Required environment variables:')
       logger.error('For OIDC providers (like Okta, Azure AD):')
@@ -415,19 +397,12 @@ async function registerSSOProvider(): Promise<boolean> {
       for (const [key, value] of Object.entries(oidcExample)) {
         logger.error(`  ${key}=${value}`)
       }
-      logger.error('  SSO_USER_EMAIL=admin@yourdomain.com')
       logger.error('')
       logger.error('For SAML providers (like ADFS):')
       const samlExample = getExampleEnvVars('saml')
       for (const [key, value] of Object.entries(samlExample)) {
         logger.error(`  ${key}=${value}`)
       }
-      logger.error('  SSO_USER_EMAIL=admin@yourdomain.com')
-      return false
-    }
-
-    const adminUser = await getAdminUser()
-    if (!adminUser) {
       return false
     }
 
@@ -435,7 +410,6 @@ async function registerSSOProvider(): Promise<boolean> {
       providerId: ssoConfig.providerId,
       providerType: ssoConfig.providerType,
       domain: ssoConfig.domain,
-      adminUser: adminUser.email,
     })
 
     try {
@@ -561,7 +535,6 @@ async function registerSSOProvider(): Promise<boolean> {
       id: generateId(),
       issuer: ssoConfig.issuer,
       domain: ssoConfig.domain,
-      userId: adminUser.id,
       providerId: ssoConfig.providerId,
       organizationId: process.env.SSO_ORGANIZATION_ID || undefined,
     }
@@ -620,7 +593,6 @@ async function registerSSOProvider(): Promise<boolean> {
           domain: providerData.domain,
           oidcConfig: providerData.oidcConfig,
           samlConfig: providerData.samlConfig,
-          userId: providerData.userId,
           organizationId: providerData.organizationId,
         })
         .where(eq(ssoProvider.providerId, ssoConfig.providerId))

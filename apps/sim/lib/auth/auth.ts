@@ -183,6 +183,32 @@ if (validStripeKey) {
   })
 }
 
+// SSO default provider config — built from environment variables at startup.
+// When SSO_ENABLED and the required OIDC env vars are set, the provider is
+// registered via defaultSSO (in-code, no database record needed).
+const ssoDefaultProvider = env.SSO_ENABLED && env.SSO_PROVIDER_ID && env.SSO_ISSUER && env.SSO_DOMAIN && env.SSO_OIDC_CLIENT_ID && env.SSO_OIDC_CLIENT_SECRET
+  ? {
+      domain: env.SSO_DOMAIN,
+      providerId: env.SSO_PROVIDER_ID,
+      oidcConfig: {
+        issuer: env.SSO_ISSUER,
+        clientId: env.SSO_OIDC_CLIENT_ID,
+        clientSecret: env.SSO_OIDC_CLIENT_SECRET,
+        scopes: env.SSO_OIDC_SCOPES
+          ? env.SSO_OIDC_SCOPES.split(',').map((s) => s.trim())
+          : ['openid', 'profile', 'email'],
+        pkce: env.SSO_OIDC_PKCE !== 'false',
+        discoveryEndpoint: `${env.SSO_ISSUER.replace(/\/$/, '')}/.well-known/openid-configuration`,
+        mapping: {
+          id: env.SSO_MAPPING_ID || 'sub',
+          email: env.SSO_MAPPING_EMAIL || 'email',
+          name: env.SSO_MAPPING_NAME || 'name',
+          image: env.SSO_MAPPING_IMAGE || 'picture',
+        },
+      },
+    }
+  : undefined
+
 export const auth = betterAuth({
   baseURL: getBaseUrl(),
   trustedOrigins: [
@@ -880,6 +906,17 @@ export const auth = betterAuth({
         if (emailPasswordPaths.some((path) => ctx.path.startsWith(path)))
           throw new APIError('FORBIDDEN', {
             message: 'Email/password authentication is disabled. Please use SSO to sign in.',
+          })
+      }
+
+      if (isSsoEnabled) {
+        if (ctx.path.startsWith('/sign-up'))
+          throw new APIError('FORBIDDEN', {
+            message: 'Registration is disabled. Please use SSO to sign in.',
+          })
+        if (ctx.path.startsWith('/sign-in') && !ctx.path.startsWith('/sign-in/sso'))
+          throw new APIError('FORBIDDEN', {
+            message: 'Only SSO sign-in is enabled. Please use SSO to sign in.',
           })
       }
 
@@ -2992,7 +3029,6 @@ export const auth = betterAuth({
         },
       ],
     }),
-    // Include SSO plugin when enabled
     ...(env.SSO_ENABLED
       ? [
           sso({
@@ -3006,6 +3042,7 @@ export const auth = betterAuth({
               disabled: false,
               defaultRole: 'member',
             },
+            ...(ssoDefaultProvider ? { defaultSSO: [ssoDefaultProvider] } : {}),
           }),
         ]
       : []),

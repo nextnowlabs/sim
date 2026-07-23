@@ -1,116 +1,74 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { Button, cn, Input, Label } from '@sim/emcn'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createLogger } from '@sim/logger'
 import Link from 'next/link'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { client } from '@/lib/auth/auth-client'
 import { env, isFalsy } from '@/lib/core/config/env'
 import { validateCallbackUrl } from '@/lib/core/security/input-validation'
-import { quickValidateEmail } from '@/lib/messaging/email/validation'
 import { AuthSubmitButton } from '@/app/(auth)/components'
 
 const logger = createLogger('SSOForm')
 
-const validateEmailField = (emailValue: string): string[] => {
-  const errors: string[] = []
-
-  if (!emailValue || !emailValue.trim()) {
-    errors.push('Email is required.')
-    return errors
-  }
-
-  const validation = quickValidateEmail(emailValue.trim().toLowerCase())
-  if (!validation.isValid) {
-    errors.push(validation.reason || 'Please enter a valid email address.')
-  }
-
-  return errors
+interface SSOFormProps {
+  providerId: string
 }
 
-export default function SSOForm() {
-  const router = useRouter()
+export default function SSOForm({ providerId }: SSOFormProps) {
   const searchParams = useSearchParams()
-  const [isLoading, setIsLoading] = useState(false)
-  const [email, setEmail] = useState('')
-  const [emailErrors, setEmailErrors] = useState<string[]>([])
-  const [showEmailValidationError, setShowEmailValidationError] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [callbackUrl, setCallbackUrl] = useState('/workspace')
+  const initiatedRef = useRef(false)
 
   useEffect(() => {
-    if (searchParams) {
-      const callback = searchParams.get('callbackUrl')
-      if (callback) {
-        if (validateCallbackUrl(callback)) {
-          setCallbackUrl(callback)
-        } else {
-          logger.warn('Invalid callback URL detected and blocked:', { url: callback })
-        }
-      }
+    if (!searchParams) return
 
-      const emailParam = searchParams.get('email')
-      if (emailParam) {
-        setEmail(emailParam)
-      }
-
-      const error = searchParams.get('error')
-      if (error) {
-        const errorMessages: Record<string, string> = {
-          account_not_found:
-            'No account found. Please contact your administrator to set up SSO access.',
-          sso_failed: 'SSO authentication failed. Please try again.',
-          invalid_provider: 'SSO provider not configured correctly.',
-        }
-        setEmailErrors([errorMessages[error] || 'SSO authentication failed. Please try again.'])
-        setShowEmailValidationError(true)
+    const callback = searchParams.get('callbackUrl')
+    if (callback) {
+      if (validateCallbackUrl(callback)) {
+        setCallbackUrl(callback)
+      } else {
+        logger.warn('Invalid callback URL detected and blocked:', { url: callback })
       }
     }
-  }, [searchParams])
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newEmail = e.target.value
-    setEmail(newEmail)
-
-    const errors = validateEmailField(newEmail)
-    setEmailErrors(errors)
-    setShowEmailValidationError(false)
-  }
-
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setIsLoading(true)
-
-    const formData = new FormData(e.currentTarget)
-    const emailRaw = formData.get('email') as string
-    const emailValue = emailRaw.trim().toLowerCase()
-
-    const emailValidationErrors = validateEmailField(emailValue)
-    setEmailErrors(emailValidationErrors)
-    setShowEmailValidationError(emailValidationErrors.length > 0)
-
-    if (emailValidationErrors.length > 0) {
+    const errorParam = searchParams.get('error')
+    if (errorParam) {
+      const errorMessages: Record<string, string> = {
+        account_not_found:
+          'No account found. Please contact your administrator to set up SSO access.',
+        sso_failed: 'SSO authentication failed. Please try again.',
+        invalid_provider: 'SSO provider not configured correctly.',
+      }
+      setError(errorMessages[errorParam] || 'SSO authentication failed. Please try again.')
       setIsLoading(false)
       return
     }
 
-    try {
-      const safeCallbackUrl = callbackUrl
+    if (!initiatedRef.current) {
+      initiatedRef.current = true
+      initiateSSO(callback || '/workspace')
+    }
+  }, [searchParams])
 
+  const initiateSSO = useCallback(async (cbUrl: string) => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
       await client.signIn.sso({
-        email: emailValue,
-        callbackURL: safeCallbackUrl,
-        errorCallbackURL: `/sso?error=sso_failed&callbackUrl=${encodeURIComponent(safeCallbackUrl)}`,
+        providerId,
+        callbackURL: cbUrl,
+        errorCallbackURL: `/sso?error=sso_failed&callbackUrl=${encodeURIComponent(cbUrl)}`,
       })
     } catch (err) {
-      logger.error('SSO sign-in failed', { error: err, email: emailValue })
-
+      logger.error('SSO sign-in failed', { error: err, providerId })
       let errorMessage = 'SSO sign-in failed. Please try again.'
       if (err instanceof Error) {
         if (err.message.includes('NO_PROVIDER_FOUND')) {
           errorMessage = 'SSO provider not found. Please check your configuration.'
-        } else if (err.message.includes('INVALID_EMAIL_DOMAIN')) {
-          errorMessage = 'Email domain not configured for SSO. Please contact your administrator.'
         } else if (err.message.includes('network')) {
           errorMessage = 'Network error. Please check your connection and try again.'
         } else if (err.message.includes('rate limit')) {
@@ -121,12 +79,11 @@ export default function SSOForm() {
           errorMessage = err.message
         }
       }
-
-      setEmailErrors([errorMessage])
-      setShowEmailValidationError(true)
+      setError(errorMessage)
       setIsLoading(false)
+      initiatedRef.current = false
     }
-  }
+  }, [providerId])
 
   return (
     <>
@@ -136,111 +93,38 @@ export default function SSOForm() {
             'text-balance text-[40px] text-[var(--text-primary)] leading-[110%] tracking-[-0.02em]'
           }
         >
-          Sign in with SSO
+          {error ? 'SSO sign-in failed' : 'Signing you in…'}
         </h1>
         <p
           className={
             'text-[color-mix(in_srgb,var(--text-muted)_60%,transparent)] text-lg leading-[125%] tracking-[0.02em]'
           }
         >
-          Enter your work email to continue
+          {error
+            ? error
+            : 'Redirecting to your identity provider…'}
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className={'mt-8 space-y-8'}>
-        <div className='space-y-6'>
-          <div className='space-y-2'>
-            <div className='flex items-center justify-between'>
-              <Label htmlFor='email'>Work email</Label>
-            </div>
-            <Input
-              id='email'
-              name='email'
-              placeholder='Enter your work email'
-              required
-              autoCapitalize='none'
-              autoComplete='email'
-              autoCorrect='off'
-              value={email}
-              onChange={handleEmailChange}
-              className={cn(
-                showEmailValidationError &&
-                  emailErrors.length > 0 &&
-                  'border-[var(--text-error)] focus:border-[var(--text-error)]'
-              )}
-            />
-            {showEmailValidationError && emailErrors.length > 0 && (
-              <div className='mt-1 space-y-1 text-[var(--text-error)] text-xs'>
-                {emailErrors.map((error) => (
-                  <p key={error}>{error}</p>
-                ))}
-              </div>
-            )}
-          </div>
+      {error && (
+        <div className='mt-8'>
+          <AuthSubmitButton loadingLabel='Redirecting…' type='button' onClick={() => initiateSSO(callbackUrl)}>
+            Try again
+          </AuthSubmitButton>
         </div>
-
-        <AuthSubmitButton loading={isLoading} loadingLabel='Redirecting to SSO provider…'>
-          Continue with SSO
-        </AuthSubmitButton>
-      </form>
-
-      {/* Only show divider and email signin button if email/password is enabled */}
-      {!isFalsy(env.NEXT_PUBLIC_EMAIL_PASSWORD_SIGNUP_ENABLED) && (
-        <>
-          <div className='relative my-6 font-light'>
-            <div className='absolute inset-0 flex items-center'>
-              <div className='w-full border-[var(--border)] border-t' />
-            </div>
-            <div className='relative flex justify-center text-sm'>
-              <span className='bg-[var(--bg)] px-4 font-normal text-[var(--text-muted)]'>Or</span>
-            </div>
-          </div>
-
-          <div className='space-y-3'>
-            <Link
-              href={`/login${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
-            >
-              <Button variant='outline' className='w-full rounded-[10px]' type='button'>
-                Sign in with email
-              </Button>
-            </Link>
-          </div>
-        </>
       )}
 
-      {/* Only show signup link if email/password signup is enabled */}
       {!isFalsy(env.NEXT_PUBLIC_EMAIL_PASSWORD_SIGNUP_ENABLED) && (
         <div className='pt-6 text-center font-light text-base'>
-          <span className='font-normal'>Don't have an account? </span>
+          <span className='font-normal'>Want to use a different method? </span>
           <Link
-            href={`/signup${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
+            href={`/login${callbackUrl ? `?callbackUrl=${encodeURIComponent(callbackUrl)}` : ''}`}
             className='font-medium text-[var(--text-primary)] underline-offset-4 transition hover:underline'
           >
-            Sign up
+            Sign in with email
           </Link>
         </div>
       )}
-
-      <div className='absolute right-0 bottom-0 left-0 px-8 pb-8 text-center font-normal text-[var(--text-muted)] text-sm leading-relaxed sm:px-8 md:px-[44px]'>
-        By signing in, you agree to our{' '}
-        <Link
-          href='/terms'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-[var(--text-muted)] underline-offset-4 transition hover:text-[var(--text-primary)] hover:underline'
-        >
-          Terms of Service
-        </Link>{' '}
-        and{' '}
-        <Link
-          href='/privacy'
-          target='_blank'
-          rel='noopener noreferrer'
-          className='text-[var(--text-muted)] underline-offset-4 transition hover:text-[var(--text-primary)] hover:underline'
-        >
-          Privacy Policy
-        </Link>
-      </div>
     </>
   )
 }

@@ -20,7 +20,6 @@ import {
   SIDEBAR_SECTION_GAP_CLASS,
 } from '@/app/workspace/[workspaceId]/w/components/sidebar/constants'
 import { SidebarTooltip } from '@/app/workspace/[workspaceId]/w/components/sidebar/sidebar'
-import { useSSOProviders } from '@/ee/sso/hooks/sso'
 import { prefetchWorkspaceCredentials } from '@/hooks/queries/credentials'
 import { prefetchGeneralSettings, useGeneralSettings } from '@/hooks/queries/general-settings'
 import { useInboxConfig } from '@/hooks/queries/inbox'
@@ -65,15 +64,11 @@ export function SettingsSidebar({
     staleTime: 5 * 60 * 1000,
   })
   const { data: inboxConfig } = useInboxConfig(workspaceId)
-  const { data: ssoProvidersData, isLoading: isLoadingSSO } = useSSOProviders({
-    enabled: !isHosted,
-  })
 
   const activeOrganization = organizationsData?.activeOrganization
   const { config: permissionConfig } = usePermissionConfig()
 
   const userEmail = session?.user?.email
-  const userId = session?.user?.id
 
   const userRole = getUserRole(activeOrganization, userEmail)
   const isOwner = userRole === 'owner'
@@ -86,12 +81,6 @@ export function SettingsSidebar({
   const isEnterprisePlan = isEnterprise(subscriptionData?.data?.plan)
 
   const isSuperUser = session?.user?.role === 'admin'
-
-  const isSSOProviderOwner = useMemo(() => {
-    if (isHosted) return null
-    if (!userId || isLoadingSSO) return null
-    return ssoProvidersData?.providers?.some((p) => p.userId === userId) || false
-  }, [userId, ssoProvidersData?.providers, isLoadingSSO])
 
   const navigationItems = useMemo(() => {
     return allNavigationItems.filter((item) => {
@@ -120,10 +109,6 @@ export function SettingsSidebar({
       }
 
       if (item.selfHostedOverride && !isHosted) {
-        if (item.id === 'sso') {
-          const hasProviders = (ssoProvidersData?.providers?.length ?? 0) > 0
-          return !hasProviders || isSSOProviderOwner === true
-        }
         return true
       }
 
@@ -165,8 +150,6 @@ export function SettingsSidebar({
     isEnterprisePlan,
     subscriptionAccess.hasUsableMaxAccess,
     isOrgAdminOrOwner,
-    isSSOProviderOwner,
-    ssoProvidersData?.providers?.length,
     permissionConfig,
     isSuperUser,
     generalSettings?.superUserModeEnabled,

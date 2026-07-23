@@ -73,24 +73,15 @@ export const POST = withRouteHandler(async (request: NextRequest) => {
       return NextResponse.json({ error: 'Enter a valid domain like company.com' }, { status: 400 })
     }
 
-    const isOwnedByCaller = (provider: {
-      userId: string | null
-      organizationId: string | null
-    }): boolean => {
-      if (provider.userId === session.user.id && !provider.organizationId) return true
-      return orgId ? provider.organizationId === orgId : false
-    }
-
     const findDomainConflict = async () =>
       (
         await db
           .select({
-            userId: ssoProvider.userId,
             organizationId: ssoProvider.organizationId,
           })
           .from(ssoProvider)
           .where(sql`lower(${ssoProvider.domain}) = ${domain}`)
-      ).find((provider) => !isOwnedByCaller(provider))
+      ).find((provider) => (orgId ? provider.organizationId !== orgId : true))
 
     const domainConflictResponse = () =>
       NextResponse.json(
@@ -139,7 +130,7 @@ export const POST = withRouteHandler(async (request: NextRequest) => {
       if (rawClientSecret === REDACTED_MARKER) {
         const ownerClause = orgId
           ? and(eq(ssoProvider.providerId, providerId), eq(ssoProvider.organizationId, orgId))
-          : and(eq(ssoProvider.providerId, providerId), eq(ssoProvider.userId, session.user.id))
+          : eq(ssoProvider.providerId, providerId)
         const [existing] = await db
           .select({ oidcConfig: ssoProvider.oidcConfig })
           .from(ssoProvider)

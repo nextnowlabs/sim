@@ -226,12 +226,11 @@ app:
     # The auto-registration job runs on post-install/post-upgrade when sso.autoRegister=true.
     # For OIDC: SSO_ISSUER + SSO_DOMAIN + SSO_OIDC_CLIENT_ID + SSO_OIDC_CLIENT_SECRET are required.
     # For SAML: SSO_ISSUER + SSO_DOMAIN + SSO_SAML_ENTRY_POINT + SSO_SAML_CERT are required.
-    SSO_USER_EMAIL: ""                                    # Admin user email for SSO registration (must already exist)
     SSO_PROVIDER_TYPE: ""                                 # "oidc" or "saml"
     SSO_PROVIDER_ID: ""                                   # Unique provider ID (e.g. "okta-corp", "azure-ad")
     SSO_ISSUER: ""                                        # IdP issuer URL (e.g. https://dev-123456.okta.com/oauth2/default)
     SSO_DOMAIN: ""                                        # Email domain for SSO (e.g. company.com)
-    SSO_ORGANIZATION_ID: ""                               # Organization ID (optional — leave empty for user-scoped)
+    SSO_ORGANIZATION_ID: ""                               # Organization ID (optional)
     # OIDC configuration
     SSO_OIDC_CLIENT_ID: ""                                # OIDC client ID
     SSO_OIDC_CLIENT_SECRET: ""                            # OIDC client secret

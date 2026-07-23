@@ -1,5 +1,7 @@
 import { Suspense } from 'react'
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
+import { isSsoEnabled } from '@/lib/core/config/env-flags'
 import { getOAuthProviderStatus } from '@/app/(auth)/components/oauth-provider-checker'
 import LoginForm from '@/app/(auth)/login/login-form'
 
@@ -10,6 +12,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function LoginPage() {
+  if (isSsoEnabled) {
+    redirect('/sso')
+  }
+
   const { githubAvailable, googleAvailable, microsoftAvailable, isProduction } =
     await getOAuthProviderStatus()
 

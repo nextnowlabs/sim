@@ -840,7 +840,6 @@ export const schemaMock = {
     domain: 'domain',
     oidcConfig: 'oidcConfig',
     samlConfig: 'samlConfig',
-    userId: 'userId',
     providerId: 'providerId',
     organizationId: 'organizationId',
   },

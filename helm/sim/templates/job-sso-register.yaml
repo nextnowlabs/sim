@@ -3,12 +3,11 @@
 {{- $providerId := (toString (.Values.app.env.SSO_PROVIDER_ID | default "")) }}
 {{- $issuer := (toString (.Values.app.env.SSO_ISSUER | default "")) }}
 {{- $domain := (toString (.Values.app.env.SSO_DOMAIN | default "")) }}
-{{- $userEmail := (toString (.Values.app.env.SSO_USER_EMAIL | default "")) }}
 {{- $oidcClientId := (toString (.Values.app.env.SSO_OIDC_CLIENT_ID | default "")) }}
 {{- $oidcClientSecret := (toString (.Values.app.env.SSO_OIDC_CLIENT_SECRET | default "")) }}
 {{- $samlEntryPoint := (toString (.Values.app.env.SSO_SAML_ENTRY_POINT | default "")) }}
 {{- $samlCert := (toString (.Values.app.env.SSO_SAML_CERT | default "")) }}
-{{- if and .Values.sso.autoRegister (eq $ssoEnabled "true") (ne $providerType "") (ne $providerId "") (ne $issuer "") (ne $domain "") (ne $userEmail "") }}
+{{- if and .Values.sso.autoRegister (eq $ssoEnabled "true") (ne $providerType "") (ne $providerId "") (ne $issuer "") (ne $domain "") }}
 {{- $hasOidc := and (eq $providerType "oidc") (ne $oidcClientId "") (ne $oidcClientSecret "") }}
 {{- $hasSaml := and (eq $providerType "saml") (ne $samlEntryPoint "") (ne $samlCert "") }}
 {{- if or $hasOidc $hasSaml }}
@@ -71,7 +70,7 @@ spec:
           env:
             - name: DATABASE_URL
               value: {{ include "sim.databaseUrl" . | quote }}
-            {{- $ssoEnvKeys := list "SSO_ENABLED" "SSO_PROVIDER_TYPE" "SSO_PROVIDER_ID" "SSO_ISSUER" "SSO_DOMAIN" "SSO_USER_EMAIL" "SSO_ORGANIZATION_ID" "SSO_OIDC_CLIENT_ID" "SSO_OIDC_CLIENT_SECRET" "SSO_OIDC_SCOPES" "SSO_OIDC_PKCE" "SSO_OIDC_AUTHORIZATION_ENDPOINT" "SSO_OIDC_TOKEN_ENDPOINT" "SSO_OIDC_USERINFO_ENDPOINT" "SSO_OIDC_JWKS_ENDPOINT" "SSO_SAML_ENTRY_POINT" "SSO_SAML_CERT" "SSO_SAML_CALLBACK_URL" "SSO_SAML_AUDIENCE" "SSO_SAML_WANT_ASSERTIONS_SIGNED" "SSO_SAML_SIGNATURE_ALGORITHM" "SSO_SAML_DIGEST_ALGORITHM" "SSO_SAML_IDENTIFIER_FORMAT" "SSO_MAPPING_ID" "SSO_MAPPING_EMAIL" "SSO_MAPPING_NAME" "SSO_MAPPING_IMAGE" "NEXT_PUBLIC_APP_URL" "BETTER_AUTH_URL" }}
+            {{- $ssoEnvKeys := list "SSO_ENABLED" "SSO_PROVIDER_TYPE" "SSO_PROVIDER_ID" "SSO_ISSUER" "SSO_DOMAIN" "SSO_ORGANIZATION_ID" "SSO_OIDC_CLIENT_ID" "SSO_OIDC_CLIENT_SECRET" "SSO_OIDC_SCOPES" "SSO_OIDC_PKCE" "SSO_OIDC_AUTHORIZATION_ENDPOINT" "SSO_OIDC_TOKEN_ENDPOINT" "SSO_OIDC_USERINFO_ENDPOINT" "SSO_OIDC_JWKS_ENDPOINT" "SSO_SAML_ENTRY_POINT" "SSO_SAML_CERT" "SSO_SAML_CALLBACK_URL" "SSO_SAML_AUDIENCE" "SSO_SAML_WANT_ASSERTIONS_SIGNED" "SSO_SAML_SIGNATURE_ALGORITHM" "SSO_SAML_DIGEST_ALGORITHM" "SSO_SAML_IDENTIFIER_FORMAT" "SSO_MAPPING_ID" "SSO_MAPPING_EMAIL" "SSO_MAPPING_NAME" "SSO_MAPPING_IMAGE" "NEXT_PUBLIC_APP_URL" "BETTER_AUTH_URL" }}
             {{- range $key := $ssoEnvKeys }}
             {{- $value := index $.Values.app.env $key }}
             {{- if and $value (ne (toString $value) "") (ne (toString $value) "<nil>") }}
