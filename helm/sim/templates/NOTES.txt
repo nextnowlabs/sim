@@ -21,27 +21,24 @@ Your release is named {{ .Release.Name }} in namespace {{ .Release.Namespace }}.
 {{- end }}
 
 2. Reach the application:
-{{- if and .Values.ingress.enabled .Values.ingress.app.host }}
+{{- if .Values.nginx.enabled }}
 
-   Sim is exposed at:
-{{- if .Values.ingress.tls.enabled }}
-     https://{{ .Values.ingress.app.host }}
-{{- else }}
-     http://{{ .Values.ingress.app.host }}
-{{- end }}
+   Nginx reverse proxy is deployed. Forward traffic from your cloud ELB to
+   the nginx Service:
 
-   If DNS is not yet wired up, point your hostname at the ingress controller's
-   external IP/LoadBalancer.
+     kubectl --namespace {{ .Release.Namespace }} get svc {{ include "sim.fullname" . }}-nginx
+
+   To expose the nginx directly via a LoadBalancer, set nginx.service.type=LoadBalancer.
 {{- else }}
 
-   Ingress is disabled. Use port-forward to reach the app locally:
+   Use port-forward to reach the app locally:
 
      kubectl --namespace {{ .Release.Namespace }} port-forward svc/{{ include "sim.fullname" . }}-app {{ .Values.app.service.port | default 3000 }}:{{ .Values.app.service.port | default 3000 }}
 
    Then open http://localhost:{{ .Values.app.service.port | default 3000 }}
 
-   To expose Sim on the public internet, enable `ingress.enabled=true` and set
-   `ingress.app.host`. See examples/values-production.yaml.
+   To expose Sim on the public internet, enable `nginx.enabled=true` and point
+   your cloud ELB at the nginx Service. See examples/values-production.yaml.
 {{- end }}
 
 3. Required secrets:

@@ -171,81 +171,10 @@ postgresql:
     maxWalSize: "8GB"
     minWalSize: "160MB"
 
-# Ollama AI models with GPU acceleration (GCP GPU instances)
-# Set ollama.enabled: false if you don't need local AI models
-ollama:
+# LiteLLM proxy (OpenAI-compatible API proxy)
+# Set litellm.enabled: false if you don't need the proxy
+litellm:
   enabled: false
-  replicaCount: 1
-
-  # GPU node targeting - uncomment and customize for GPU node pools
-  # Recommended: T4 or V100 GPU instances
-  # nodeSelector:
-  #   cloud.google.com/gke-nodepool: "gpu-pool"
-  #   cloud.google.com/gke-accelerator: "nvidia-tesla-t4"
-  
-  tolerations:
-    - key: "nvidia.com/gpu"
-      operator: "Equal"
-      value: "present"
-      effect: "NoSchedule"
-  
-  # GPU resource allocation for AI model serving
-  gpu:
-    enabled: true
-    count: 1
-  
-  resources:
-    limits:
-      memory: "16Gi"
-      cpu: "4000m"
-      nvidia.com/gpu: "1"
-    requests:
-      memory: "8Gi"
-      cpu: "2000m"
-  
-  # High-performance SSD storage for AI models
-  persistence:
-    enabled: true
-    storageClass: "premium-rwo"
-    size: 100Gi
-    accessModes:
-      - ReadWriteOnce
-  
-  env:
-    NVIDIA_DRIVER_CAPABILITIES: "all"
-    OLLAMA_LOAD_TIMEOUT: "-1"
-    OLLAMA_KEEP_ALIVE: "-1"
-    OLLAMA_DEBUG: "1"
-
-# Ingress using Google Cloud Load Balancer
-ingress:
-  enabled: true
-  className: gce
-  
-  annotations:
-    kubernetes.io/ingress.class: gce
-    kubernetes.io/ingress.global-static-ip-name: "simstudio-ip"
-    networking.gke.io/managed-certificates: "simstudio-ssl-cert"
-    kubernetes.io/ingress.allow-http: "false"
-  
-  # Main application
-  app:
-    host: simstudio.acme.com
-    paths:
-      - path: /
-        pathType: Prefix
-  
-  # Realtime service
-  realtime:
-    host: simstudio-ws.acme.com
-    paths:
-      - path: /
-        pathType: Prefix
-  
-  # TLS configuration
-  tls:
-    enabled: true
-    secretName: simstudio-tls-secret
 
 # Pod disruption budget for high availability
 podDisruptionBudget:

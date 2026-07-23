@@ -11,9 +11,7 @@ defaults: &defaults
   app.env.CRON_SECRET: x
   postgresql.auth.password: x
   networkPolicy.enabled: true
-  ingress.enabled: true
-  ingress.app.host: a.test
-  ingress.realtime.host: b.test
+  nginx.enabled: true
 
 tests:
   - it: does not render when networkPolicy.enabled=false

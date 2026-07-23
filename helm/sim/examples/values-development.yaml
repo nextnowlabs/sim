@@ -115,12 +115,8 @@ postgresql:
     maxWalSize: "1GB"
     minWalSize: "80MB"
 
-# Ollama AI models (disabled by default for development)
-ollama:
-  enabled: false
-
-# Ingress (disabled for development - use port-forward for local access)
-ingress:
+# LiteLLM proxy (disabled by default for development)
+litellm:
   enabled: false
 
 # Pod disruption budget (disabled for development)

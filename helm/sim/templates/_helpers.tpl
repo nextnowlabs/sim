@@ -102,19 +102,35 @@ app.kubernetes.io/component: postgresql
 {{- end }}
 
 {{/*
-Ollama specific labels
+LiteLLM specific labels
 */}}
-{{- define "sim.ollama.labels" -}}
+{{- define "sim.litellm.labels" -}}
 {{ include "sim.labels" . }}
-app.kubernetes.io/component: ollama
+app.kubernetes.io/component: litellm
 {{- end }}
 
 {{/*
-Ollama selector labels
+LiteLLM selector labels
 */}}
-{{- define "sim.ollama.selectorLabels" -}}
+{{- define "sim.litellm.selectorLabels" -}}
 {{ include "sim.selectorLabels" . }}
-app.kubernetes.io/component: ollama
+app.kubernetes.io/component: litellm
+{{- end }}
+
+{{/*
+Nginx specific labels
+*/}}
+{{- define "sim.nginx.labels" -}}
+{{ include "sim.labels" . }}
+app.kubernetes.io/component: nginx
+{{- end }}
+
+{{/*
+Nginx selector labels
+*/}}
+{{- define "sim.nginx.selectorLabels" -}}
+{{ include "sim.selectorLabels" . }}
+app.kubernetes.io/component: nginx
 {{- end }}
 
 {{/*
@@ -289,7 +305,7 @@ than enforced.
 {{- define "sim.validateExternalSecretCoverage" -}}
 {{- if and .Values.externalSecrets .Values.externalSecrets.enabled -}}
 {{- $remoteRefs := default (dict) (default (dict) .Values.externalSecrets.remoteRefs).app -}}
-{{- $chartComputed := list "DATABASE_URL" "SOCKET_SERVER_URL" "OLLAMA_URL" "PII_URL" -}}
+{{- $chartComputed := list "DATABASE_URL" "SOCKET_SERVER_URL" "LITELLM_URL" "PII_URL" -}}
 {{- $appEnv := default (dict) .Values.app.env -}}
 {{/*
   Required-key coverage: these are non-optional at runtime. With ESO enabled
@@ -434,15 +450,15 @@ true
 {{- end }}
 
 {{/*
-Ollama URL
+LiteLLM URL
 */}}
-{{- define "sim.ollamaUrl" -}}
-{{- if .Values.ollama.enabled }}
-{{- $serviceName := printf "%s-ollama" (include "sim.fullname" .) }}
-{{- $port := .Values.ollama.service.port }}
+{{- define "sim.litellmUrl" -}}
+{{- if .Values.litellm.enabled }}
+{{- $serviceName := printf "%s-litellm" (include "sim.fullname" .) }}
+{{- $port := .Values.litellm.service.port }}
 {{- printf "http://%s:%v" $serviceName $port }}
 {{- else }}
-{{- .Values.app.env.OLLAMA_URL | default "http://localhost:11434" }}
+{{- .Values.app.env.LITELLM_URL | default "http://localhost:4000" }}
 {{- end }}
 {{- end }}
 

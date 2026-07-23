@@ -1,0 +1,86 @@
+{{- if .Values.nginx.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "sim.fullname" . }}-nginx
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sim.nginx.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.nginx.service.type }}
+  ports:
+    - port: {{ .Values.nginx.service.port }}
+      targetPort: {{ .Values.nginx.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "sim.nginx.selectorLabels" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sim.fullname" . }}-nginx
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sim.nginx.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.nginx.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sim.nginx.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-nginx.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "sim.nginx.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sim.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      {{- include "sim.podSecurityContext" .Values.nginx | nindent 6 }}
+      {{- include "sim.nodeSelector" .Values.nginx | nindent 6 }}
+      {{- include "sim.tolerations" .Values.nginx | nindent 6 }}
+      {{- include "sim.affinity" .Values | nindent 6 }}
+      containers:
+        - name: nginx
+          image: {{ include "sim.image" (dict "imageRoot" .Values.nginx.image "global" .Values.global "chartAppVersion" .Chart.AppVersion) }}
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.nginx.service.targetPort }}
+              protocol: TCP
+          {{- if .Values.nginx.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.nginx.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.nginx.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.nginx.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.nginx.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.nginx.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- include "sim.resources" .Values.nginx | nindent 10 }}
+          {{- include "sim.containerSecurityContext" .Values.nginx | nindent 10 }}
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: {{ include "sim.fullname" . }}-nginx-config
+{{- end }}

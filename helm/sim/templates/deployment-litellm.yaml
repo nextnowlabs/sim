@@ -1,0 +1,92 @@
+{{- if .Values.litellm.enabled }}
+---
+# Deployment for LiteLLM
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sim.fullname" . }}-litellm
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sim.litellm.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.litellm.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "sim.litellm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-litellm.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "sim.litellm.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sim.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      {{- include "sim.podSecurityContext" .Values.litellm | nindent 6 }}
+      {{- include "sim.nodeSelector" .Values.litellm | nindent 6 }}
+      {{- include "sim.tolerations" .Values.litellm | nindent 6 }}
+      {{- include "sim.affinity" .Values | nindent 6 }}
+      containers:
+        - name: litellm
+          image: {{ include "sim.image" (dict "imageRoot" .Values.litellm.image "global" .Values.global "chartAppVersion" .Chart.AppVersion) }}
+          imagePullPolicy: {{ .Values.litellm.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.litellm.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: LITELLM_CONFIG_PATH
+              value: /etc/litellm/litellm_config.yaml
+            {{- range $key, $value := .Values.litellm.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- with .Values.extraEnvVars }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.litellm.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.litellm.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.litellm.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.litellm.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.litellm.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.litellm.readinessProbe | nindent 12 }}
+          {{- end }}
+          {{- include "sim.resources" .Values.litellm | nindent 10 }}
+          {{- include "sim.containerSecurityContext" .Values.litellm | nindent 10 }}
+          volumeMounts:
+            - name: litellm-config
+              mountPath: /etc/litellm/litellm_config.yaml
+              subPath: litellm_config.yaml
+              readOnly: true
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.litellm.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+        - name: litellm-config
+          configMap:
+            name: {{ include "sim.fullname" . }}-litellm-config
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.litellm.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+{{- end }}

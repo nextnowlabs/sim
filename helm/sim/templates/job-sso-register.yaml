@@ -1,0 +1,96 @@
+{{- $ssoEnabled := (toString (.Values.app.env.SSO_ENABLED | default "")) }}
+{{- $providerType := (toString (.Values.app.env.SSO_PROVIDER_TYPE | default "")) }}
+{{- $providerId := (toString (.Values.app.env.SSO_PROVIDER_ID | default "")) }}
+{{- $issuer := (toString (.Values.app.env.SSO_ISSUER | default "")) }}
+{{- $domain := (toString (.Values.app.env.SSO_DOMAIN | default "")) }}
+{{- $userEmail := (toString (.Values.app.env.SSO_USER_EMAIL | default "")) }}
+{{- $oidcClientId := (toString (.Values.app.env.SSO_OIDC_CLIENT_ID | default "")) }}
+{{- $oidcClientSecret := (toString (.Values.app.env.SSO_OIDC_CLIENT_SECRET | default "")) }}
+{{- $samlEntryPoint := (toString (.Values.app.env.SSO_SAML_ENTRY_POINT | default "")) }}
+{{- $samlCert := (toString (.Values.app.env.SSO_SAML_CERT | default "")) }}
+{{- if and .Values.sso.autoRegister (eq $ssoEnabled "true") (ne $providerType "") (ne $providerId "") (ne $issuer "") (ne $domain "") (ne $userEmail "") }}
+{{- $hasOidc := and (eq $providerType "oidc") (ne $oidcClientId "") (ne $oidcClientSecret "") }}
+{{- $hasSaml := and (eq $providerType "saml") (ne $samlEntryPoint "") (ne $samlCert "") }}
+{{- if or $hasOidc $hasSaml }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "sim.fullname" . }}-sso-register
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sim.labels" . | nindent 4 }}
+    app.kubernetes.io/component: sso-register
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: {{ .Values.sso.backoffLimit }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "sim.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: sso-register
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "sim.serviceAccountName" . }}
+      automountServiceAccountToken: false
+      restartPolicy: {{ .Values.sso.restartPolicy }}
+      {{- include "sim.podSecurityContext" .Values.sso | nindent 6 }}
+      {{- with .Values.app.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.postgresql.enabled }}
+      initContainers:
+        - name: wait-for-postgres
+          image: {{ include "sim.image" (dict "imageRoot" .Values.postgresql.image "global" .Values.global "chartAppVersion" .Chart.AppVersion) }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              until pg_isready -h {{ include "sim.fullname" . }}-postgresql -p {{ .Values.postgresql.service.port }} -U {{ .Values.postgresql.auth.username }}; do
+                echo "Waiting for PostgreSQL to be ready..."
+                sleep 2
+              done
+              echo "PostgreSQL is ready!"
+          envFrom:
+            - secretRef:
+                name: {{ include "sim.postgresqlSecretName" . }}
+          {{- include "sim.containerSecurityContext" .Values.sso | nindent 10 }}
+      {{- end }}
+      containers:
+        - name: sso-register
+          image: {{ include "sim.image" (dict "imageRoot" .Values.app.image "global" .Values.global "chartAppVersion" .Chart.AppVersion) }}
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          command: ["bun", "run", "packages/db/scripts/register-sso-provider.ts"]
+          env:
+            - name: DATABASE_URL
+              value: {{ include "sim.databaseUrl" . | quote }}
+            {{- $ssoEnvKeys := list "SSO_ENABLED" "SSO_PROVIDER_TYPE" "SSO_PROVIDER_ID" "SSO_ISSUER" "SSO_DOMAIN" "SSO_USER_EMAIL" "SSO_ORGANIZATION_ID" "SSO_OIDC_CLIENT_ID" "SSO_OIDC_CLIENT_SECRET" "SSO_OIDC_SCOPES" "SSO_OIDC_PKCE" "SSO_OIDC_AUTHORIZATION_ENDPOINT" "SSO_OIDC_TOKEN_ENDPOINT" "SSO_OIDC_USERINFO_ENDPOINT" "SSO_OIDC_JWKS_ENDPOINT" "SSO_SAML_ENTRY_POINT" "SSO_SAML_CERT" "SSO_SAML_CALLBACK_URL" "SSO_SAML_AUDIENCE" "SSO_SAML_WANT_ASSERTIONS_SIGNED" "SSO_SAML_SIGNATURE_ALGORITHM" "SSO_SAML_DIGEST_ALGORITHM" "SSO_SAML_IDENTIFIER_FORMAT" "SSO_MAPPING_ID" "SSO_MAPPING_EMAIL" "SSO_MAPPING_NAME" "SSO_MAPPING_IMAGE" "NEXT_PUBLIC_APP_URL" "BETTER_AUTH_URL" }}
+            {{- range $key := $ssoEnvKeys }}
+            {{- $value := index $.Values.app.env $key }}
+            {{- if and $value (ne (toString $value) "") (ne (toString $value) "<nil>") }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.postgresql.enabled }}
+            - secretRef:
+                name: {{ include "sim.postgresqlSecretName" . }}
+            {{- else if .Values.externalDatabase.enabled }}
+            - secretRef:
+                name: {{ include "sim.externalDbSecretName" . }}
+            {{- end }}
+          {{- with .Values.sso.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- include "sim.containerSecurityContext" .Values.sso | nindent 10 }}
+{{- end }}
+{{- end }}

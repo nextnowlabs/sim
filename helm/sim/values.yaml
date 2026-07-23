@@ -156,7 +156,7 @@ app:
     ANTHROPIC_API_KEY_1: ""                               # Primary Anthropic Claude API key
     ANTHROPIC_API_KEY_2: ""                               # Additional Anthropic API key for load balancing
     ANTHROPIC_API_KEY_3: ""                               # Additional Anthropic API key for load balancing
-    OLLAMA_URL: ""                                        # Ollama local LLM server URL
+    LITELLM_URL: ""                                       # LiteLLM proxy server URL (auto-wired when litellm.enabled)
     PII_URL: ""                                           # Presidio PII service URL; auto-computed when pii.enabled, override here otherwise
     ELEVENLABS_API_KEY: ""                                # ElevenLabs API key for text-to-speech in deployed chat
 
@@ -220,6 +220,41 @@ app:
     # user signs in via SSO and an account with the same email already exists. Only needed for IdPs that do NOT
     # assert email_verified (trustEmailVerified already handles those that do). Resolved at startup — restart after editing.
     SSO_TRUSTED_PROVIDER_IDS: ""
+
+    # SSO Provider Configuration (required for auto-registration via helm hook)
+    # Set SSO_ENABLED="true" and fill in the provider details below.
+    # The auto-registration job runs on post-install/post-upgrade when sso.autoRegister=true.
+    # For OIDC: SSO_ISSUER + SSO_DOMAIN + SSO_OIDC_CLIENT_ID + SSO_OIDC_CLIENT_SECRET are required.
+    # For SAML: SSO_ISSUER + SSO_DOMAIN + SSO_SAML_ENTRY_POINT + SSO_SAML_CERT are required.
+    SSO_USER_EMAIL: ""                                    # Admin user email for SSO registration (must already exist)
+    SSO_PROVIDER_TYPE: ""                                 # "oidc" or "saml"
+    SSO_PROVIDER_ID: ""                                   # Unique provider ID (e.g. "okta-corp", "azure-ad")
+    SSO_ISSUER: ""                                        # IdP issuer URL (e.g. https://dev-123456.okta.com/oauth2/default)
+    SSO_DOMAIN: ""                                        # Email domain for SSO (e.g. company.com)
+    SSO_ORGANIZATION_ID: ""                               # Organization ID (optional — leave empty for user-scoped)
+    # OIDC configuration
+    SSO_OIDC_CLIENT_ID: ""                                # OIDC client ID
+    SSO_OIDC_CLIENT_SECRET: ""                            # OIDC client secret
+    SSO_OIDC_SCOPES: ""                                   # OIDC scopes, comma-separated (default: openid,profile,email)
+    SSO_OIDC_PKCE: ""                                     # Enable PKCE (default: true, set to "false" to disable)
+    SSO_OIDC_AUTHORIZATION_ENDPOINT: ""                   # Custom authorization endpoint (optional, auto-discovered from issuer)
+    SSO_OIDC_TOKEN_ENDPOINT: ""                           # Custom token endpoint (optional, auto-discovered from issuer)
+    SSO_OIDC_USERINFO_ENDPOINT: ""                        # Custom userinfo endpoint (optional)
+    SSO_OIDC_JWKS_ENDPOINT: ""                            # Custom JWKS endpoint (optional, auto-discovered from issuer)
+    # SAML configuration
+    SSO_SAML_ENTRY_POINT: ""                              # SAML IdP SSO URL
+    SSO_SAML_CERT: ""                                     # SAML IdP certificate (PEM format)
+    SSO_SAML_CALLBACK_URL: ""                             # SAML callback URL (optional, auto-generated)
+    SSO_SAML_AUDIENCE: ""                                 # SAML audience restriction (optional, defaults to issuer)
+    SSO_SAML_WANT_ASSERTIONS_SIGNED: ""                   # Require signed assertions (default: false)
+    SSO_SAML_SIGNATURE_ALGORITHM: ""                      # SAML signature algorithm (optional)
+    SSO_SAML_DIGEST_ALGORITHM: ""                         # SAML digest algorithm (optional)
+    SSO_SAML_IDENTIFIER_FORMAT: ""                        # SAML identifier format (optional)
+    # Custom claim mapping (optional — sensible defaults per provider type)
+    SSO_MAPPING_ID: ""                                    # Custom ID claim (default: sub for OIDC, nameidentifier for SAML)
+    SSO_MAPPING_EMAIL: ""                                 # Custom email claim (default: email for OIDC, emailaddress for SAML)
+    SSO_MAPPING_NAME: ""                                  # Custom name claim (default: name for both)
+    SSO_MAPPING_IMAGE: ""                                 # Custom image claim (default: picture for OIDC)
 
     # Enterprise Feature Overrides (self-hosted)
     CREDENTIAL_SETS_ENABLED: ""                           # Enable credential sets (email polling) on self-hosted ("true" to enable)
@@ -681,60 +716,34 @@ externalDatabase:
     name: ""           # Name of existing Kubernetes secret
     passwordKey: "EXTERNAL_DB_PASSWORD"  # Key in the secret containing the password
 
-# Ollama local AI models configuration
-ollama:
-  # Enable/disable Ollama deployment
+# LiteLLM proxy configuration (OpenAI-compatible API proxy for LLM providers)
+litellm:
+  # Enable/disable LiteLLM deployment
   enabled: false
 
   # Image configuration
   image:
-    repository: ollama/ollama
-    # Pinned to a stable release rather than "latest" to keep deployments reproducible.
-    # 0.23.2 is the latest stable Ollama as of May 2026
-    # (https://github.com/ollama/ollama/releases/tag/v0.23.2).
-    tag: "0.23.2"
+    repository: ghcr.io/berriai/litellm
+    tag: "main-stable"
     digest: ""
     pullPolicy: IfNotPresent
 
   # Number of replicas
   replicaCount: 1
 
-  # GPU configuration
-  gpu:
-    enabled: false
-    count: 1
-    # GPU sharing strategy: "mig" (Multi-Instance GPU) or "time-slicing"
-    # - mig: Hardware-level GPU partitioning (requires supported GPUs like A100)
-    # - time-slicing: Software-level GPU sharing (works with most NVIDIA GPUs)
-    strategy: "time-slicing"
-    # Number of time-slicing replicas (only used when strategy is "time-slicing")
-    timeSlicingReplicas: 5
-  
-  # Node selector for GPU workloads (adjust labels based on your cluster configuration)
-  nodeSelector:
-    accelerator: nvidia
-  
-  # Tolerations for GPU nodes (adjust based on your cluster's GPU node taints)
-  tolerations:
-    - key: "sku"
-      operator: "Equal"
-      value: "gpu"
-      effect: "NoSchedule"
-  
   # Resource limits and requests
   resources:
     limits:
-      memory: "8Gi"
-      nvidia.com/gpu: "1"
-    requests:
-      memory: "4Gi"
+      memory: "2Gi"
       cpu: "1000m"
-  
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+
+  # Node selector for pod scheduling (leave empty to allow scheduling on any node)
+  nodeSelector: {}
+
   # Pod security context
-  # The upstream ollama/ollama image is built to run as root and writes models to
-  # /root/.ollama by default. To meet Pod Security Standards "restricted", we run
-  # as a non-root user (1001) and rely on fsGroup to make the mounted PVC writable.
-  # Override OLLAMA_MODELS env (or remount /root/.ollama) if your image expects root.
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 1001
@@ -742,7 +751,6 @@ ollama:
     fsGroup: 1001
 
   # Container security context
-  # readOnlyRootFilesystem is intentionally false — Ollama writes model blobs to its data dir.
   securityContext:
     runAsNonRoot: true
     runAsUser: 1001
@@ -750,60 +758,159 @@ ollama:
 
   # Environment variables
   env:
-    NVIDIA_DRIVER_CAPABILITIES: "all"
-    OLLAMA_LOAD_TIMEOUT: "-1"
-    OLLAMA_KEEP_ALIVE: "-1"
-    OLLAMA_DEBUG: "1"
-    # The default OLLAMA model dir is /root/.ollama, which a non-root user can't write.
-    # Point it at a path under the writable PVC mount instead.
-    HOME: "/tmp"
-    OLLAMA_MODELS: "/data/models"
-  
-  # Persistence configuration
-  persistence:
-    enabled: true
-    storageClass: ""
-    size: 100Gi
-    accessModes:
-      - ReadWriteOnce
-  
+    LITELLM_MASTER_KEY: ""
+    # Provider API keys (set at least one)
+    OPENAI_API_KEY: ""
+    ANTHROPIC_API_KEY: ""
+    # Database for storing usage logs (optional)
+    DATABASE_URL: ""
+    # Telemetry (optional)
+    OTEL_EXPORTER: ""
+    OTEL_EXPORTER_OTLP_ENDPOINT: ""
+
+  # Model list — define which models LiteLLM proxies
+  # Each entry maps a model_name to a provider/model with auth via env var
+  # Example:
+  #   modelList:
+  #     - modelName: gpt-4o
+  #       provider: openai
+  #       model: gpt-4o
+  #       apiKeyEnv: OPENAI_API_KEY
+  #     - modelName: claude-sonnet-4-20250514
+  #       provider: anthropic
+  #       model: claude-sonnet-4-20250514
+  #       apiKeyEnv: ANTHROPIC_API_KEY
+  modelList: []
+
+  # LiteLLM proxy configuration
+  config:
+    # Master key for admin API (if empty, taken from litellm.env.LITELLM_MASTER_KEY)
+    masterKey: ""
+
+    # Extra settings injected into general_settings block of litellm_config.yaml
+    extraSettings: {}
+
   # Service configuration
   service:
     type: ClusterIP
-    port: 11434
-    targetPort: 11434
-  
+    port: 4000
+    targetPort: 4000
+
   # Health checks
   startupProbe:
     httpGet:
-      path: /
-      port: 11434
+      path: /health
+      port: 4000
     initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 10
-  
+
   livenessProbe:
     httpGet:
-      path: /
-      port: 11434
-    initialDelaySeconds: 60
+      path: /health
+      port: 4000
+    initialDelaySeconds: 30
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 5
-  
+
   readinessProbe:
     httpGet:
-      path: /
-      port: 11434
-    initialDelaySeconds: 30
+      path: /health
+      port: 4000
+    initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 5
     failureThreshold: 3
 
-  # Additional volumes for ollama deployment
+  # Additional volumes for litellm deployment
   extraVolumes: []
   extraVolumeMounts: []
+
+# Nginx reverse proxy configuration
+nginx:
+  # Enable/disable the nginx reverse proxy
+  enabled: false
+
+  # Image configuration
+  image:
+    repository: nginx
+    tag: "1.27-alpine"
+    digest: ""
+    pullPolicy: IfNotPresent
+
+  # Number of replicas
+  replicaCount: 1
+
+  # Resource limits and requests
+  resources:
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+
+  # Node selector for pod scheduling
+  nodeSelector: {}
+
+  # Pod security context
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+    runAsGroup: 101
+    fsGroup: 101
+
+  # Container security context
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 101
+    runAsGroup: 101
+
+  # Client max body size (for file uploads)
+  clientMaxBodySize: "50m"
+
+  # Set to your ELB/proxy CIDR for real-IP passthrough
+  realIpFrom: ""
+
+  # Extra server-level nginx config (injected into the server block)
+  extraServerConfig: ""
+
+  # Service configuration
+  # Set type: LoadBalancer to expose nginx via cloud ELB directly
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+
+  # Health checks
+  startupProbe:
+    httpGet:
+      path: /nginx-health
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 10
+
+  livenessProbe:
+    httpGet:
+      path: /nginx-health
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    httpGet:
+      path: /nginx-health
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
 
 # Presidio PII redaction service (analyzer + anonymizer combined, port 5001).
 # When enabled, the app's PII_URL is auto-wired to this in-cluster service so the
@@ -888,83 +995,6 @@ pii:
   # Additional volumes for the pii deployment
   extraVolumes: []
   extraVolumeMounts: []
-
-# Ingress configuration
-# When services share the same host, paths are consolidated into a single rule.
-# Path order: realtime paths, copilot paths, then app paths (most specific first).
-# Ensure specific paths (e.g., /socket.io, /copilot) come before catch-all paths (/).
-ingress:
-  enabled: false
-  className: nginx
-
-  annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    # Production recommendations (uncomment & adjust to your environment):
-    #
-    # Automatic TLS via cert-manager. Issuer name varies per cluster
-    # (e.g. letsencrypt-prod, letsencrypt-staging, internal-ca).
-    # cert-manager.io/cluster-issuer: letsencrypt-prod
-    #
-    # Allow larger uploads (knowledge base / file ingestion).
-    # nginx.ingress.kubernetes.io/proxy-body-size: "50m"
-    #
-    # Long timeouts for streaming SSE / LLM responses.
-    # nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
-    # nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
-
-  # Main application (use / as catch-all)
-  app:
-    host: sim.local
-    paths:
-      - path: /
-        pathType: Prefix
-
-  # Realtime service (use /socket.io when sharing host with app)
-  realtime:
-    host: sim-ws.local
-    paths:
-      - path: /
-        pathType: Prefix
-
-  # Copilot service (optional, use /copilot when sharing host)
-  # copilot:
-  #   host: sim.local
-  #   paths:
-  #     - path: /copilot
-  #       pathType: Prefix
-
-  tls:
-    enabled: false
-    secretName: sim-tls-secret
-
-# Internal Ingress configuration
-# Same path ordering rules apply as above.
-ingressInternal:
-  enabled: false
-  className: nginx
-  annotations: {}
-
-  app:
-    host: sim-internal.local
-    paths:
-      - path: /
-        pathType: Prefix
-
-  realtime:
-    host: sim-internal.local
-    paths:
-      - path: /socket.io
-        pathType: Prefix
-
-  # copilot:
-  #   host: sim-internal.local
-  #   paths:
-  #     - path: /copilot
-  #       pathType: Prefix
-
-  tls:
-    enabled: false
-    secretName: sim-internal-tls-secret
 
 # Service Account configuration
 serviceAccount:
@@ -1657,6 +1687,26 @@ copilot:
     # Job configuration
     backoffLimit: 3
     restartPolicy: OnFailure
+
+# SSO auto-registration via helm hook Job
+# When enabled, the chart runs a post-install/post-upgrade Job that registers
+# the SSO provider using the env vars under app.env (SSO_PROVIDER_TYPE, SSO_ISSUER, etc.).
+# Requires SSO_ENABLED="true" and all provider-specific env vars to be set.
+sso:
+  autoRegister: false
+
+  # Job configuration
+  backoffLimit: 3
+  restartPolicy: OnFailure
+
+  # Resource limits and requests
+  resources:
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
 
 # External Secrets Operator integration
 # Use this to automatically sync secrets from external secret managers (Azure Key Vault, AWS Secrets Manager, etc.)

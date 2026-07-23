@@ -136,37 +136,9 @@ postgresql:
     maxWalSize: "8GB"
     minWalSize: "160MB"
 
-# Ollama AI models (optional - enable if you need local AI model serving)
-ollama:
+# LiteLLM proxy (optional - enable for OpenAI-compatible API proxying)
+litellm:
   enabled: false
-
-# Ingress configuration
-ingress:
-  enabled: true
-  className: nginx
-  
-  annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
-  
-  # Main application
-  app:
-    host: sim.acme.ai
-    paths:
-      - path: /
-        pathType: Prefix
-  
-  # Realtime service
-  realtime:
-    host: sim-ws.acme.ai
-    paths:
-      - path: /
-        pathType: Prefix
-  
-  # TLS configuration
-  tls:
-    enabled: true
-    secretName: sim-tls-secret
 
 # Horizontal Pod Autoscaler (automatically scales pods based on CPU/memory usage)
 autoscaling:

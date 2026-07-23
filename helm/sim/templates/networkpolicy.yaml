@@ -38,8 +38,8 @@ spec:
     - protocol: TCP
       port: {{ .Values.app.service.targetPort }}
   {{- end }}
-  # Allow ingress from ingress controller (configurable peers; defaults to any)
-  {{- if .Values.ingress.enabled }}
+  # Allow ingress from nginx reverse proxy
+  {{- if .Values.nginx.enabled }}
   - from:
       {{- toYaml (default (list (dict)) .Values.networkPolicy.ingressFrom) | nindent 6 }}
     ports:
@@ -71,15 +71,15 @@ spec:
     - protocol: TCP
       port: {{ .Values.realtime.service.targetPort }}
   {{- end }}
-  # Allow egress to Ollama
-  {{- if .Values.ollama.enabled }}
+  # Allow egress to LiteLLM
+  {{- if .Values.litellm.enabled }}
   - to:
     - podSelector:
         matchLabels:
-          {{- include "sim.ollama.selectorLabels" . | nindent 10 }}
+          {{- include "sim.litellm.selectorLabels" . | nindent 10 }}
     ports:
     - protocol: TCP
-      port: {{ .Values.ollama.service.targetPort }}
+      port: {{ .Values.litellm.service.targetPort }}
   {{- end }}
   # Allow egress to the PII (Presidio) service
   {{- if .Values.pii.enabled }}
@@ -154,8 +154,8 @@ spec:
     ports:
     - protocol: TCP
       port: {{ .Values.realtime.service.targetPort }}
-  # Allow ingress from ingress controller (configurable peers; defaults to any)
-  {{- if .Values.ingress.enabled }}
+  # Allow ingress from nginx reverse proxy
+  {{- if .Values.nginx.enabled }}
   - from:
       {{- toYaml (default (list (dict)) .Values.networkPolicy.ingressFrom) | nindent 6 }}
     ports:
@@ -267,20 +267,20 @@ spec:
       port: 53
 {{- end }}
 
-{{- if .Values.ollama.enabled }}
+{{- if .Values.litellm.enabled }}
 ---
-# Network Policy for Ollama
+# Network Policy for LiteLLM
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ include "sim.fullname" . }}-ollama
+  name: {{ include "sim.fullname" . }}-litellm
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "sim.ollama.labels" . | nindent 4 }}
+    {{- include "sim.litellm.labels" . | nindent 4 }}
 spec:
   podSelector:
     matchLabels:
-      {{- include "sim.ollama.selectorLabels" . | nindent 6 }}
+      {{- include "sim.litellm.selectorLabels" . | nindent 6 }}
   policyTypes:
   - Ingress
   - Egress
@@ -292,7 +292,18 @@ spec:
           {{- include "sim.app.selectorLabels" . | nindent 10 }}
     ports:
     - protocol: TCP
-      port: {{ .Values.ollama.service.targetPort }}
+      port: {{ .Values.litellm.service.targetPort }}
+  # Allow ingress from copilot
+  {{- if .Values.copilot.enabled }}
+  - from:
+    - podSelector:
+        matchLabels:
+          {{- include "sim.selectorLabels" . | nindent 10 }}
+          app.kubernetes.io/component: copilot
+    ports:
+    - protocol: TCP
+      port: {{ .Values.litellm.service.targetPort }}
+  {{- end }}
   egress:
   # Allow DNS resolution
   - to: []
@@ -301,7 +312,7 @@ spec:
       port: 53
     - protocol: TCP
       port: 53
-  # Allow HTTPS egress for model downloads (excludes cloud metadata endpoints)
+  # Allow HTTPS egress to external LLM provider APIs (excludes cloud metadata endpoints)
   - to:
     - ipBlock:
         cidr: 0.0.0.0/0
@@ -424,6 +435,58 @@ spec:
     ports:
     - protocol: TCP
       port: 443
+{{- end }}
+
+{{- if .Values.nginx.enabled }}
+---
+# Network Policy for Nginx reverse proxy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "sim.fullname" . }}-nginx
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "sim.nginx.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "sim.nginx.selectorLabels" . | nindent 6 }}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  # Allow ingress from external proxy peers (configurable; defaults to any)
+  - from:
+      {{- toYaml (default (list (dict)) .Values.networkPolicy.ingressFrom) | nindent 6 }}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.nginx.service.targetPort }}
+  egress:
+  # Allow egress to app
+  - to:
+    - podSelector:
+        matchLabels:
+          {{- include "sim.app.selectorLabels" . | nindent 10 }}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.app.service.targetPort }}
+  # Allow egress to realtime
+  {{- if .Values.realtime.enabled }}
+  - to:
+    - podSelector:
+        matchLabels:
+          {{- include "sim.realtime.selectorLabels" . | nindent 10 }}
+    ports:
+    - protocol: TCP
+      port: {{ .Values.realtime.service.targetPort }}
+  {{- end }}
+  # Allow DNS resolution
+  - to: []
+    ports:
+    - protocol: UDP
+      port: 53
+    - protocol: TCP
+      port: 53
 {{- end }}
 
 {{- /*
