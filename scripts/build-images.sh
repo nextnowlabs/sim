@@ -54,7 +54,8 @@ build_service() {
 
   local full_image
   if [[ -n "$REGISTRY" ]]; then
-    full_image="${REGISTRY}/${image_name}:${TAG}"
+    local short_name="${image_name#*/}"
+    full_image="${REGISTRY}/${short_name}:${TAG}"
   else
     full_image="${image_name}:${TAG}"
   fi
