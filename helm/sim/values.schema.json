@@ -230,6 +230,27 @@
               "type": "string",
               "description": "Set to 'true' to hide GitHub OAuth login even when credentials are configured"
             },
+            "DISABLE_AUTH": {
+              "type": "string",
+              "description": "Set to 'true' to bypass authentication entirely (self-hosted, trusted private networks only)"
+            },
+            "ALLOW_PRIVATE_DATABASE_HOSTS": {
+              "type": "string",
+              "description": "Set to 'true' to allow database/connector tools to reach private/loopback hosts (self-hosted only)"
+            },
+            "COPILOT_API_KEY": {
+              "type": "string",
+              "description": "API key for the main app to authenticate with the Copilot microservice"
+            },
+            "SIM_AGENT_API_URL": {
+              "type": "string",
+              "anyOf": [{ "format": "uri" }, { "const": "" }],
+              "description": "Internal URL of the Copilot microservice (auto-computed when copilot.enabled=true)"
+            },
+            "OPENROUTER_API_KEY": {
+              "type": "string",
+              "description": "OpenRouter API key"
+            },
             "OPENAI_API_KEY": {
               "type": "string",
               "description": "Primary OpenAI API key"

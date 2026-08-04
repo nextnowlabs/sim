@@ -305,7 +305,7 @@ than enforced.
 {{- define "sim.validateExternalSecretCoverage" -}}
 {{- if and .Values.externalSecrets .Values.externalSecrets.enabled -}}
 {{- $remoteRefs := default (dict) (default (dict) .Values.externalSecrets.remoteRefs).app -}}
-{{- $chartComputed := list "DATABASE_URL" "SOCKET_SERVER_URL" "LITELLM_URL" "PII_URL" -}}
+{{- $chartComputed := list "DATABASE_URL" "SOCKET_SERVER_URL" "LITELLM_URL" "PII_URL" "SIM_AGENT_API_URL" "OLLAMA_URL" -}}
 {{- $appEnv := default (dict) .Values.app.env -}}
 {{/*
   Required-key coverage: these are non-optional at runtime. With ESO enabled
@@ -485,6 +485,19 @@ Socket Server URL (internal)
 {{- printf "http://%s:%v" $serviceName $port }}
 {{- else }}
 {{- .Values.app.env.SOCKET_SERVER_URL | default "http://localhost:3002" }}
+{{- end }}
+{{- end }}
+
+{{/*
+Copilot Agent API URL (internal)
+*/}}
+{{- define "sim.agentApiUrl" -}}
+{{- if .Values.copilot.enabled }}
+{{- $serviceName := printf "%s-copilot" (include "sim.fullname" .) }}
+{{- $port := .Values.copilot.server.service.port }}
+{{- printf "http://%s:%v" $serviceName $port }}
+{{- else }}
+{{- .Values.app.env.SIM_AGENT_API_URL | default "http://localhost:3002" }}
 {{- end }}
 {{- end }}
 

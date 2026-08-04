@@ -108,6 +108,11 @@ app:
     # Generate with: openssl rand -hex 32 (produces the required 64-hex-char / 32-byte value).
     API_ENCRYPTION_KEY: ""  # OPTIONAL - encrypts API keys at rest; if unset, keys are stored in plain text
     REDIS_URL: ""           # OPTIONAL - Redis connection string for caching/sessions; can also come from app secret or External Secrets
+    COPILOT_API_KEY: ""                                    # API key for the main app to authenticate with the Copilot microservice
+    SIM_AGENT_API_URL: ""                                  # Internal URL of the Copilot microservice (auto-computed when copilot.enabled=true)
+    ALLOW_PRIVATE_DATABASE_HOSTS: ""                       # Set to "true" to allow database/connector tools to reach private/loopback hosts (self-hosted only)
+    DISABLE_AUTH: ""                                       # Set to "true" to bypass authentication entirely (self-hosted, trusted private networks)
+    OPENROUTER_API_KEY: ""                                 # OpenRouter API key
     
     # Email & Communication
     # Configure one provider — the mailer auto-detects in priority order:
@@ -147,6 +152,7 @@ app:
     AZURE_ANTHROPIC_API_VERSION: ""                       # Azure Anthropic API version (e.g., 2023-06-01)
 
     # AI Provider API Keys (leave empty if not using)
+    DEEPSEEK_API_KEY: ""                                  # DeepSeek API key (used as WAND fallback and by copilot)
     OPENAI_API_KEY: ""                                    # Primary OpenAI API key
     OPENAI_API_KEY_1: ""                                  # Additional OpenAI API key for load balancing
     OPENAI_API_KEY_2: ""                                  # Additional OpenAI API key for load balancing
@@ -159,6 +165,13 @@ app:
     LITELLM_URL: ""                                       # LiteLLM proxy server URL (auto-wired when litellm.enabled)
     PII_URL: ""                                           # Presidio PII service URL; auto-computed when pii.enabled, override here otherwise
     ELEVENLABS_API_KEY: ""                                # ElevenLabs API key for text-to-speech in deployed chat
+
+    # Wand / AI Generation (inline AI content generation inside the workflow editor)
+    # Falls back to DEEPSEEK_API_KEY or OPENAI_API_KEY when WAND_LLM_API_KEY is empty.
+    WAND_LLM_API_KEY: ""                                  # Wand-specific API key (default: DEEPSEEK_API_KEY → OPENAI_API_KEY)
+    WAND_LLM_BASE_URL: ""                                 # Wand LLM base URL (default: https://api.deepseek.com/v1 → https://api.openai.com/v1)
+    WAND_LLM_MODEL: ""                                    # Wand model name (default: deepseek-v4-pro → gpt-4o)
+    WAND_OPENAI_MODEL_NAME: ""                            # Wand OpenAI model name (for Azure OpenAI deployment name mapping)
 
     # UI Branding & Whitelabeling Configuration
     NEXT_PUBLIC_BRAND_NAME: ""                            # Custom brand name (default "Sim" via envDefaults)
@@ -339,11 +352,24 @@ app:
     NEXT_PUBLIC_BRAND_NAME: "Sim"
     NEXT_PUBLIC_SUPPORT_EMAIL: "help@sim.ai"
 
-    # Feature flags (default off — set "true" in app.env or app.envDefaults to enable)
-    ACCESS_CONTROL_ENABLED: "false"
-    ORGANIZATIONS_ENABLED: "false"
-    NEXT_PUBLIC_ACCESS_CONTROL_ENABLED: "false"
-    NEXT_PUBLIC_ORGANIZATIONS_ENABLED: "false"
+    # Ollama
+    OLLAMA_URL: "http://localhost:11434"                   # Ollama local LLM server URL (default localhost via envDefaults)
+
+    # Feature flags (default on for self-hosted — set "false" in app.env or app.envDefaults to disable)
+    ACCESS_CONTROL_ENABLED: "true"
+    ORGANIZATIONS_ENABLED: "true"
+    NEXT_PUBLIC_ACCESS_CONTROL_ENABLED: "true"
+    NEXT_PUBLIC_ORGANIZATIONS_ENABLED: "true"
+    CREDENTIAL_SETS_ENABLED: "true"
+    NEXT_PUBLIC_CREDENTIAL_SETS_ENABLED: "true"
+    INBOX_ENABLED: "true"
+    NEXT_PUBLIC_INBOX_ENABLED: "true"
+    WHITELABELING_ENABLED: "true"
+    NEXT_PUBLIC_WHITELABELING_ENABLED: "true"
+    AUDIT_LOGS_ENABLED: "true"
+    NEXT_PUBLIC_AUDIT_LOGS_ENABLED: "true"
+    DATA_DRAINS_ENABLED: "true"
+    NEXT_PUBLIC_DATA_DRAINS_ENABLED: "true"
 
     # Admission Gate
     ADMISSION_GATE_MAX_INFLIGHT: "500"                    # Max concurrent in-flight execution requests per pod
@@ -1499,9 +1525,16 @@ copilot:
       LICENSE_KEY: ""
       OPENAI_API_KEY_1: ""
       ANTHROPIC_API_KEY_1: ""
+      DEEPSEEK_API_KEY: ""
+      OPENROUTER_API_KEY: ""
       SIM_BASE_URL: ""
       SIM_AGENT_API_KEY: ""
       REDIS_URL: ""
+      COPILOT_LLM_PROVIDER: ""           # LLM provider to use (e.g. "deepseek", "openai", "anthropic")
+      COPILOT_DEFAULT_MODEL: ""          # Default model name (e.g. "deepseek-v4-pro")
+      CUSTOM_LLM_API_KEY: ""             # API key for custom LLM provider
+      CUSTOM_LLM_BASE_URL: ""            # Base URL for custom LLM provider
+      COPILOT_PROMPT_PATH: ""            # Path to custom copilot prompt file
       # Optional configuration
       LOG_LEVEL: "info"
       CORS_ALLOWED_ORIGINS: ""
