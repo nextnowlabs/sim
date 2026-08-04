@@ -199,6 +199,10 @@ const ssoDefaultProvider = env.SSO_ENABLED && env.SSO_PROVIDER_ID && env.SSO_ISS
           : ['openid', 'profile', 'email'],
         pkce: env.SSO_OIDC_PKCE !== 'false',
         discoveryEndpoint: `${env.SSO_ISSUER.replace(/\/$/, '')}/.well-known/openid-configuration`,
+        authorizationEndpoint: env.SSO_OIDC_AUTHORIZATION_ENDPOINT || undefined,
+        tokenEndpoint: env.SSO_OIDC_TOKEN_ENDPOINT || undefined,
+        userInfoEndpoint: env.SSO_OIDC_USERINFO_ENDPOINT || undefined,
+        jwksEndpoint: env.SSO_OIDC_JWKS_ENDPOINT || undefined,
         mapping: {
           id: env.SSO_MAPPING_ID || 'sub',
           email: env.SSO_MAPPING_EMAIL || 'email',
