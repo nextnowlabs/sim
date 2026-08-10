@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sim/copilot/internal/history"
 	"sim/copilot/internal/logger"
 	"sim/copilot/internal/prompt"
 	"sim/copilot/internal/protocol"
@@ -28,17 +29,19 @@ type Agent struct {
 	adapter      provider.ProviderAdapter
 	executor     *tools.ToolExecutor
 	prompt       *prompt.PromptBuilder
+	historyLoader history.Loader
 	defaultModel string
 	timeout      time.Duration
 }
 
-func NewAgent(adapter provider.ProviderAdapter, executor *tools.ToolExecutor, promptBuilder *prompt.PromptBuilder, defaultModel string) *Agent {
+func NewAgent(adapter provider.ProviderAdapter, executor *tools.ToolExecutor, promptBuilder *prompt.PromptBuilder, defaultModel string, historyLoader history.Loader) *Agent {
 	return &Agent{
-		adapter:      adapter,
-		executor:     executor,
-		prompt:       promptBuilder,
-		defaultModel: defaultModel,
-		timeout:      DefaultTimeout,
+		adapter:       adapter,
+		executor:      executor,
+		prompt:        promptBuilder,
+		historyLoader: historyLoader,
+		defaultModel:  defaultModel,
+		timeout:       DefaultTimeout,
 	}
 }
 
@@ -180,6 +183,7 @@ func (a *Agent) RunFromCheckpoint(ctx context.Context, req *ChatRequest, sw *str
 	} else {
 		trace = &loopTrace{}
 		messages = a.buildMessages(req)
+		messages = a.loadHistory(ctx, req, messages)
 	}
 
 	if err := sw.Write(protocol.EventTypeSession, &protocol.SessionStartPayload{
@@ -507,6 +511,29 @@ func (a *Agent) buildMessages(req *ChatRequest) []provider.Message {
 		messages = append(req.History, messages...)
 	}
 	return messages
+}
+
+// loadHistory prepends prior conversation turns from the history loader
+// (Sim's Postgres) ahead of the current message. Only the initial leg calls
+// it — resume legs continue from checkpoint messages, which already contain
+// the injected history. A missing loader or a load error degrades gracefully:
+// the request proceeds without conversation memory.
+func (a *Agent) loadHistory(ctx context.Context, req *ChatRequest, messages []provider.Message) []provider.Message {
+	if a.historyLoader == nil || req.ChatID == "" || req.MessageID == "" {
+		return messages
+	}
+
+	historyMessages, err := a.historyLoader.Load(ctx, req.ChatID, req.MessageID)
+	if err != nil {
+		logger.Warnf("[agent] Failed to load chat history for chat=%s: %v (continuing without history)", req.ChatID, err)
+		return messages
+	}
+	if len(historyMessages) == 0 {
+		return messages
+	}
+
+	logger.Infof("[agent] Loaded %d history message(s) for chat=%s", len(historyMessages), req.ChatID)
+	return append(historyMessages, messages...)
 }
 
 func (a *Agent) buildToolDefs(req *ChatRequest, mode string) []provider.ToolDefinition {

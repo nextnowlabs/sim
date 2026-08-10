@@ -3,7 +3,6 @@ package tools
 import (
 	"context"
 	"fmt"
-	"sim/copilot/internal/config"
 )
 
 type ToolResult struct {
@@ -16,15 +15,11 @@ type ToolHandler interface {
 }
 
 type ToolExecutor struct {
-	config       *config.Config
-	simProxy     *SimProxy
 	localHandlers map[string]ToolHandler
 }
 
-func NewToolExecutor(cfg *config.Config) *ToolExecutor {
+func NewToolExecutor() *ToolExecutor {
 	te := &ToolExecutor{
-		config:        cfg,
-		simProxy:      NewSimProxy(cfg.SimInternalURL, cfg.InternalAPISecret),
 		localHandlers: make(map[string]ToolHandler),
 	}
 

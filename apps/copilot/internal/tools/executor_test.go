@@ -54,16 +54,14 @@ func TestToolExecutor_ErrorPropagation(t *testing.T) {
 	}
 }
 
-func TestToolExecutor_SimProxyFallback(t *testing.T) {
-	// Test that tools not in localHandlers are dispatched to sim proxy
+func TestToolExecutor_UnknownToolReturnsError(t *testing.T) {
 	te := &ToolExecutor{
 		localHandlers: make(map[string]ToolHandler),
 	}
 
-	// Without sim proxy configured, should return error
 	result := te.Execute(context.Background(), "unknown_tool", nil)
 
 	if result.Error == "" {
-		t.Error("expected error for unknown tool without sim proxy")
+		t.Error("expected error for unknown tool")
 	}
 }

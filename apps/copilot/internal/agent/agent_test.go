@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http/httptest"
+	"sim/copilot/internal/history"
 	"sim/copilot/internal/prompt"
 	"sim/copilot/internal/provider"
 	"sim/copilot/internal/stream"
@@ -45,7 +46,7 @@ func TestAgent_Run_TextOnly(t *testing.T) {
 
 	promptBuilder, _ := prompt.NewPromptBuilder("")
 	executor := &tools.ToolExecutor{}
-	ag := NewAgent(mockP, executor, promptBuilder, "test-model")
+	ag := NewAgent(mockP, executor, promptBuilder, "test-model", nil)
 
 	w := httptest.NewRecorder()
 	sw, err := stream.NewStreamWriter(w, "test-stream")
@@ -96,7 +97,7 @@ func TestAgent_Run_WithToolCalls(t *testing.T) {
 
 	promptBuilder, _ := prompt.NewPromptBuilder("")
 	executor := &tools.ToolExecutor{}
-	ag := NewAgent(mockP, executor, promptBuilder, "test-model")
+	ag := NewAgent(mockP, executor, promptBuilder, "test-model", nil)
 
 	w := httptest.NewRecorder()
 	sw, err := stream.NewStreamWriter(w, "test-stream")
@@ -126,7 +127,7 @@ func TestAgent_Run_WithToolCalls(t *testing.T) {
 
 func TestAgent_Run_ModeDispatch(t *testing.T) {
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := NewAgent(nil, nil, promptBuilder, "test-model")
+	ag := NewAgent(nil, nil, promptBuilder, "test-model", nil)
 
 	tools := ag.buildToolDefs(&ChatRequest{
 		IntegrationTools: []ToolSchema{
@@ -154,7 +155,7 @@ func TestAgent_Run_ModeDispatch(t *testing.T) {
 // tools are present in build mode and excluded in ask mode.
 func TestAgent_BuildToolDefs_WorkflowTools(t *testing.T) {
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := NewAgent(nil, nil, promptBuilder, "test-model")
+	ag := NewAgent(nil, nil, promptBuilder, "test-model", nil)
 
 	buildTools := ag.buildToolDefs(&ChatRequest{}, "build")
 	names := make(map[string]bool)
@@ -214,7 +215,7 @@ func TestAgent_Run_SingleSimToolCallPausesLeg(t *testing.T) {
 	}
 
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := NewAgent(mockP, &tools.ToolExecutor{}, promptBuilder, "test-model")
+	ag := NewAgent(mockP, &tools.ToolExecutor{}, promptBuilder, "test-model", nil)
 
 	w := httptest.NewRecorder()
 	sw, err := stream.NewStreamWriter(w, "test-stream")
@@ -254,7 +255,7 @@ func TestAgent_Run_TwoSimToolCallsSinglePause(t *testing.T) {
 	}
 
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := NewAgent(mockP, &tools.ToolExecutor{}, promptBuilder, "test-model")
+	ag := NewAgent(mockP, &tools.ToolExecutor{}, promptBuilder, "test-model", nil)
 
 	w := httptest.NewRecorder()
 	sw, err := stream.NewStreamWriter(w, "test-stream")
@@ -295,7 +296,7 @@ func TestAgent_Run_MixedGoAndSimTools(t *testing.T) {
 	}
 
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := NewAgent(mockP, &tools.ToolExecutor{}, promptBuilder, "test-model")
+	ag := NewAgent(mockP, &tools.ToolExecutor{}, promptBuilder, "test-model", nil)
 
 	w := httptest.NewRecorder()
 	sw, err := stream.NewStreamWriter(w, "test-stream")
@@ -404,7 +405,7 @@ func TestTruncateToolResultContent(t *testing.T) {
 
 func TestAgent_MessageTruncation(t *testing.T) {
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := NewAgent(nil, nil, promptBuilder, "test-model")
+	ag := NewAgent(nil, nil, promptBuilder, "test-model", nil)
 
 	messages := make([]provider.Message, 100)
 	for i := range messages {
@@ -521,5 +522,188 @@ func TestCheckpointStore_UnknownID(t *testing.T) {
 	}
 	if cp := ConsumedCheckpoint("does-not-exist"); cp != nil {
 		t.Error("ConsumedCheckpoint must return nil for unknown IDs")
+	}
+}
+
+// recordingProvider captures every StreamChat call's messages so tests can
+// assert exactly what the LLM received.
+type recordingProvider struct {
+	events []provider.StreamEvent
+	calls  []recordedCall
+}
+
+type recordedCall struct {
+	model    string
+	messages []provider.Message
+}
+
+func (m *recordingProvider) StreamChat(ctx context.Context, model string, _ string, messages []provider.Message, _ []provider.ToolDefinition) (<-chan provider.StreamEvent, error) {
+	m.calls = append(m.calls, recordedCall{
+		model:    model,
+		messages: append([]provider.Message(nil), messages...),
+	})
+	ch := make(chan provider.StreamEvent, len(m.events)+1)
+	go func() {
+		defer close(ch)
+		for _, e := range m.events {
+			select {
+			case <-ctx.Done():
+				return
+			case ch <- e:
+			}
+		}
+	}()
+	return ch, nil
+}
+
+// fakeHistoryLoader records Load invocations and returns preconfigured data.
+type fakeHistoryLoader struct {
+	messages []provider.Message
+	err      error
+	calls    int
+	chatID   string
+	exclude  string
+}
+
+func (f *fakeHistoryLoader) Load(_ context.Context, chatID string, excludeMessageID string) ([]provider.Message, error) {
+	f.calls++
+	f.chatID = chatID
+	f.exclude = excludeMessageID
+	return f.messages, f.err
+}
+
+func runAgentWithHistory(t *testing.T, loader history.Loader, req *ChatRequest) *recordingProvider {
+	t.Helper()
+	mockP := &recordingProvider{
+		events: []provider.StreamEvent{
+			{Type: provider.EventTextDelta, TextDelta: "ok"},
+			{Type: provider.EventDone},
+		},
+	}
+	promptBuilder, _ := prompt.NewPromptBuilder("")
+	ag := NewAgent(mockP, &tools.ToolExecutor{}, promptBuilder, "test-model", loader)
+
+	w := httptest.NewRecorder()
+	sw, err := stream.NewStreamWriter(w, "test-stream")
+	if err != nil {
+		t.Fatalf("NewStreamWriter failed: %v", err)
+	}
+	defer sw.Close()
+
+	if err := ag.Run(context.Background(), req, sw, "req-1"); err != nil {
+		t.Fatalf("Agent.Run failed: %v", err)
+	}
+	return mockP
+}
+
+func TestAgent_Run_HistoryInjectedBeforeCurrentMessage(t *testing.T) {
+	loader := &fakeHistoryLoader{
+		messages: []provider.Message{
+			{Role: "user", Content: "prior question"},
+			{Role: "assistant", Content: "prior answer"},
+		},
+	}
+	req := &ChatRequest{
+		Message:   "current question",
+		Model:     "test-model",
+		Mode:      "ask",
+		ChatID:    "chat-1",
+		MessageID: "msg-2",
+	}
+
+	mockP := runAgentWithHistory(t, loader, req)
+
+	if loader.calls != 1 {
+		t.Fatalf("history loader should be called once, got %d", loader.calls)
+	}
+	if loader.chatID != "chat-1" || loader.exclude != "msg-2" {
+		t.Errorf("loader should receive chatID=chat-1 exclude=msg-2, got %s %s", loader.chatID, loader.exclude)
+	}
+	if len(mockP.calls) != 1 {
+		t.Fatalf("provider should be called once, got %d", len(mockP.calls))
+	}
+	got := mockP.calls[0].messages
+	want := []string{"prior question", "prior answer", "current question"}
+	if len(got) != len(want) {
+		t.Fatalf("expected %d messages, got %d: %+v", len(want), len(got), got)
+	}
+	for i := range want {
+		if got[i].Role != []string{"user", "assistant", "user"}[i] || got[i].Content != want[i] {
+			t.Errorf("message %d = %s:%q, want %q", i, got[i].Role, got[i].Content, want[i])
+		}
+	}
+}
+
+func TestAgent_Run_NoHistoryMessages(t *testing.T) {
+	loader := &fakeHistoryLoader{messages: nil}
+	req := &ChatRequest{
+		Message:   "hello",
+		Model:     "test-model",
+		Mode:      "ask",
+		ChatID:    "chat-1",
+		MessageID: "msg-1",
+	}
+
+	mockP := runAgentWithHistory(t, loader, req)
+
+	got := mockP.calls[0].messages
+	if len(got) != 1 || got[0].Content != "hello" {
+		t.Fatalf("expected only the current message, got %+v", got)
+	}
+}
+
+func TestAgent_Run_HistoryLoaderErrorContinuesGracefully(t *testing.T) {
+	loader := &fakeHistoryLoader{err: fmt.Errorf("db down")}
+	req := &ChatRequest{
+		Message:   "hello",
+		Model:     "test-model",
+		Mode:      "ask",
+		ChatID:    "chat-1",
+		MessageID: "msg-1",
+	}
+
+	mockP := runAgentWithHistory(t, loader, req)
+
+	got := mockP.calls[0].messages
+	if len(got) != 1 || got[0].Content != "hello" {
+		t.Fatalf("expected graceful continuation without history, got %+v", got)
+	}
+}
+
+func TestAgent_RunFromCheckpoint_SkipsHistoryLoader(t *testing.T) {
+	loader := &fakeHistoryLoader{
+		messages: []provider.Message{{Role: "user", Content: "should not load"}},
+	}
+	mockP := &recordingProvider{
+		events: []provider.StreamEvent{
+			{Type: provider.EventTextDelta, TextDelta: "resumed"},
+			{Type: provider.EventDone},
+		},
+	}
+	promptBuilder, _ := prompt.NewPromptBuilder("")
+	ag := NewAgent(mockP, &tools.ToolExecutor{}, promptBuilder, "test-model", loader)
+
+	w := httptest.NewRecorder()
+	sw, err := stream.NewStreamWriter(w, "test-stream")
+	if err != nil {
+		t.Fatalf("NewStreamWriter failed: %v", err)
+	}
+	defer sw.Close()
+
+	cp := &Checkpoint{
+		Messages: []provider.Message{{Role: "assistant", Content: "checkpoint content"}},
+		Model:    "test-model",
+		Trace:    &loopTrace{},
+	}
+	req := &ChatRequest{MessageID: "msg-1", ChatID: "chat-1", Mode: "ask"}
+	if err := ag.RunFromCheckpoint(context.Background(), req, sw, "req-1", cp, nil); err != nil {
+		t.Fatalf("RunFromCheckpoint failed: %v", err)
+	}
+
+	if loader.calls != 0 {
+		t.Fatalf("history loader must not run on resume legs, got %d calls", loader.calls)
+	}
+	if len(mockP.calls) != 1 || mockP.calls[0].messages[0].Content != "checkpoint content" {
+		t.Fatalf("resume leg should continue from checkpoint messages, got %+v", mockP.calls)
 	}
 }

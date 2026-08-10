@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -16,9 +15,11 @@ import (
 
 	"sim/copilot/internal/agent"
 	"sim/copilot/internal/config"
+	"sim/copilot/internal/history"
 	"sim/copilot/internal/prompt"
 	"sim/copilot/internal/provider"
 	"sim/copilot/internal/stream"
+	"sim/copilot/internal/title"
 	"sim/copilot/internal/tools"
 
 	"github.com/google/uuid"
@@ -39,9 +40,23 @@ func main() {
 		logger.Fatalf("Failed to load prompt: %v", err)
 	}
 
-	toolExecutor := tools.NewToolExecutor(cfg)
+	toolExecutor := tools.NewToolExecutor()
 
-	ag := agent.NewAgent(adapter, toolExecutor, promptBuilder, cfg.DefaultModel)
+	var historyLoader history.Loader
+	if cfg.DatabaseURL != "" {
+		loader, err := history.NewPgLoader(context.Background(), cfg.DatabaseURL)
+		if err != nil {
+			logger.Warnf("DATABASE_URL set but unreachable, continuing without conversation history: %v", err)
+		} else {
+			historyLoader = loader
+			defer loader.Close()
+			logger.Infof("Conversation history enabled via Postgres")
+		}
+	} else {
+		logger.Infof("DATABASE_URL not set — conversation history disabled")
+	}
+
+	ag := agent.NewAgent(adapter, toolExecutor, promptBuilder, cfg.DefaultModel, historyLoader)
 	sm := newStreamManager()
 
 	mux := http.NewServeMux()
@@ -56,6 +71,9 @@ func main() {
 	mux.HandleFunc("/api/streams/explicit-abort", func(w http.ResponseWriter, r *http.Request) {
 		handleAbort(w, r, sm)
 	})
+
+	titleGenerator := title.NewGenerator(adapter, cfg.DefaultModel)
+	mux.HandleFunc("/api/generate-chat-title", titleGenerator.Handler())
 
 	mux.HandleFunc("/api/tools/resume", func(w http.ResponseWriter, r *http.Request) {
 		handleResume(w, r, ag, sm)
@@ -166,9 +184,6 @@ func handleChat(w http.ResponseWriter, r *http.Request, ag *agent.Agent, promptB
 		}
 	}()
 
-	// Persist user message for chat history
-	_ = saveMessage(ctx, &req, req.MessageID, "user", req.Message)
-
 	if err := ag.Run(ctx, &req, sw, requestID); err != nil {
 		if ctx.Err() != nil {
 			logger.Infof("Request %s cancelled or timed out: %v", requestID, ctx.Err())
@@ -176,45 +191,6 @@ func handleChat(w http.ResponseWriter, r *http.Request, ag *agent.Agent, promptB
 			logger.Infof("Agent error for request %s: %v", requestID, err)
 		}
 	}
-}
-
-func saveMessage(ctx context.Context, req *agent.ChatRequest, messageID, role, content string) error {
-	if req.ChatID == "" {
-		return nil
-	}
-
-	body := map[string]interface{}{
-		"chatId":    req.ChatID,
-		"messageId": messageID,
-		"role":      role,
-		"content":   content,
-	}
-
-	bodyBytes, err := json.Marshal(body)
-	if err != nil {
-		return fmt.Errorf("marshal: %w", err)
-	}
-
-	url := fmt.Sprintf("%s/api/internal/copilot/messages", strings.TrimRight(os.Getenv("SIM_INTERNAL_URL"), "/"))
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(bodyBytes))
-	if err != nil {
-		return fmt.Errorf("create request: %w", err)
-	}
-
-	httpReq.Header.Set("Content-Type", "application/json")
-	httpReq.Header.Set("x-internal-secret", os.Getenv("INTERNAL_API_SECRET"))
-
-	resp, err := http.DefaultClient.Do(httpReq)
-	if err != nil {
-		return fmt.Errorf("http request: %w", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("sim returned status %d", resp.StatusCode)
-	}
-
-	return nil
 }
 
 func handleAbort(w http.ResponseWriter, r *http.Request, sm *streamManager) {

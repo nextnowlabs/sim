@@ -16,8 +16,7 @@ type Config struct {
 	CustomBaseURL string
 	DefaultModel  string
 
-	SimInternalURL    string
-	InternalAPISecret string
+	DatabaseURL string
 
 	PromptPath string
 	ListenAddr string
@@ -37,18 +36,17 @@ var validProviders = map[string]bool{
 
 func Load() (*Config, error) {
 	cfg := &Config{
-		LLMProvider:       os.Getenv("COPILOT_LLM_PROVIDER"),
-		AnthropicKey:      os.Getenv("ANTHROPIC_API_KEY"),
-		OpenAIKey:         os.Getenv("OPENAI_API_KEY"),
-		OpenRouterKey:     os.Getenv("OPENROUTER_API_KEY"),
-		DeepSeekKey:       os.Getenv("DEEPSEEK_API_KEY"),
-		CustomKey:         os.Getenv("CUSTOM_LLM_API_KEY"),
-		CustomBaseURL:     strings.TrimRight(os.Getenv("CUSTOM_LLM_BASE_URL"), "/"),
-		DefaultModel:      os.Getenv("COPILOT_DEFAULT_MODEL"),
-		SimInternalURL:    strings.TrimRight(os.Getenv("SIM_INTERNAL_URL"), "/"),
-		InternalAPISecret: os.Getenv("INTERNAL_API_SECRET"),
-		PromptPath:        os.Getenv("COPILOT_PROMPT_PATH"),
-		ListenAddr:        os.Getenv("COPILOT_LISTEN_ADDR"),
+		LLMProvider:   os.Getenv("COPILOT_LLM_PROVIDER"),
+		AnthropicKey:  os.Getenv("ANTHROPIC_API_KEY"),
+		OpenAIKey:     os.Getenv("OPENAI_API_KEY"),
+		OpenRouterKey: os.Getenv("OPENROUTER_API_KEY"),
+		DeepSeekKey:   os.Getenv("DEEPSEEK_API_KEY"),
+		CustomKey:     os.Getenv("CUSTOM_LLM_API_KEY"),
+		CustomBaseURL: strings.TrimRight(os.Getenv("CUSTOM_LLM_BASE_URL"), "/"),
+		DefaultModel:  os.Getenv("COPILOT_DEFAULT_MODEL"),
+		DatabaseURL:   os.Getenv("DATABASE_URL"),
+		PromptPath:    os.Getenv("COPILOT_PROMPT_PATH"),
+		ListenAddr:    os.Getenv("COPILOT_LISTEN_ADDR"),
 	}
 
 	if cfg.ListenAddr == "" {
@@ -92,14 +90,6 @@ func Load() (*Config, error) {
 
 	if cfg.DefaultModel == "" {
 		missing = append(missing, "COPILOT_DEFAULT_MODEL")
-	}
-
-	if cfg.SimInternalURL == "" {
-		missing = append(missing, "SIM_INTERNAL_URL")
-	}
-
-	if cfg.InternalAPISecret == "" {
-		missing = append(missing, "INTERNAL_API_SECRET")
 	}
 
 	if len(missing) > 0 {

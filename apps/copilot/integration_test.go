@@ -33,10 +33,8 @@ func (m *integrationMockProvider) StreamChat(ctx context.Context, model, systemP
 
 func TestIntegration_FullSSEStreamLifecycle(t *testing.T) {
 	cfg := &config.Config{
-		LLMProvider:       "anthropic",
-		DefaultModel:      "claude-sonnet-4-5",
-		SimInternalURL:    "http://localhost:3000",
-		InternalAPISecret: "test-secret",
+		LLMProvider:  "anthropic",
+		DefaultModel: "claude-sonnet-4-5",
 	}
 
 	promptBuilder, err := prompt.NewPromptBuilder("")
@@ -44,9 +42,9 @@ func TestIntegration_FullSSEStreamLifecycle(t *testing.T) {
 		t.Fatalf("NewPromptBuilder failed: %v", err)
 	}
 
-	toolExecutor := tools.NewToolExecutor(cfg)
+	toolExecutor := tools.NewToolExecutor()
 	mockP := &integrationMockProvider{}
-	ag := agent.NewAgent(mockP, toolExecutor, promptBuilder, cfg.DefaultModel)
+	ag := agent.NewAgent(mockP, toolExecutor, promptBuilder, cfg.DefaultModel, nil)
 
 	reqBody := map[string]interface{}{
 		"message": "Hello",
@@ -133,10 +131,8 @@ func (m *toolCallMockProvider) StreamChat(ctx context.Context, model, systemProm
 
 func TestIntegration_MultiTurnConversation(t *testing.T) {
 	cfg := &config.Config{
-		LLMProvider:       "openai",
-		DefaultModel:      "gpt-4o",
-		SimInternalURL:    "http://localhost:3000",
-		InternalAPISecret: "test-secret",
+		LLMProvider:  "openai",
+		DefaultModel: "gpt-4o",
 	}
 
 	promptBuilder, err := prompt.NewPromptBuilder("")
@@ -144,10 +140,10 @@ func TestIntegration_MultiTurnConversation(t *testing.T) {
 		t.Fatalf("NewPromptBuilder failed: %v", err)
 	}
 
-	toolExecutor := tools.NewToolExecutor(cfg)
+	toolExecutor := tools.NewToolExecutor()
 
 	mockP := &toolCallMockProvider{}
-	ag := agent.NewAgent(mockP, toolExecutor, promptBuilder, cfg.DefaultModel)
+	ag := agent.NewAgent(mockP, toolExecutor, promptBuilder, cfg.DefaultModel, nil)
 
 	w := httptest.NewRecorder()
 	sw, err := stream.NewStreamWriter(w, "test-stream-2")
@@ -249,10 +245,8 @@ func extractCheckpointID(t *testing.T, body string) string {
 // session(start) and completes.
 func TestIntegration_FullChatPauseResumeComplete(t *testing.T) {
 	cfg := &config.Config{
-		LLMProvider:       "anthropic",
-		DefaultModel:      "claude-sonnet-4-5",
-		SimInternalURL:    "http://localhost:3000",
-		InternalAPISecret: "test-secret",
+		LLMProvider:  "anthropic",
+		DefaultModel: "claude-sonnet-4-5",
 	}
 
 	promptBuilder, err := prompt.NewPromptBuilder("")
@@ -278,7 +272,7 @@ func TestIntegration_FullChatPauseResumeComplete(t *testing.T) {
 			},
 		},
 	}
-	ag := agent.NewAgent(mockP, tools.NewToolExecutor(cfg), promptBuilder, cfg.DefaultModel)
+	ag := agent.NewAgent(mockP, tools.NewToolExecutor(), promptBuilder, cfg.DefaultModel, nil)
 	sm := newStreamManager()
 
 	chatReq := &agent.ChatRequest{
@@ -339,10 +333,8 @@ func TestIntegration_FullChatPauseResumeComplete(t *testing.T) {
 // in a different order.
 func TestIntegration_ResumeAppliesAllResultsInOrder(t *testing.T) {
 	cfg := &config.Config{
-		LLMProvider:       "anthropic",
-		DefaultModel:      "claude-sonnet-4-5",
-		SimInternalURL:    "http://localhost:3000",
-		InternalAPISecret: "test-secret",
+		LLMProvider:  "anthropic",
+		DefaultModel: "claude-sonnet-4-5",
 	}
 
 	promptBuilder, err := prompt.NewPromptBuilder("")
@@ -371,7 +363,7 @@ func TestIntegration_ResumeAppliesAllResultsInOrder(t *testing.T) {
 			},
 		},
 	}
-	ag := agent.NewAgent(mockP, tools.NewToolExecutor(cfg), promptBuilder, cfg.DefaultModel)
+	ag := agent.NewAgent(mockP, tools.NewToolExecutor(), promptBuilder, cfg.DefaultModel, nil)
 	sm := newStreamManager()
 
 	chatReq := &agent.ChatRequest{Message: "Build", Model: "claude-sonnet-4-5", Mode: "build"}
@@ -438,7 +430,7 @@ func newResumeRequest(t *testing.T, body map[string]interface{}) *http.Request {
 
 func TestResume_MissingCheckpointReturns404(t *testing.T) {
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := agent.NewAgent(&scriptedMockProvider{}, tools.NewToolExecutor(&config.Config{}), promptBuilder, "test-model")
+	ag := agent.NewAgent(&scriptedMockProvider{}, tools.NewToolExecutor(), promptBuilder, "test-model", nil)
 	sm := newStreamManager()
 
 	req := newResumeRequest(t, map[string]interface{}{
@@ -458,7 +450,7 @@ func TestResume_MissingCheckpointReturns404(t *testing.T) {
 
 func TestResume_EmptyResultsReturns400(t *testing.T) {
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := agent.NewAgent(&scriptedMockProvider{}, tools.NewToolExecutor(&config.Config{}), promptBuilder, "test-model")
+	ag := agent.NewAgent(&scriptedMockProvider{}, tools.NewToolExecutor(), promptBuilder, "test-model", nil)
 	sm := newStreamManager()
 
 	req := newResumeRequest(t, map[string]interface{}{"checkpointId": "ckpt-x"})
@@ -472,7 +464,7 @@ func TestResume_EmptyResultsReturns400(t *testing.T) {
 
 func TestResume_MissingCheckpointIDReturns400(t *testing.T) {
 	promptBuilder, _ := prompt.NewPromptBuilder("")
-	ag := agent.NewAgent(&scriptedMockProvider{}, tools.NewToolExecutor(&config.Config{}), promptBuilder, "test-model")
+	ag := agent.NewAgent(&scriptedMockProvider{}, tools.NewToolExecutor(), promptBuilder, "test-model", nil)
 	sm := newStreamManager()
 
 	req := newResumeRequest(t, map[string]interface{}{
@@ -503,10 +495,8 @@ func (h *blockingToolHandler) Execute(ctx context.Context, args map[string]inter
 // complete(status: cancelled).
 func TestIntegration_ExplicitAbortCancelsLeg(t *testing.T) {
 	cfg := &config.Config{
-		LLMProvider:       "anthropic",
-		DefaultModel:      "claude-sonnet-4-5",
-		SimInternalURL:    "http://localhost:3000",
-		InternalAPISecret: "test-secret",
+		LLMProvider:  "anthropic",
+		DefaultModel: "claude-sonnet-4-5",
 	}
 
 	promptBuilder, err := prompt.NewPromptBuilder("")
@@ -529,11 +519,11 @@ func TestIntegration_ExplicitAbortCancelsLeg(t *testing.T) {
 		},
 	}
 
-	executor := tools.NewToolExecutor(cfg)
+	executor := tools.NewToolExecutor()
 	blocking := &blockingToolHandler{entered: make(chan struct{})}
 	executor.RegisterHandler("read_file", blocking)
 
-	ag := agent.NewAgent(mockP, executor, promptBuilder, cfg.DefaultModel)
+	ag := agent.NewAgent(mockP, executor, promptBuilder, cfg.DefaultModel, nil)
 	sm := newStreamManager()
 
 	ctx, cancel := context.WithCancel(context.Background())

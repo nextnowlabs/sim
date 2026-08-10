@@ -19,19 +19,21 @@ Browser (React)              Sim API (Next.js)            Copilot Go Backend    
      │  SSE events (relayed)       │                            │                        │
      │<────────────────────────────┤                            │                        │
      │                             │                            │                        │
-     │                             │  POST /api/internal/...    │                        │
-     │                             │<───────────────────────────┤  (edit_workflow, etc.) │
-     │                             │  { success, blocks, edges }│                        │
-     │                             ├───────────────────────────>│                        │
+     │                             │  run(checkpoint_pause)     │  sim-executor tools    │
+     │                             │  ─── Sim executes ───▶     │                        │
+     │                             │  POST /api/tools/resume    │                        │
+     │                             │<───────────────────────────┤                        │
+     │                             │                            │                        │
+     │                             │  (read-only, if DATABASE_URL)                        │
+     │                             ├─────── copilot_messages ───▶ Postgres                │
      │                             │                            │                        │
 ```
 
 ### Protocol Boundaries
 
 - **Sim → Copilot**: HTTP POST with JSON body containing `message`, `model`, `mode`, `chatId`, `integrationTools[]`, and context
-- **Copilot → Sim**: Server-Sent Events (SSE) in Mothership v1 protocol format (`data: <JSON>\n\n`)
-- **Copilot → Sim (Internal)**: `POST /api/internal/tools/execute` with `x-internal-secret` header for `edit_workflow` and other `sim`-executor tools
-- **Copilot → Sim (Internal)**: `POST /api/internal/copilot/messages` for chat persistence
+- **Copilot → Sim**: Server-Sent Events (SSE) in Mothership v1 protocol format (`data: <JSON>\n\n`) — Sim executes `sim`-executor tools itself after `run(checkpoint_pause)` and resumes via `POST /api/tools/resume`
+- **Copilot → Sim DB (read-only)**: conversation history loaded from Sim's Postgres `copilot_messages` table when `DATABASE_URL` is configured
 
 ### SSE Streaming Protocol
 
@@ -52,7 +54,7 @@ Each event envelope contains `type`, `seq` (monotonic), `stream` (with `streamId
 ### Prerequisites
 
 - Go 1.22+
-- A running Sim instance (for runtime tool execution and chat persistence via internal API)
+- A running Sim instance (for workflow/tool execution via the checkpoint/resume flow; optionally its Postgres for conversation history)
 
 ### Environment Variables
 
@@ -66,8 +68,7 @@ Each event envelope contains `type`, `seq` (monotonic), `stream` (with `streamId
 | `CUSTOM_LLM_API_KEY` | If provider=custom | — | API key for custom provider |
 | `CUSTOM_LLM_BASE_URL` | If provider=custom | — | Base URL for custom OpenAI-compatible API (e.g. `https://your-api.example.com/v1`) |
 | `COPILOT_DEFAULT_MODEL` | Yes | — | Default model (e.g. `claude-sonnet-4-5`, `gpt-4o`, `deepseek-v4-pro`) |
-| `SIM_INTERNAL_URL` | Yes | — | Sim internal API URL (e.g. `http://localhost:3000`) |
-| `INTERNAL_API_SECRET` | Yes | — | Secret for Sim internal API authentication |
+| `DATABASE_URL` | No | — | Sim's Postgres connection string; enables conversation history (prior turns injected into the LLM context per chat) |
 | `COPILOT_PROMPT_PATH` | No | — | Path to custom system prompt template file |
 | `COPILOT_LISTEN_ADDR` | No | `:3002` | HTTP listen address |
 
@@ -120,6 +121,11 @@ COPILOT_BACKEND_URL=http://localhost:3002
 
 If not set, Sim falls back to `SIM_AGENT_API_URL` (default: `https://www.copilot.sim.ai`) or the environment-specific URLs for admin users.
 
+## Conversation Memory & Chat Titles
+
+- **Conversation history**: when `DATABASE_URL` points at Sim's Postgres, each chat request loads the chat's prior user/assistant turns from `copilot_messages` (mirroring Sim's ordering and soft-delete semantics; the in-flight message is excluded by `message_id`) and prepends them to the LLM context. Without `DATABASE_URL`, or on a database error, the request proceeds without history — never fails. Resume legs reuse checkpoint messages and skip the database.
+- **Chat titles**: Sim calls `POST /api/generate-chat-title` on the first message of a new chat. The endpoint generates a short title via the configured LLM using `COPILOT_DEFAULT_MODEL` (the request's `model` is a Sim-side model name and is ignored), sanitizes it (quotes stripped, ~60 char cap), and falls back to the truncated first message on LLM failure so the title is never empty.
+
 ## Project Structure
 
 ```
@@ -136,6 +142,8 @@ apps/copilot/
 │   │   └── agent_test.go    # Agent unit tests
 │   ├── config/
 │   │   └── config.go        # Environment-based configuration
+│   ├── history/
+│   │   └── history.go       # Conversation history loader (Sim Postgres copilot_messages)
 │   ├── prompt/
 │   │   ├── builder.go       # Template loading, variable substitution, block catalog formatting
 │   │   ├── builder_test.go  # Prompt builder tests
@@ -154,10 +162,12 @@ apps/copilot/
 │   ├── stream/
 │   │   ├── writer.go        # SSE stream writer, keepalive, lifecycle
 │   │   └── writer_test.go   # Stream writer tests
+│   ├── title/
+│   │   ├── title.go         # Chat title generation (/api/generate-chat-title)
+│   │   └── title_test.go    # Title generator tests
 │   └── tools/
-│       ├── executor.go      # Tool executor (local + sim proxy dispatch)
+│       ├── executor.go      # Tool executor (local go-executor tools)
 │       ├── executor_test.go # Tool executor tests
-│       ├── sim_proxy.go     # Sim internal API proxy for tools
 │       ├── files.go         # File I/O tools (read, write, list)
 │       ├── code.go          # Sandboxed code execution tool
 │       └── format.go        # Tool result to message formatting
@@ -166,15 +176,14 @@ apps/copilot/
 ## Tool Execution Flow
 
 ```
-1. LLM returns tool_call for "edit_workflow"
+1. LLM returns tool_call for a sim-executor tool (edit_workflow, read, ...)
 2. Copilot emits tool(phase: call) SSE event
-3. Copilot POSTs to $SIM_INTERNAL_URL/api/internal/tools/execute
-   with x-internal-secret header
-4. Sim runs edit_workflow operations
-5. Sim returns { success, blocks, edges, lint, skippedItems }
-6. Copilot emits tool(phase: result) SSE event
-7. Copilot adds tool result to LLM conversation
-8. LLM continues generating
+3. Copilot emits run(checkpoint_pause) with the pending tool IDs and ends the stream leg
+4. Sim executes the tools locally
+5. Sim resumes via POST /api/tools/resume with the tool results
+6. Copilot emits tool(phase: result) SSE events on the resume leg
+7. Copilot adds tool results to LLM conversation
+8. LLM continues generating (re-pauses rotate to fresh checkpoints)
 ```
 
 ## License
