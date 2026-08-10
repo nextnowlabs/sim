@@ -99,19 +99,19 @@ const logger = createLogger('KnowledgeBase')
 const DOCUMENTS_PER_PAGE = 50
 
 const DOCUMENT_COLUMNS: ResourceColumn[] = [
-  { id: 'name', header: 'Name', widthMultiplier: 0.8 },
-  { id: 'size', header: 'Size', widthMultiplier: 0.75 },
+  { id: 'name', header: '名称', widthMultiplier: 0.8 },
+  { id: 'size', header: '大小', widthMultiplier: 0.75 },
   { id: 'tokens', header: 'Tokens', widthMultiplier: 0.75 },
-  { id: 'chunks', header: 'Chunks', widthMultiplier: 0.75 },
-  { id: 'uploaded', header: 'Uploaded' },
-  { id: 'status', header: 'Status', widthMultiplier: 0.75 },
-  { id: 'tags', header: 'Tags' },
+  { id: 'chunks', header: '分块数', widthMultiplier: 0.75 },
+  { id: 'uploaded', header: '上传时间' },
+  { id: 'status', header: '状态', widthMultiplier: 0.75 },
+  { id: 'tags', header: '标签' },
 ]
 
 const STATUS_FILTER_OPTIONS: ChipDropdownOption[] = [
-  { value: 'all', label: 'All' },
-  { value: 'enabled', label: 'Enabled' },
-  { value: 'disabled', label: 'Disabled' },
+  { value: 'all', label: '全部' },
+  { value: 'enabled', label: '已启用' },
+  { value: 'disabled', label: '已禁用' },
 ]
 
 const FILTER_SECTION_LABEL_CLASS = 'text-[var(--text-muted)] text-small'
@@ -131,33 +131,33 @@ const getStatusBadge = (doc: DocumentData) => {
     case 'pending':
       return (
         <Badge variant='gray' size='sm'>
-          Pending
+          等待中
         </Badge>
       )
     case 'processing':
       return (
         <Badge variant='purple' size='sm' icon={AnimatedLoader}>
-          Processing
+          处理中
         </Badge>
       )
     case 'failed':
       return doc.processingError ? (
         <Badge variant='red' size='sm' icon={AlertCircle}>
-          Failed
+          失败
         </Badge>
       ) : (
         <Badge variant='red' size='sm'>
-          Failed
+          失败
         </Badge>
       )
     case 'completed':
       return doc.enabled ? (
         <Badge variant='green' size='sm'>
-          Enabled
+          已启用
         </Badge>
       ) : (
         <Badge variant='gray' size='sm'>
-          Disabled
+          已禁用
         </Badge>
       )
     default:
@@ -197,7 +197,7 @@ function getDocumentTags(doc: DocumentData, definitions: TagDefinition[]): TagVa
         value = String(raw)
       }
     } else if (fieldType === 'boolean') {
-      value = raw ? 'Yes' : 'No'
+      value = raw ? '是' : '否'
     } else if (fieldType === 'number' && typeof raw === 'number') {
       value = raw.toLocaleString()
     } else {
@@ -411,7 +411,7 @@ export function KnowledgeBase({
     prevHadSyncingRef.current = hasSyncingConnectors
   }, [hasSyncingConnectors, refreshKnowledgeBase, refreshDocuments])
 
-  const knowledgeBaseName = knowledgeBase?.name || passedKnowledgeBaseName || 'Knowledge Base'
+  const knowledgeBaseName = knowledgeBase?.name || passedKnowledgeBaseName || '知识库'
   /**
    * Breadcrumb leaf label. Falls back to the canonical '…' placeholder while
    * the name loads (mirroring loading.tsx) instead of duplicating the root
@@ -516,7 +516,7 @@ export function KnowledgeBase({
           logger.error('Error retrying document:', err)
           updateDocument(docId, {
             processingStatus: 'failed',
-            processingError: getErrorMessage(err, 'Failed to retry document processing'),
+            processingError: getErrorMessage(err, '重试文档处理失败'),
           })
         },
       }
@@ -621,7 +621,7 @@ export function KnowledgeBase({
     if (document?.processingStatus !== 'completed') return
     const urlParams = new URLSearchParams({
       kbName: knowledgeBaseName,
-      docName: document?.filename || 'Document',
+      docName: document?.filename || '文档',
     })
     router.push(`/workspace/${workspaceId}/knowledge/${id}/${docId}?${urlParams.toString()}`)
   }
@@ -835,7 +835,7 @@ export function KnowledgeBase({
 
   const breadcrumbs: BreadcrumbItem[] = [
     {
-      label: 'Knowledge Base',
+      label: '知识库',
       icon: Database,
       onClick: () => router.push(`/workspace/${workspaceId}/knowledge`),
     },
@@ -856,19 +856,19 @@ export function KnowledgeBase({
         ...(userPermissions.canEdit || userPermissions.isLoading
           ? [
               {
-                label: 'Rename',
+                label: '重命名',
                 icon: Pencil,
                 disabled: !userPermissions.canEdit,
                 onClick: () => kbRename.startRename(id, knowledgeBaseName),
               },
               {
-                label: 'Tags',
+                label: '标签',
                 icon: Tag,
                 disabled: !userPermissions.canEdit,
                 onClick: () => setShowTagsModal(true),
               },
               {
-                label: 'Delete',
+                label: '删除',
                 icon: Trash,
                 disabled: !userPermissions.canEdit,
                 onClick: () => setShowDeleteDialog(true),
@@ -883,7 +883,7 @@ export function KnowledgeBase({
     ...(userPermissions.canEdit || userPermissions.isLoading
       ? [
           {
-            text: 'New connector',
+            text: '新建连接器',
             icon: Plus,
             disabled: !userPermissions.canEdit,
             onSelect: () => setShowAddConnectorModal(true),
@@ -895,12 +895,12 @@ export function KnowledgeBase({
   const sortConfig: SortConfig = useMemo(
     () => ({
       options: [
-        { id: 'filename', label: 'Name' },
-        { id: 'fileSize', label: 'Size' },
+        { id: 'filename', label: '名称' },
+        { id: 'fileSize', label: '大小' },
         { id: 'tokenCount', label: 'Tokens' },
-        { id: 'chunkCount', label: 'Chunks' },
-        { id: 'uploadedAt', label: 'Uploaded' },
-        { id: 'enabled', label: 'Status' },
+        { id: 'chunkCount', label: '分块数' },
+        { id: 'uploadedAt', label: '上传时间' },
+        { id: 'enabled', label: '状态' },
       ],
       active: activeSort,
       onSort: (column, direction) => {
@@ -1014,7 +1014,7 @@ export function KnowledgeBase({
       ...(enabledFilter !== 'all'
         ? [
             {
-              label: `Status: ${enabledFilter === 'enabled' ? 'Enabled' : 'Disabled'}`,
+              label: `状态: ${enabledFilter === 'enabled' ? '已启用' : '已禁用'}`,
               onRemove: () => {
                 setEnabledFilter('all')
                 setSelectedDocuments(new Set())
@@ -1179,12 +1179,12 @@ export function KnowledgeBase({
       <Resource onContextMenu={handleEmptyContextMenu}>
         <Resource.Header
           icon={Database}
-          title='Knowledge Base'
+          title='知识库'
           breadcrumbs={breadcrumbs}
           actions={[
             ...headerActions,
             {
-              text: 'New documents',
+              text: '新建文档',
               icon: Plus,
               onSelect: handleAddDocuments,
               disabled: userPermissions.canEdit !== true,
@@ -1196,7 +1196,7 @@ export function KnowledgeBase({
           search={{
             value: searchQuery,
             onChange: handleSearchChange,
-            placeholder: 'Search documents...',
+            placeholder: '搜索文档…',
           }}
           sort={sortConfig}
           filter={filterContent ? { content: filterContent } : undefined}
@@ -1242,23 +1242,23 @@ export function KnowledgeBase({
       <ChipConfirmModal
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        srTitle='Delete Knowledge Base'
-        title='Delete Knowledge Base'
+        srTitle='删除知识库'
+        title='删除知识库'
         text={[
-          'Are you sure you want to delete ',
+          '确定要删除 ',
           { text: knowledgeBaseName, bold: true },
-          '? ',
+          ' 吗?',
           {
-            text: `The knowledge base and all ${pagination.total} document${pagination.total === 1 ? '' : 's'} within it will be removed.`,
+            text: `知识库及其中的 ${pagination.total} 个文档都将被移除。`,
             error: true,
           },
-          ' You can restore it from Recently Deleted in Settings.',
+          ' 你可以在设置中的"最近删除"里恢复它。',
         ]}
         confirm={{
-          label: 'Delete Knowledge Base',
+          label: '删除知识库',
           onClick: handleDeleteKnowledgeBase,
           pending: isDeleting,
-          pendingLabel: 'Deleting...',
+          pendingLabel: '删除中…',
         }}
       />
 
@@ -1268,31 +1268,31 @@ export function KnowledgeBase({
           setShowDeleteDocumentModal(open)
           if (!open) setDocumentToDelete(null)
         }}
-        srTitle='Delete Document'
-        title='Delete Document'
+        srTitle='删除文档'
+        title='删除文档'
         text={(() => {
           const docToDelete = documents.find((doc) => doc.id === documentToDelete)
           const base: ChipConfirmTextSegment[] = [
-            'Are you sure you want to delete ',
-            { text: docToDelete?.filename ?? 'this document', bold: true },
-            '? ',
+            '确定要删除 ',
+            { text: docToDelete?.filename ?? '此文档', bold: true },
+            ' 吗?',
           ]
           return docToDelete?.connectorId
             ? [
                 ...base,
                 {
-                  text: 'This document is synced from a connector. Deleting it will permanently exclude it from future syncs. To temporarily hide it from search, disable it instead.',
+                  text: '此文档来自连接器同步。删除后它将永久从未来的同步中排除。若只是暂时隐藏搜索结果,请改为禁用。',
                   error: true,
                 },
               ]
             : [
                 ...base,
-                { text: 'This will permanently delete the document.', error: true },
-                ' This action cannot be undone.',
+                { text: '这将永久删除该文档。', error: true },
+                ' 此操作无法撤销。',
               ]
         })()}
         confirm={{
-          label: 'Delete Document',
+          label: '删除文档',
           onClick: confirmDeleteDocument,
         }}
       />
@@ -1300,21 +1300,21 @@ export function KnowledgeBase({
       <ChipConfirmModal
         open={showBulkDeleteModal}
         onOpenChange={setShowBulkDeleteModal}
-        srTitle='Delete Documents'
-        title='Delete Documents'
+        srTitle='删除文档'
+        title='删除文档'
         text={[
-          `Are you sure you want to delete ${selectedDocuments.size} document${selectedDocuments.size === 1 ? '' : 's'}? `,
+          `确定要删除 ${selectedDocuments.size} 个文档吗?`,
           {
-            text: `This will permanently delete the selected document${selectedDocuments.size === 1 ? '' : 's'}.`,
+            text: `这将永久删除选中的 ${selectedDocuments.size} 个文档。`,
             error: true,
           },
-          ' This action cannot be undone.',
+          ' 此操作无法撤销。',
         ]}
         confirm={{
-          label: `Delete ${selectedDocuments.size} Document${selectedDocuments.size === 1 ? '' : 's'}`,
+          label: `删除 ${selectedDocuments.size} 个文档`,
           onClick: confirmBulkDelete,
           pending: isBulkOperating,
-          pendingLabel: 'Deleting...',
+          pendingLabel: '删除中…',
         }}
       />
 
@@ -1348,10 +1348,10 @@ export function KnowledgeBase({
       <ChipModal
         open={showConnectorsModal}
         onOpenChange={setShowConnectorsModal}
-        srTitle='Connected Sources'
+        srTitle='已连接的数据源'
       >
         <ChipModalHeader onClose={() => setShowConnectorsModal(false)}>
-          Connected Sources
+          已连接的数据源
         </ChipModalHeader>
         <ChipModalBody>
           <ConnectorsSection
@@ -1384,7 +1384,7 @@ export function KnowledgeBase({
             ? () => {
                 const urlParams = new URLSearchParams({
                   kbName: knowledgeBaseName,
-                  docName: contextMenuDocument.filename || 'Document',
+                  docName: contextMenuDocument.filename || '文档',
                 })
                 window.open(
                   `/workspace/${workspaceId}/knowledge/${id}/${contextMenuDocument.id}?${urlParams.toString()}`,
@@ -1417,7 +1417,7 @@ export function KnowledgeBase({
             ? () => {
                 const urlParams = new URLSearchParams({
                   kbName: knowledgeBaseName,
-                  docName: contextMenuDocument.filename || 'Document',
+                  docName: contextMenuDocument.filename || '文档',
                 })
                 router.push(
                   `/workspace/${workspaceId}/knowledge/${id}/${contextMenuDocument.id}?${urlParams.toString()}`
@@ -1518,15 +1518,15 @@ function TagFilterValueControl({ entry, onChange }: TagFilterValueControlProps) 
           <ChipDatePicker
             value={entry.value || undefined}
             onChange={(value) => onChange({ value })}
-            placeholder='From'
+            placeholder='从'
             fullWidth
             flush
           />
-          <span className='flex-shrink-0 text-[var(--text-muted)] text-caption'>to</span>
+          <span className='flex-shrink-0 text-[var(--text-muted)] text-caption'>至</span>
           <ChipDatePicker
             value={entry.valueTo || undefined}
             onChange={(value) => onChange({ valueTo: value })}
-            placeholder='To'
+            placeholder='到'
             fullWidth
             flush
           />
@@ -1538,7 +1538,7 @@ function TagFilterValueControl({ entry, onChange }: TagFilterValueControlProps) 
       <ChipDatePicker
         value={entry.value || undefined}
         onChange={(value) => onChange({ value })}
-        placeholder='Select date'
+        placeholder='选择日期'
         fullWidth
         flush
       />
@@ -1551,13 +1551,13 @@ function TagFilterValueControl({ entry, onChange }: TagFilterValueControlProps) 
         <ChipInput
           value={entry.value}
           onChange={(event) => onChange({ value: event.target.value })}
-          placeholder='From'
+          placeholder='从'
         />
-        <span className='flex-shrink-0 text-[var(--text-muted)] text-caption'>to</span>
+        <span className='flex-shrink-0 text-[var(--text-muted)] text-caption'>至</span>
         <ChipInput
           value={entry.valueTo}
           onChange={(event) => onChange({ valueTo: event.target.value })}
-          placeholder='To'
+          placeholder='到'
         />
       </div>
     )
@@ -1569,10 +1569,10 @@ function TagFilterValueControl({ entry, onChange }: TagFilterValueControlProps) 
       onChange={(event) => onChange({ value: event.target.value })}
       placeholder={
         entry.fieldType === 'boolean'
-          ? 'true or false'
+          ? 'true 或 false'
           : entry.fieldType === 'number'
-            ? 'Enter number'
-            : 'Enter value'
+            ? '输入数字'
+            : '输入值'
       }
     />
   )
@@ -1683,7 +1683,7 @@ function TagFilterSection({ tagDefinitions, entries, onChange }: TagFilterSectio
                     options={tagOptions}
                     value={entry.tagName}
                     onChange={(value) => handleTagChange(entry.id, value)}
-                    placeholder='Select tag'
+                    placeholder='选择标签'
                     align='start'
                     matchTriggerWidth={false}
                     contentClassName='max-h-[240px] overflow-y-auto'
@@ -1695,7 +1695,7 @@ function TagFilterSection({ tagDefinitions, entries, onChange }: TagFilterSectio
                       options={operatorOptions}
                       value={entry.operator}
                       onChange={(value) => updateEntry(entry.id, { operator: value, valueTo: '' })}
-                      placeholder='Operator'
+                      placeholder='运算符'
                       align='start'
                       matchTriggerWidth={false}
                       flush
@@ -1706,7 +1706,7 @@ function TagFilterSection({ tagDefinitions, entries, onChange }: TagFilterSectio
                   variant='ghost'
                   className='relative size-[30px] shrink-0 p-0 text-[var(--text-muted)] before:absolute before:inset-[-5px] before:content-[""] hover-hover:bg-[var(--surface-active)] hover-hover:text-[var(--text-error)]'
                   onClick={() => removeFilter(entry.id)}
-                  aria-label='Remove tag filter'
+                  aria-label='移除标签筛选'
                 >
                   <X className='size-[14px]' />
                 </Button>

@@ -122,9 +122,9 @@ export function WorkflowSearchReplace() {
   const workflowLocked = isWorkflowEffectivelyLocked(workflowMetadata, folders)
   const searchReadOnly = currentWorkflow.isSnapshotView || workflowLocked
   const readonlyReason = currentWorkflow.isSnapshotView
-    ? 'Snapshot view is readonly'
+    ? '快照视图为只读'
     : workflowLocked
-      ? 'Workflow is locked'
+      ? '工作流已锁定'
       : undefined
   const userPermissions = useUserPermissionsContext()
   const {
@@ -524,14 +524,14 @@ export function WorkflowSearchReplace() {
 
   const matchCountLabel =
     hydratedMatches.length === 0
-      ? 'No results'
+      ? '无结果'
       : activeMatchIndex >= 0
-        ? `${activeMatchIndex + 1} of ${hydratedMatches.length}`
-        : `0 of ${hydratedMatches.length}`
+        ? `${activeMatchIndex + 1} / ${hydratedMatches.length}`
+        : `0 / ${hydratedMatches.length}`
   return (
     <div
       role='dialog'
-      aria-label='Search and replace'
+      aria-label='查找与替换'
       className='fixed z-[var(--z-dropdown)] flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-1)] px-2.5 pt-0.5 pb-2'
       style={{
         left: `${actualPosition.x}px`,
@@ -566,7 +566,7 @@ export function WorkflowSearchReplace() {
         <Button
           variant='ghost'
           className='size-8 p-0'
-          aria-label={isReplaceExpanded ? 'Hide replace controls' : 'Show replace controls'}
+          aria-label={isReplaceExpanded ? '隐藏替换控件' : '显示替换控件'}
           onClick={() => setIsReplaceExpanded((expanded) => !expanded)}
         >
           <ChevronRight
@@ -579,7 +579,7 @@ export function WorkflowSearchReplace() {
         <Input
           ref={searchInputRef}
           value={query}
-          placeholder='Search'
+          placeholder='搜索'
           onKeyDown={(event) => {
             if (event.key !== 'Enter') return
             event.preventDefault()

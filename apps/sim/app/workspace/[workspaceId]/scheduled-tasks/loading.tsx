@@ -6,7 +6,7 @@ import {
   ResourceChromeFallback,
 } from '@/app/workspace/[workspaceId]/components'
 
-const ACTIONS: ChromeActionSpec[] = [{ text: 'New scheduled task', icon: Plus, variant: 'primary' }]
+const ACTIONS: ChromeActionSpec[] = [{ text: '新建定时任务', icon: Plus, variant: 'primary' }]
 
 /**
  * Route-segment fallback: the page renders a calendar, not a table, so this
@@ -14,5 +14,5 @@ const ACTIONS: ChromeActionSpec[] = [{ text: 'New scheduled task', icon: Plus, v
  * The empty calendar then mounts and its tasks load in.
  */
 export default function ScheduledTasksLoading() {
-  return <ResourceChromeFallback icon={Calendar} title='Scheduled Tasks' actions={ACTIONS} />
+  return <ResourceChromeFallback icon={Calendar} title='定时任务' actions={ACTIONS} />
 }

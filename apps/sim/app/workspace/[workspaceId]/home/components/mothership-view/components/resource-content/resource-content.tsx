@@ -371,13 +371,13 @@ export function EmbeddedWorkflowActions({ workspaceId, workflowId }: EmbeddedWor
             variant='subtle'
             onClick={handleOpenWorkflow}
             className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-            aria-label='Open workflow'
+            aria-label='打开工作流'
           >
             <SquareArrowUpRight className={RESOURCE_TAB_ICON_CLASS} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side='bottom'>
-          <p>Open workflow</p>
+          <p>打开工作流</p>
         </Tooltip.Content>
       </Tooltip.Root>
       <Tooltip.Root>
@@ -387,7 +387,7 @@ export function EmbeddedWorkflowActions({ workspaceId, workflowId }: EmbeddedWor
             onClick={() => void handleRun()}
             disabled={isRunButtonDisabled}
             className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-            aria-label={isExecuting ? 'Stop workflow' : 'Run workflow'}
+            aria-label={isExecuting ? '停止工作流' : '运行工作流'}
           >
             {isExecuting ? (
               <Square className={RESOURCE_TAB_ICON_CLASS} />
@@ -397,7 +397,7 @@ export function EmbeddedWorkflowActions({ workspaceId, workflowId }: EmbeddedWor
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side='bottom'>
-          <p>{isExecuting ? 'Stop' : 'Run workflow'}</p>
+          <p>{isExecuting ? '停止' : '运行工作流'}</p>
         </Tooltip.Content>
       </Tooltip.Root>
     </>
@@ -426,13 +426,13 @@ export function EmbeddedKnowledgeBaseActions({
           variant='subtle'
           onClick={handleOpenKnowledgeBase}
           className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-          aria-label='Open knowledge base'
+          aria-label='打开知识库'
         >
           <SquareArrowUpRight className={RESOURCE_TAB_ICON_CLASS} />
         </Button>
       </Tooltip.Trigger>
       <Tooltip.Content side='bottom'>
-        <p>Open knowledge base</p>
+        <p>打开知识库</p>
       </Tooltip.Content>
     </Tooltip.Root>
   )
@@ -469,13 +469,13 @@ function EmbeddedTableActions({ workspaceId, tableId, tableName }: EmbeddedTable
             variant='subtle'
             onClick={handleOpenTable}
             className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-            aria-label='Open table'
+            aria-label='打开表格'
           >
             <SquareArrowUpRight className={RESOURCE_TAB_ICON_CLASS} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side='bottom'>
-          <p>Open table</p>
+          <p>打开表格</p>
         </Tooltip.Content>
       </Tooltip.Root>
       <Tooltip.Root>
@@ -484,13 +484,13 @@ function EmbeddedTableActions({ workspaceId, tableId, tableName }: EmbeddedTable
             variant='subtle'
             onClick={() => void handleExport()}
             className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-            aria-label='Export table as CSV'
+            aria-label='导出表格为 CSV'
           >
             <Download className={RESOURCE_TAB_ICON_CLASS} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side='bottom'>
-          <p>Export CSV</p>
+          <p>导出 CSV</p>
         </Tooltip.Content>
       </Tooltip.Root>
     </>
@@ -540,13 +540,13 @@ function EmbeddedFileActions({ workspaceId, fileId, filePath }: EmbeddedFileActi
             variant='subtle'
             onClick={handleOpenInFiles}
             className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-            aria-label='Open in files'
+            aria-label='在文件中打开'
           >
             <SquareArrowUpRight className={RESOURCE_TAB_ICON_CLASS} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side='bottom'>
-          <p>Open in files</p>
+          <p>在文件中打开</p>
         </Tooltip.Content>
       </Tooltip.Root>
       <Tooltip.Root>
@@ -556,13 +556,13 @@ function EmbeddedFileActions({ workspaceId, fileId, filePath }: EmbeddedFileActi
             onClick={() => void handleDownload()}
             disabled={!file}
             className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-            aria-label='Download file'
+            aria-label='下载文件'
           >
             <Download className={RESOURCE_TAB_ICON_CLASS} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side='bottom'>
-          <p>Download</p>
+          <p>下载</p>
         </Tooltip.Content>
       </Tooltip.Root>
     </>
@@ -706,7 +706,7 @@ function EmbeddedFolder({ workspaceId, folderId }: EmbeddedFolderProps) {
     <div className='flex h-full flex-col overflow-y-auto p-6'>
       <h2 className='mb-4 font-medium text-[16px] text-[var(--text-primary)]'>{folder.name}</h2>
       {folderWorkflows.length === 0 ? (
-        <p className='text-[13px] text-[var(--text-muted)]'>No workflows in this folder</p>
+        <p className='text-[13px] text-[var(--text-muted)]'>此文件夹中没有工作流</p>
       ) : (
         <div className='flex flex-col gap-1'>
           {folderWorkflows.map((w) => (
@@ -727,9 +727,9 @@ function EmbeddedFolder({ workspaceId, folderId }: EmbeddedFolderProps) {
 }
 
 const SCHEDULE_STATUS_LABEL: Record<string, string> = {
-  active: 'Active',
-  disabled: 'Paused',
-  completed: 'Completed',
+  active: '进行中',
+  disabled: '已暂停',
+  completed: '已完成',
 }
 
 function formatScheduleInstant(iso: string | null): string {
@@ -763,10 +763,10 @@ function EmbeddedScheduledTask({ scheduleId }: EmbeddedScheduledTaskProps) {
   if (isLoading && !schedule) return LOADING_SKELETON
 
   if (!schedule) {
-    const heading = isError ? "Couldn't load scheduled task" : 'Scheduled task not found'
+    const heading = isError ? '无法加载定时任务' : '未找到定时任务'
     const detail = isError
-      ? 'Something went wrong loading this scheduled task. Try again.'
-      : 'This scheduled task may have been deleted'
+      ? '加载此定时任务时出错,请重试。'
+      : '此定时任务可能已被删除'
     return (
       <div className='flex h-full flex-col items-center justify-center gap-3'>
         <Calendar className='size-[32px] text-[var(--text-icon)]' />
@@ -778,10 +778,10 @@ function EmbeddedScheduledTask({ scheduleId }: EmbeddedScheduledTaskProps) {
     )
   }
 
-  const title = schedule.jobTitle || schedule.prompt || 'Scheduled task'
+  const title = schedule.jobTitle || schedule.prompt || '定时任务'
   const timing = schedule.cronExpression
     ? parseCronToHumanReadable(schedule.cronExpression, schedule.timezone)
-    : 'Runs once'
+    : '仅运行一次'
   const status = SCHEDULE_STATUS_LABEL[schedule.status] ?? schedule.status
 
   return (
@@ -792,14 +792,14 @@ function EmbeddedScheduledTask({ scheduleId }: EmbeddedScheduledTaskProps) {
       </div>
 
       <div className='grid grid-cols-2 gap-4'>
-        <ScheduledTaskField title='Status' value={status} />
-        <ScheduledTaskField title='Schedule' value={timing} />
-        <ScheduledTaskField title='Next run' value={formatScheduleInstant(schedule.nextRunAt)} />
-        <ScheduledTaskField title='Last run' value={formatScheduleInstant(schedule.lastRanAt)} />
+        <ScheduledTaskField title='状态' value={status} />
+        <ScheduledTaskField title='计划' value={timing} />
+        <ScheduledTaskField title='下次运行' value={formatScheduleInstant(schedule.nextRunAt)} />
+        <ScheduledTaskField title='上次运行' value={formatScheduleInstant(schedule.lastRanAt)} />
       </div>
 
       <div className='flex flex-col gap-1'>
-        <span className='text-[var(--text-muted)] text-caption'>Prompt</span>
+        <span className='text-[var(--text-muted)] text-caption'>提示词</span>
         <p className='whitespace-pre-wrap text-[var(--text-body)] text-small'>
           {schedule.prompt || '—'}
         </p>
@@ -807,7 +807,7 @@ function EmbeddedScheduledTask({ scheduleId }: EmbeddedScheduledTaskProps) {
 
       {schedule.jobHistory && schedule.jobHistory.length > 0 && (
         <div className='flex flex-col gap-2'>
-          <span className='text-[var(--text-muted)] text-caption'>Recent runs</span>
+          <span className='text-[var(--text-muted)] text-caption'>最近运行</span>
           <div className='flex flex-col gap-2'>
             {schedule.jobHistory.slice(0, 5).map((run, index) => (
               <div
@@ -845,13 +845,13 @@ function EmbeddedScheduledTaskActions({ workspaceId }: EmbeddedScheduledTaskActi
           variant='subtle'
           onClick={handleOpenScheduledTasks}
           className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-          aria-label='Open in scheduled tasks'
+          aria-label='在定时任务中打开'
         >
           <SquareArrowUpRight className={RESOURCE_TAB_ICON_CLASS} />
         </Button>
       </Tooltip.Trigger>
       <Tooltip.Content side='bottom'>
-        <p>Open in scheduled tasks</p>
+        <p>在定时任务中打开</p>
       </Tooltip.Content>
     </Tooltip.Root>
   )
@@ -919,13 +919,13 @@ export function EmbeddedLogActions({ workspaceId, logId }: EmbeddedLogActionsPro
           variant='subtle'
           onClick={handleOpenInLogs}
           className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-          aria-label='Open in logs'
+          aria-label='在日志中打开'
         >
           <SquareArrowUpRight className={RESOURCE_TAB_ICON_CLASS} />
         </Button>
       </Tooltip.Trigger>
       <Tooltip.Content side='bottom'>
-        <p>Open in logs</p>
+        <p>在日志中打开</p>
       </Tooltip.Content>
     </Tooltip.Root>
   )

@@ -42,8 +42,8 @@ async function maybeNotifyTableRowLimit(
       workspaceId,
       currentUsage: projectedRowCount,
       limit,
-      usageLabel: `${projectedRowCount.toLocaleString('en-US')} rows`,
-      limitLabel: `${limit.toLocaleString('en-US')} rows`,
+      usageLabel: `${projectedRowCount.toLocaleString('zh-CN')} 行`,
+      limitLabel: `${limit.toLocaleString('zh-CN')} 行`,
     })
   } catch (error) {
     logger.error('Error evaluating table row-limit notification:', error)
@@ -174,7 +174,7 @@ function cacheLimits(workspaceId: string, limits: TablePlanLimits): void {
 export class TableRowLimitError extends Error {
   constructor(readonly limit: number) {
     super(
-      `This table has reached its row limit (${limit.toLocaleString('en-US')} rows) on your current plan.`
+      `This table has reached its row limit (${limit.toLocaleString('zh-CN')} rows) on your current plan.`
     )
     this.name = 'TableRowLimitError'
   }

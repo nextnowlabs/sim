@@ -159,7 +159,7 @@ export const MemoizedWorkflowItem = memo(
           <span className='truncate'>
             <HighlightedText text={name} query={query} />
           </span>
-          {isCurrent && <span className='flex-shrink-0 whitespace-pre'> (current)</span>}
+          {isCurrent && <span className='flex-shrink-0 whitespace-pre'> (当前)</span>}
         </span>
         {folderPath && folderPath.length > 0 && (
           <span className='ml-auto flex min-w-0 pl-2 text-[var(--text-subtle)] text-small'>
@@ -279,7 +279,7 @@ export const MemoizedWorkspaceItem = memo(
           <span className='truncate'>
             <HighlightedText text={name} query={query} />
           </span>
-          {isCurrent && <span className='flex-shrink-0 whitespace-pre'> (current)</span>}
+          {isCurrent && <span className='flex-shrink-0 whitespace-pre'> (当前)</span>}
         </span>
       </Command.Item>
     )

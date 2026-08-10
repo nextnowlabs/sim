@@ -73,57 +73,57 @@ export function CreateWorkflowMcpServerModal({
   const showWorkflows = workflowOptions !== undefined
 
   return (
-    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Add New MCP Server'>
-      <ChipModalHeader onClose={() => onOpenChange(false)}>Add New MCP Server</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='添加新 MCP 服务器'>
+      <ChipModalHeader onClose={() => onOpenChange(false)}>添加新 MCP 服务器</ChipModalHeader>
       <ChipModalBody>
         <ChipModalField
           type='input'
-          title='Server Name'
+          title='服务器名称'
           value={formData.name}
           onChange={(value) => setFormData({ ...formData, name: value })}
           required
-          placeholder='e.g., My MCP Server'
+          placeholder='例如：我的 MCP 服务器'
         />
         <ChipModalField
           type='textarea'
-          title='Description'
+          title='描述'
           value={formData.description}
           onChange={(value) => setFormData({ ...formData, description: value })}
-          placeholder='Describe what this MCP server does (optional)'
+          placeholder='描述此 MCP 服务器的用途（可选）'
         />
         {showWorkflows && (
-          <ChipModalField type='custom' title='Workflows'>
+          <ChipModalField type='custom' title='工作流'>
             <ChipSelect
               options={workflowOptions ?? []}
               multiSelect
               multiSelectValues={selectedWorkflowIds}
               onMultiSelectChange={setSelectedWorkflowIds}
-              placeholder='Select workflows...'
+              placeholder='选择工作流…'
               searchable
-              searchPlaceholder='Search workflows...'
+              searchPlaceholder='搜索工作流…'
               disabled={createServerMutation.isPending}
               fullWidth
               dropdownWidth='trigger'
               align='start'
               displayLabel={
                 selectedWorkflowIds.length > 0
-                  ? `${selectedWorkflowIds.length} workflow${selectedWorkflowIds.length !== 1 ? 's' : ''} selected`
+                  ? `${selectedWorkflowIds.length} 个工作流已选择`
                   : undefined
               }
             />
           </ChipModalField>
         )}
-        <ChipModalField type='custom' title='Access'>
+        <ChipModalField type='custom' title='访问权限'>
           <div className='flex items-center gap-3'>
             <ButtonGroup
               value={formData.isPublic ? 'public' : 'private'}
               onValueChange={(value) => setFormData({ ...formData, isPublic: value === 'public' })}
             >
-              <ButtonGroupItem value='private'>API Key</ButtonGroupItem>
-              <ButtonGroupItem value='public'>Public</ButtonGroupItem>
+              <ButtonGroupItem value='private'>API 密钥</ButtonGroupItem>
+              <ButtonGroupItem value='public'>公开</ButtonGroupItem>
             </ButtonGroup>
             {formData.isPublic && (
-              <span className='text-[var(--text-muted)] text-xs'>No authentication required</span>
+              <span className='text-[var(--text-muted)] text-xs'>无需认证</span>
             )}
           </div>
         </ChipModalField>
@@ -132,7 +132,7 @@ export function CreateWorkflowMcpServerModal({
       <ChipModalFooter
         onCancel={() => onOpenChange(false)}
         primaryAction={{
-          label: createServerMutation.isPending ? 'Adding...' : 'Add Server',
+          label: createServerMutation.isPending ? '添加中…' : '添加服务器',
           onClick: handleCreateServer,
           disabled: !isFormValid || createServerMutation.isPending,
         }}

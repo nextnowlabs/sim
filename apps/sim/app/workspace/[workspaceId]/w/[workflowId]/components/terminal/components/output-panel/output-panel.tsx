@@ -300,7 +300,7 @@ export const OutputPanel = React.memo(function OutputPanel({
           className='-ml-1 absolute top-0 bottom-0 left-0 z-20 w-[8px] cursor-ew-resize'
           onMouseDown={handleOutputPanelResizeMouseDown}
           role='separator'
-          aria-label='Resize output panel'
+          aria-label='调整输出面板大小'
           aria-orientation='vertical'
         />
 
@@ -317,7 +317,7 @@ export const OutputPanel = React.memo(function OutputPanel({
                 !showInput ? '!text-[var(--text-primary)]' : '!text-[var(--text-icon)]'
               )}
               onClick={handleOutputButtonClick}
-              aria-label='Show output'
+              aria-label='显示输出'
             >
               Output
             </Button>
@@ -329,7 +329,7 @@ export const OutputPanel = React.memo(function OutputPanel({
                   showInput ? '!text-[var(--text-primary)]' : '!text-[var(--text-icon)]'
                 )}
                 onClick={handleInputButtonClick}
-                aria-label='Show input'
+                aria-label='显示输入'
               >
                 Input
               </Button>
@@ -342,14 +342,14 @@ export const OutputPanel = React.memo(function OutputPanel({
                   <Button
                     variant='ghost'
                     onClick={handleCloseSearchClick}
-                    aria-label='Close search'
+                    aria-label='关闭搜索'
                     className='!p-1.5 -m-1.5'
                   >
                     <X className='h-3.5 w-3.5' />
                   </Button>
                 </Tooltip.Trigger>
                 <Tooltip.Content>
-                  <span>Close search</span>
+                  <span>关闭搜索</span>
                 </Tooltip.Content>
               </Tooltip.Root>
             ) : (
@@ -358,14 +358,14 @@ export const OutputPanel = React.memo(function OutputPanel({
                   <Button
                     variant='ghost'
                     onClick={handleSearchClick}
-                    aria-label='Search in output'
+                    aria-label='在输出中搜索'
                     className='!p-1.5 -m-1.5'
                   >
                     <Search className='h-3.5 w-3.5' />
                   </Button>
                 </Tooltip.Trigger>
                 <Tooltip.Content>
-                  <span>Search</span>
+                  <span>搜索</span>
                 </Tooltip.Content>
               </Tooltip.Root>
             )}
@@ -376,7 +376,7 @@ export const OutputPanel = React.memo(function OutputPanel({
                   <Link href='/playground'>
                     <Button
                       variant='ghost'
-                      aria-label='Component Playground'
+                      aria-label='组件试验场'
                       className='!p-1.5 -m-1.5'
                     >
                       <Palette className='h-3.5 w-3.5' />
@@ -419,7 +419,7 @@ export const OutputPanel = React.memo(function OutputPanel({
                 <Button
                   variant='ghost'
                   onClick={handleCopyClick}
-                  aria-label='Copy output'
+                  aria-label='复制输出'
                   className='!p-1.5 -m-1.5'
                 >
                   {showCopySuccess ? (
@@ -440,14 +440,14 @@ export const OutputPanel = React.memo(function OutputPanel({
                     <Button
                       variant='ghost'
                       onClick={handleExportConsole}
-                      aria-label='Export console CSV'
+                      aria-label='导出控制台 CSV'
                       className='!p-1.5 -m-1.5'
                     >
                       <Download className='h-3.5 w-3.5' />
                     </Button>
                   </Tooltip.Trigger>
                   <Tooltip.Content>
-                    <span>Export CSV</span>
+                    <span>导出 CSV</span>
                   </Tooltip.Content>
                 </Tooltip.Root>
                 <Tooltip.Root>
@@ -462,7 +462,7 @@ export const OutputPanel = React.memo(function OutputPanel({
                     </Button>
                   </Tooltip.Trigger>
                   <Tooltip.Content>
-                    <Tooltip.Shortcut keys='⌘D'>Clear console</Tooltip.Shortcut>
+                    <Tooltip.Shortcut keys='⌘D'>清空控制台</Tooltip.Shortcut>
                   </Tooltip.Content>
                 </Tooltip.Root>
               </>
@@ -502,7 +502,7 @@ export const OutputPanel = React.memo(function OutputPanel({
                   showCheck={openOnRun}
                   onClick={handleToggleOpenOnRun}
                 >
-                  <span>Open on run</span>
+                  <span>运行时打开</span>
                 </PopoverItem>
               </PopoverContent>
             </Popover>
@@ -555,7 +555,7 @@ export const OutputPanel = React.memo(function OutputPanel({
             <Button
               variant='ghost'
               onClick={closeOutputSearch}
-              aria-label='Close search'
+              aria-label='关闭搜索'
               className='!p-1.5 -m-1.5'
             >
               <X className='h-3.5 w-3.5' />

@@ -49,11 +49,11 @@ interface ConnectorsSectionProps {
 const SYNC_COOLDOWN_MS = 5 * 60 * 1000
 
 const STATUS_CONFIG = {
-  active: { label: 'Active', variant: 'green' as const },
-  syncing: { label: 'Syncing', variant: 'amber' as const },
-  error: { label: 'Error', variant: 'red' as const },
-  paused: { label: 'Paused', variant: 'gray' as const },
-  disabled: { label: 'Disabled', variant: 'orange' as const },
+  active: { label: '已连接', variant: 'green' as const },
+  syncing: { label: '同步中', variant: 'amber' as const },
+  error: { label: '错误', variant: 'red' as const },
+  paused: { label: '已暂停', variant: 'gray' as const },
+  disabled: { label: '已禁用', variant: 'orange' as const },
 } as const
 
 const CONNECTOR_ACTION_BUTTON_CLASSES =
@@ -200,7 +200,7 @@ export function ConnectorsSection({
         <div className='mt-2' />
       ) : connectors.length === 0 ? (
         <p className='mt-2 text-[var(--text-muted)] text-small'>
-          No connected sources yet. Connect an external source to automatically sync documents.
+          还没有已连接的数据源。连接外部数据源即可自动同步文档。
         </p>
       ) : (
         <div className='mt-2 flex flex-col gap-0.5'>
@@ -237,14 +237,14 @@ export function ConnectorsSection({
         onOpenChange={(open) => {
           if (!open) closeDeleteModal()
         }}
-        srTitle='Remove Connector'
-        title='Remove Connector'
-        text='This will disconnect the source and stop future syncs. Documents already synced will remain in the knowledge base unless you choose to delete them.'
+        srTitle='移除连接器'
+        title='移除连接器'
+        text='这将断开数据源并停止未来的同步。已同步的文档将保留在知识库中,除非你选择删除它们。'
         confirm={{
-          label: 'Remove',
+          label: '移除',
           onClick: handleDeleteConnector,
           pending: isDeleting,
-          pendingLabel: 'Removing...',
+          pendingLabel: '移除中…',
         }}
       >
         <div className='flex items-center gap-2 px-2'>
@@ -257,7 +257,7 @@ export function ConnectorsSection({
             htmlFor={deleteDocumentsId}
             className='cursor-pointer text-[var(--text-secondary)] text-small'
           >
-            Also delete all synced documents
+            同时删除所有已同步的文档
           </label>
         </div>
       </ChipConfirmModal>
@@ -428,7 +428,7 @@ function ConnectorCard({
                   </Button>
                 </Tooltip.Trigger>
                 <Tooltip.Content>
-                  {syncCooldown ? 'Sync recently triggered' : 'Sync now'}
+                  {syncCooldown ? '刚刚触发过同步' : '立即同步'}
                 </Tooltip.Content>
               </Tooltip.Root>
 
@@ -442,7 +442,7 @@ function ConnectorCard({
                     <Settings className='size-3.5' />
                   </Button>
                 </Tooltip.Trigger>
-                <Tooltip.Content>Settings</Tooltip.Content>
+                <Tooltip.Content>设置</Tooltip.Content>
               </Tooltip.Root>
 
               <Tooltip.Root>
@@ -464,8 +464,8 @@ function ConnectorCard({
                 </Tooltip.Trigger>
                 <Tooltip.Content>
                   {connector.status === 'paused' || connector.status === 'disabled'
-                    ? 'Resume'
-                    : 'Pause'}
+                    ? '恢复'
+                    : '暂停'}
                 </Tooltip.Content>
               </Tooltip.Root>
 
@@ -479,7 +479,7 @@ function ConnectorCard({
                     <Trash className='size-3.5' />
                   </Button>
                 </Tooltip.Trigger>
-                <Tooltip.Content>Delete</Tooltip.Content>
+                <Tooltip.Content>删除</Tooltip.Content>
               </Tooltip.Root>
             </>
           )}
@@ -496,7 +496,7 @@ function ConnectorCard({
                 />
               </Button>
             </Tooltip.Trigger>
-            <Tooltip.Content>{expanded ? 'Hide history' : 'Sync history'}</Tooltip.Content>
+            <Tooltip.Content>{expanded ? '隐藏历史' : '同步历史'}</Tooltip.Content>
           </Tooltip.Root>
         </div>
       </div>
@@ -506,13 +506,13 @@ function ConnectorCard({
           <div className='flex flex-col gap-2 rounded-md border border-[var(--border-muted)] bg-[var(--surface-3)] px-2.5 py-2'>
             <div className='flex items-center gap-1.5 font-medium text-[var(--text-primary)] text-caption'>
               <AlertTriangle className='size-3 flex-shrink-0 text-[var(--caution)]' />
-              Connector disabled after repeated sync failures
+              连接器因多次同步失败已被禁用
             </div>
             <p className='text-[var(--text-muted)] text-caption leading-snug'>
-              Syncing has been paused due to {connector.consecutiveFailures} consecutive failures.
+              由于连续 {connector.consecutiveFailures} 次失败,同步已暂停。
               {serviceId
-                ? ' Reconnect your account to resume syncing.'
-                : ' Use the resume button to re-enable syncing.'}
+                ? ' 重新连接你的账号以恢复同步。'
+                : ' 使用恢复按钮重新启用同步。'}
             </p>
             {canEdit && serviceId && providerId && (
               <Button
@@ -534,7 +534,7 @@ function ConnectorCard({
                 size='sm'
                 className='w-full'
               >
-                Reconnect
+                重新连接
               </Button>
             )}
           </div>
@@ -546,7 +546,7 @@ function ConnectorCard({
           <div className='flex flex-col gap-2 rounded-md border border-[var(--border-muted)] bg-[var(--surface-3)] px-2.5 py-2'>
             <div className='flex items-center font-medium text-[var(--text-primary)] text-caption'>
               <span className='mr-1.5 inline-block size-[6px] rounded-xs bg-[var(--caution)]' />
-              Additional permissions required
+              需要额外权限
             </div>
             {canEdit && (
               <Button

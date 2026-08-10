@@ -235,7 +235,7 @@ export function Versions({
                       'size-[6px] shrink-0 rounded-xs',
                       v.isActive ? 'bg-[var(--indicator-active)]' : 'bg-[var(--indicator-inactive)]'
                     )}
-                    title={v.isActive ? 'Live' : 'Inactive'}
+                    title={v.isActive ? '在线' : '未激活'}
                   />
                   {editingVersion === v.version ? (
                     <Input
@@ -282,7 +282,7 @@ export function Versions({
 
               <div className={cn(COLUMN_WIDTHS.DEPLOYED_BY, COLUMN_BASE_CLASS, 'min-w-0')}>
                 <span className={cn('block truncate text-[var(--text-tertiary)]', ROW_TEXT_CLASS)}>
-                  {v.deployedBy || 'Unknown'}
+                  {v.deployedBy || '未知'}
                 </span>
               </div>
 
@@ -320,7 +320,7 @@ export function Versions({
                     {v.description ? (
                       <p className='line-clamp-3 text-caption'>{v.description}</p>
                     ) : (
-                      <p className='text-caption'>Add description</p>
+                      <p className='text-caption'>添加描述</p>
                     )}
                   </Tooltip.Content>
                 </Tooltip.Root>
@@ -341,11 +341,11 @@ export function Versions({
                   <PopoverContent align='end' sideOffset={4} minWidth={160} maxWidth={200} border>
                     <PopoverItem onClick={() => handleStartRename(v.version, v.name)}>
                       <Pencil className='size-3' />
-                      <span>Rename</span>
+                      <span>重命名</span>
                     </PopoverItem>
                     <PopoverItem onClick={() => handleOpenDescriptionModal(v.version)}>
                       <FileText className='size-3' />
-                      <span>{v.description ? 'Edit description' : 'Add description'}</span>
+                      <span>{v.description ? '编辑描述' : '添加描述'}</span>
                     </PopoverItem>
                     {!v.isActive && (
                       <PopoverItem onClick={() => handlePromote(v.version)}>

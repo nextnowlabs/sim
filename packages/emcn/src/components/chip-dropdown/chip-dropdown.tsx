@@ -188,8 +188,8 @@ const ChipDropdown = forwardRef<HTMLButtonElement, ChipDropdownProps>(
     const [open, setOpen] = useState(false)
     const [search, setSearch] = useState('')
     const searchable = isMultiple && props.searchable === true
-    const searchPlaceholder = isMultiple ? (props.searchPlaceholder ?? 'Search...') : 'Search...'
-    const allLabel = isMultiple ? (props.allLabel ?? 'All') : ''
+    const searchPlaceholder = isMultiple ? (props.searchPlaceholder ?? '搜索…') : '搜索…'
+    const allLabel = isMultiple ? (props.allLabel ?? '全部') : ''
     const showAllOption = isMultiple ? props.showAllOption !== false : false
     const showSelectedCheck = isMultiple || props.showSelectedCheck !== false
 
@@ -211,10 +211,10 @@ const ChipDropdown = forwardRef<HTMLButtonElement, ChipDropdownProps>(
           ? allLabel
           : selectedValues.length === 1
             ? (options.find((option) => option.value === selectedValues[0])?.label ?? allLabel)
-            : `${selectedValues.length} selected`
+            : `已选择 ${selectedValues.length} 项`
     } else {
       const selected = options.find((option) => option.value === selectedValues[0])
-      displayLabel = selected?.label ?? placeholder ?? 'Select...'
+      displayLabel = selected?.label ?? placeholder ?? '选择…'
     }
     const isPlaceholder = !isMultiple && selectedValues.length === 0
 

@@ -127,60 +127,60 @@ export function SearchModal({
       [
         {
           id: 'integrations',
-          name: 'Integrations',
+          name: '集成',
           icon: Integration,
           href: `/workspace/${workspaceId}/integrations`,
           hidden: permissionConfig.hideIntegrationsTab,
         },
         {
           id: 'tables',
-          name: 'Tables',
+          name: '表格',
           icon: Table,
           href: `/workspace/${workspaceId}/tables`,
           hidden: permissionConfig.hideTablesTab,
         },
         {
           id: 'files',
-          name: 'Files',
+          name: '文件',
           icon: File,
           href: `/workspace/${workspaceId}/files`,
           hidden: permissionConfig.hideFilesTab,
         },
         {
           id: 'knowledge-base',
-          name: 'Knowledge base',
+          name: '知识库',
           icon: Database,
           href: `/workspace/${workspaceId}/knowledge`,
           hidden: permissionConfig.hideKnowledgeBaseTab,
         },
         {
           id: 'scheduled-tasks',
-          name: 'Scheduled tasks',
+          name: '定时任务',
           icon: Calendar,
           href: `/workspace/${workspaceId}/scheduled-tasks`,
         },
         {
           id: 'logs',
-          name: 'Logs',
+          name: '日志',
           icon: Library,
           href: `/workspace/${workspaceId}/logs`,
           shortcut: '⌘⇧L',
         },
         {
           id: 'secrets',
-          name: 'Secrets',
+          name: '密钥',
           icon: Key,
           href: `/workspace/${workspaceId}/settings/secrets`,
         },
         {
           id: 'help',
-          name: 'Help',
+          name: '帮助',
           icon: HelpCircle,
           onClick: openHelpModal,
         },
         {
           id: 'settings',
-          name: 'Settings',
+          name: '设置',
           icon: Settings,
           onClick: navigateToSettings,
         },
@@ -205,7 +205,7 @@ export function SearchModal({
     const list: ActionItem[] = []
     list.push({
       id: 'run-workflow',
-      name: 'Run workflow',
+      name: '运行工作流',
       keywords: 'execute start play test',
       icon: Play,
       shortcut: '⌘↵',
@@ -214,7 +214,7 @@ export function SearchModal({
     })
     list.push({
       id: 'new-chat',
-      name: 'New chat',
+      name: '新建对话',
       keywords: 'chat message ask sim assistant home',
       icon: Home,
       context: 'global',
@@ -223,7 +223,7 @@ export function SearchModal({
     if (canEdit && onCreateWorkflow) {
       list.push({
         id: 'create-workflow',
-        name: 'Create workflow',
+        name: '新建工作流',
         keywords: 'new add build',
         icon: Plus,
         context: 'global',
@@ -233,7 +233,7 @@ export function SearchModal({
     if (canEdit && onCreateFolder) {
       list.push({
         id: 'create-folder',
-        name: 'Create folder',
+        name: '新建文件夹',
         keywords: 'new add group',
         icon: FolderPlus,
         context: 'global',
@@ -243,7 +243,7 @@ export function SearchModal({
     if (canEdit && onImportWorkflow) {
       list.push({
         id: 'import-workflow',
-        name: 'Import workflow',
+        name: '导入工作流',
         keywords: 'upload add',
         icon: Upload,
         context: 'global',
@@ -252,7 +252,7 @@ export function SearchModal({
     }
     list.push({
       id: 'fit-to-view',
-      name: 'Fit workflow to view',
+      name: '让工作流适应视图',
       keywords: 'zoom center recenter canvas reset',
       icon: Scan,
       shortcut: '⌘⇧F',
@@ -261,7 +261,7 @@ export function SearchModal({
     })
     list.push({
       id: 'copy-workflow-url',
-      name: 'Copy workflow link',
+      name: '复制工作流链接',
       keywords: 'url share clipboard',
       icon: Duplicate,
       context: 'workflow',
@@ -273,7 +273,7 @@ export function SearchModal({
     })
     list.push({
       id: 'invite-teammates',
-      name: 'Invite teammates',
+      name: '邀请团队成员',
       keywords: 'members people add user organization',
       icon: Send,
       context: 'global',
@@ -656,7 +656,7 @@ export function SearchModal({
         role='dialog'
         aria-modal={open}
         aria-hidden={!open}
-        aria-label='Search'
+        aria-label='搜索'
         className={cn(
           '-translate-x-1/2 fixed top-[15%] z-50 w-[500px] rounded-xl border border-[var(--border-muted)] bg-[var(--surface-4)] p-[3px] shadow-[var(--shadow-overlay)] dark:bg-[var(--surface-5)]',
           open ? 'visible opacity-100' : 'invisible opacity-0'
@@ -668,14 +668,14 @@ export function SearchModal({
         }}
       >
         <div className='overflow-hidden rounded-lg border border-[var(--border-1)] bg-[var(--bg)]'>
-          <Command label='Search' shouldFilter={false}>
+          <Command label='搜索' shouldFilter={false}>
             <div className='mx-2 mt-2 flex h-[30px] items-center gap-1.5 rounded-lg border border-[var(--border-1)] bg-[var(--surface-5)] px-2 dark:bg-[var(--surface-4)]'>
               <Search className='size-[14px] flex-shrink-0 text-[var(--text-muted)]' />
               <Command.Input
                 ref={inputRef}
                 autoFocus
                 onValueChange={handleSearchChange}
-                placeholder='Search anything...'
+                placeholder='搜索任何内容…'
                 className='h-full w-full bg-transparent text-[var(--text-body)] text-sm outline-none placeholder:text-[var(--text-muted)] focus:outline-none'
               />
             </div>
@@ -687,7 +687,7 @@ export function SearchModal({
               )}
             >
               <Command.Empty className='flex items-center justify-center px-4 py-6 text-[var(--text-subtle)] text-sm'>
-                No results found.
+                未找到结果。
               </Command.Empty>
 
               <ActionsGroup

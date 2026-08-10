@@ -342,7 +342,7 @@ export function VariablesInput({
             d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
           />
         </svg>
-        <p className='mb-1 font-medium text-foreground text-sm'>No variable assignments defined</p>
+        <p className='mb-1 font-medium text-foreground text-sm'>未定义变量赋值</p>
         <p className='text-muted-foreground text-xs'>
           Add variables in the Variables panel to get started
         </p>
@@ -351,7 +351,7 @@ export function VariablesInput({
   }
 
   if (!isPreview && hasNoWorkflowVariables && assignments.length === 0) {
-    return <p className='text-[var(--text-muted)] text-sm'>No variables available</p>
+    return <p className='text-[var(--text-muted)] text-sm'>没有可用变量</p>
   }
 
   return (
@@ -427,7 +427,7 @@ export function VariablesInput({
                       className='h-auto p-0'
                     >
                       <Plus className='size-[14px]' />
-                      <span className='sr-only'>Add Variable</span>
+                      <span className='sr-only'>添加变量</span>
                     </Button>
                     <Button
                       variant='ghost'
@@ -439,7 +439,7 @@ export function VariablesInput({
                       className='h-auto p-0 text-[var(--text-error)] hover-hover:text-[var(--text-error)]'
                     >
                       <Trash className='size-[14px]' />
-                      <span className='sr-only'>Delete Variable</span>
+                      <span className='sr-only'>删除变量</span>
                     </Button>
                   </div>
                 </div>
@@ -447,12 +447,12 @@ export function VariablesInput({
                 {!collapsed && (
                   <div className='flex flex-col gap-2 rounded-b-[4px] border-[var(--border-1)] border-t bg-[var(--surface-2)] px-2.5 pt-1.5 pb-2.5'>
                     <div className='flex flex-col gap-1.5'>
-                      <Label className='text-small'>Variable</Label>
+                      <Label className='text-small'>变量</Label>
                       <Combobox
                         options={availableVars.map((v) => ({ label: v.name, value: v.id }))}
                         value={assignment.variableId || ''}
                         onChange={(value) => handleVariableSelect(assignment.id, value)}
-                        placeholder='Select a variable...'
+                        placeholder='选择变量…'
                         disabled={isReadOnly}
                         overlayContent={
                           variableLabelHighlight ? (
@@ -467,7 +467,7 @@ export function VariablesInput({
                     </div>
 
                     <div className='flex flex-col gap-1.5'>
-                      <Label className='text-small'>Value</Label>
+                      <Label className='text-small'>值</Label>
                       {assignment.type === 'boolean' ? (
                         <Combobox
                           options={BOOLEAN_OPTIONS}
@@ -475,7 +475,7 @@ export function VariablesInput({
                           onChange={(v) =>
                             !isReadOnly && updateAssignment(assignment.id, { value: v })
                           }
-                          placeholder='Select value'
+                          placeholder='选择值'
                           disabled={isReadOnly}
                           overlayContent={
                             booleanLabelHighlight ? (

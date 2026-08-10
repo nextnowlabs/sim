@@ -15,9 +15,11 @@ const COL = {
   CHEVRON: 'w-[14px]',
 } as const
 
-const plural = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`
+/** Join "N verb" segments (Chinese verbs aren't pluralized), dropping zero counts. */
+function plural(n: number, noun: string) {
+  return `${n} ${noun}`
+}
 
-/** Join "N verb" segments (verbs like "updated" aren't pluralized), dropping zero counts. */
 function countList(pairs: Array<[number | undefined, string]>): string {
   return pairs
     .filter(([n]) => (n ?? 0) > 0)
@@ -43,19 +45,19 @@ function jobTitle(job: BackgroundWorkItem): string {
   switch (job.kind) {
     case 'fork_content_copy':
       return m?.childWorkspaceName
-        ? `Forked into "${m.childWorkspaceName}"`
-        : (job.message ?? 'Fork')
+        ? `已创建副本 "${m.childWorkspaceName}"`
+        : (job.message ?? '创建副本')
     case 'fork_sync':
-      if (!m?.otherWorkspaceName) return job.message ?? 'Sync'
+      if (!m?.otherWorkspaceName) return job.message ?? '同步'
       return m.direction === 'pull'
-        ? `Pulled from "${m.otherWorkspaceName}"`
-        : `Pushed to "${m.otherWorkspaceName}"`
+        ? `已从 "${m.otherWorkspaceName}" 拉取`
+        : `已推送到 "${m.otherWorkspaceName}"`
     case 'fork_rollback':
       return m?.otherWorkspaceName
-        ? `Undid sync from "${m.otherWorkspaceName}"`
-        : (job.message ?? 'Rollback')
+        ? `已撤销来自 "${m.otherWorkspaceName}" 的同步`
+        : (job.message ?? '回滚')
     default:
-      return job.message ?? 'Activity'
+      return job.message ?? '活动'
   }
 }
 
@@ -71,22 +73,22 @@ function jobReport(job: BackgroundWorkItem): JobReport {
   }
 
   if (job.kind === 'fork_sync') {
-    addGroup('Updated', m.updatedNames)
-    addGroup('Created', m.createdNames)
-    addGroup('Archived', m.archivedNames)
+    addGroup('已更新', m.updatedNames)
+    addGroup('已创建', m.createdNames)
+    addGroup('已归档', m.archivedNames)
     // Pre-names entries fall back to the count summary (redeployed mirrors updated).
     if (groups.length === 0) {
       const counts = countList([
-        [m.updated, 'updated'],
-        [m.created, 'created'],
-        [m.archived, 'archived'],
+        [m.updated, '已更新'],
+        [m.created, '已创建'],
+        [m.archived, '已归档'],
       ])
       if (counts) notes.push({ value: counts })
     }
     if (m.needsConfiguration && m.needsConfiguration.length > 0) {
       for (const item of m.needsConfiguration) {
         notes.push({
-          value: `${item.workflowName} — re-check ${item.blocks.join(', ')}`,
+          value: `${item.workflowName} — 需重新检查 ${item.blocks.join(', ')}`,
           warning: true,
         })
       }
@@ -94,42 +96,42 @@ function jobReport(job: BackgroundWorkItem): JobReport {
     if (m.clearedOptional && m.clearedOptional.length > 0) {
       for (const item of m.clearedOptional) {
         notes.push({
-          value: `${item.workflowName} — optional cleared in ${item.blocks.join(', ')}`,
+          value: `${item.workflowName} — ${item.blocks.join(', ')} 中的可选内容已清除`,
         })
       }
     }
     if (m.deployFailed && m.deployFailed > 0) {
-      notes.push({ value: `${plural(m.deployFailed, 'workflow')} failed to deploy`, warning: true })
+      notes.push({ value: `${plural(m.deployFailed, '个工作流')} 部署失败`, warning: true })
     }
     return { groups, notes }
   }
 
   if (job.kind === 'fork_rollback') {
     const counts = countList([
-      [m.restored, 'restored'],
-      [m.unarchived, 'unarchived'],
-      [m.removed, 'removed'],
-      [m.skipped, 'skipped'],
+      [m.restored, '已恢复'],
+      [m.unarchived, '已取消归档'],
+      [m.removed, '已移除'],
+      [m.skipped, '已跳过'],
     ])
     if (counts) notes.push({ value: counts })
     return { groups, notes }
   }
 
   // fork_content_copy: a named breakdown of everything copied, by kind.
-  addGroup('Workflows', m.workflowNames)
-  addGroup('Knowledge bases', m.knowledgeBaseNames)
-  addGroup('Tables', m.tableNames)
-  addGroup('Files', m.fileNames)
-  addGroup('Custom tools', m.customToolNames)
-  addGroup('Skills', m.skillNames)
-  addGroup('Workflow MCP servers', m.workflowMcpServerNames)
+  addGroup('工作流', m.workflowNames)
+  addGroup('知识库', m.knowledgeBaseNames)
+  addGroup('表格', m.tableNames)
+  addGroup('文件', m.fileNames)
+  addGroup('自定义工具', m.customToolNames)
+  addGroup('技能', m.skillNames)
+  addGroup('工作流 MCP 服务器', m.workflowMcpServerNames)
   // Pre-names entries fall back to the per-kind counts.
   if (groups.length === 0) {
     const counts = [
-      [m.workflowsCopied, 'workflow'],
-      [m.knowledgeBases, 'knowledge base'],
-      [m.tables, 'table'],
-      [m.files, 'file'],
+      [m.workflowsCopied, '个工作流'],
+      [m.knowledgeBases, '个知识库'],
+      [m.tables, '个表格'],
+      [m.files, '个文件'],
     ]
       .filter(([n]) => ((n as number | undefined) ?? 0) > 0)
       .map(([n, noun]) => plural(n as number, noun as string))
@@ -137,10 +139,10 @@ function jobReport(job: BackgroundWorkItem): JobReport {
     if (counts) notes.push({ value: counts })
   }
   if (m.failed && m.failed > 0) {
-    notes.push({ value: `${plural(m.failed, 'resource')} failed to copy`, warning: true })
+    notes.push({ value: `${plural(m.failed, '个资源')} 复制失败`, warning: true })
   }
   if (m.clearingFailed) {
-    notes.push({ value: 'Reference cleanup incomplete', warning: true })
+    notes.push({ value: '引用清理未完成', warning: true })
   }
   return { groups, notes }
 }
@@ -157,11 +159,7 @@ function JobStatusIndicator({ status }: { status: BackgroundWorkItem['status'] }
         ? 'bg-[var(--badge-amber-text)]'
         : 'bg-[var(--indicator-active)]'
   const label =
-    status === 'failed'
-      ? 'Failed'
-      : status === 'completed_with_warnings'
-        ? 'Completed with warnings'
-        : 'Done'
+    status === 'failed' ? '失败' : status === 'completed_with_warnings' ? '完成但有警告' : '已完成'
   return <span className={cn('size-[6px] shrink-0 rounded-full', color)} title={label} />
 }
 
@@ -275,8 +273,8 @@ function ForkJobsTable({ jobs }: { jobs: BackgroundWorkItem[] }) {
   return (
     <div className='overflow-hidden rounded-sm border border-[var(--border)]'>
       <div className='flex h-[30px] items-center bg-[var(--surface-1)] px-4'>
-        <span className={cn('flex-1', HEADER_TEXT)}>Activity</span>
-        <span className={cn(COL.BY, 'shrink-0', HEADER_TEXT)}>By</span>
+        <span className={cn('flex-1', HEADER_TEXT)}>活动</span>
+        <span className={cn(COL.BY, 'shrink-0', HEADER_TEXT)}>执行者</span>
         <span className={cn(COL.CHEVRON, 'shrink-0')} />
       </div>
       <div className='bg-[var(--surface-2)]'>
@@ -304,7 +302,7 @@ interface ForkActivityPanelProps {
  */
 export function ForkActivityPanel({
   pending = false,
-  pendingLabel = 'Working…',
+  pendingLabel = '处理中…',
   backgroundWorkspaceId,
 }: ForkActivityPanelProps) {
   const { data: jobs = [] } = useWorkspaceBackgroundWork(backgroundWorkspaceId)
@@ -312,7 +310,7 @@ export function ForkActivityPanel({
   if (!pending && jobs.length === 0) {
     return (
       <div className='px-2 py-8 text-center text-[var(--text-muted)] text-small'>
-        Nothing here yet. Forks, syncs, and rollbacks will appear here.
+        暂无记录。副本创建、同步和回滚将显示在这里。
       </div>
     )
   }

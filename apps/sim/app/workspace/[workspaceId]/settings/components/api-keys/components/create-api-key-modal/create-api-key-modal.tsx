@@ -64,8 +64,8 @@ export function CreateApiKeyModal({
     if (isDuplicate) {
       setCreateError(
         keyType === 'workspace'
-          ? `A workspace API key named "${trimmedName}" already exists. Please choose a different name.`
-          : `A personal API key named "${trimmedName}" already exists. Please choose a different name.`
+          ? `名为"${trimmedName}"的工作区 API 密钥已存在,请选择其他名称。`
+          : `名为"${trimmedName}"的个人 API 密钥已存在,请选择其他名称。`
       )
       return
     }
@@ -88,11 +88,11 @@ export function CreateApiKeyModal({
       onKeyCreated?.(data.key)
     } catch (error: unknown) {
       logger.error('API key creation failed:', { error })
-      const errorMessage = getErrorMessage(error, 'Failed to create API key. Please try again.')
+      const errorMessage = getErrorMessage(error, '创建 API 密钥失败,请重试。')
       if (errorMessage.toLowerCase().includes('already exists')) {
         setCreateError(errorMessage)
       } else {
-        setCreateError('Failed to create API key. Please check your connection and try again.')
+        setCreateError('创建 API 密钥失败,请检查网络连接后重试。')
       }
     }
   }
@@ -107,11 +107,11 @@ export function CreateApiKeyModal({
   return (
     <>
       {/* Create API Key Dialog */}
-      <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Create new API key'>
-        <ChipModalHeader onClose={handleClose}>Create new API key</ChipModalHeader>
+      <ChipModal open={open} onOpenChange={onOpenChange} srTitle='创建新的 API 密钥'>
+        <ChipModalHeader onClose={handleClose}>创建新的 API 密钥</ChipModalHeader>
         <ChipModalBody>
           {canManageWorkspaceKeys && (
-            <ChipModalField type='custom' title='API Key Type'>
+            <ChipModalField type='custom' title='API 密钥类型'>
               <ButtonGroup
                 value={keyType}
                 onValueChange={(value) => {
@@ -120,21 +120,21 @@ export function CreateApiKeyModal({
                 }}
               >
                 <ButtonGroupItem value='personal' disabled={!allowPersonalApiKeys}>
-                  Personal
+                  个人
                 </ButtonGroupItem>
-                <ButtonGroupItem value='workspace'>Workspace</ButtonGroupItem>
+                <ButtonGroupItem value='workspace'>工作区</ButtonGroupItem>
               </ButtonGroup>
             </ChipModalField>
           )}
           <ChipModalField
             type='input'
-            title='Enter a name for your API key to help you identify it later.'
+            title='为你的 API 密钥输入一个便于日后识别的名称。'
             value={keyName}
             onChange={(value) => {
               setKeyName(value)
               if (createError) setCreateError(null)
             }}
-            placeholder='e.g., Development, Production'
+            placeholder='例如:开发环境、生产环境'
             autoComplete='off'
             required
           />
@@ -158,7 +158,7 @@ export function CreateApiKeyModal({
         <ChipModalFooter
           onCancel={handleClose}
           primaryAction={{
-            label: createApiKeyMutation.isPending ? 'Creating...' : 'Create',
+            label: createApiKeyMutation.isPending ? '创建中...' : '创建',
             onClick: handleCreateKey,
             disabled:
               !keyName.trim() ||
@@ -177,19 +177,19 @@ export function CreateApiKeyModal({
             setNewKey(null)
           }
         }}
-        srTitle='Your API key has been created'
+        srTitle='你的 API 密钥已创建'
       >
         <ChipModalHeader onClose={() => setShowNewKeyDialog(false)}>
-          Your API key has been created
+          你的 API 密钥已创建
         </ChipModalHeader>
         <ChipModalBody>
-          <ChipModalField type='custom' title="Copy it now — it won't be shown again">
+          <ChipModalField type='custom' title='请立即复制——之后将不再显示'>
             {newKey && <SecretReveal value={newKey.key} />}
           </ChipModalField>
         </ChipModalBody>
         <ChipModalFooter
           onCancel={() => setShowNewKeyDialog(false)}
-          primaryAction={{ label: 'Done', onClick: () => setShowNewKeyDialog(false) }}
+          primaryAction={{ label: '完成', onClick: () => setShowNewKeyDialog(false) }}
         />
       </ChipModal>
     </>

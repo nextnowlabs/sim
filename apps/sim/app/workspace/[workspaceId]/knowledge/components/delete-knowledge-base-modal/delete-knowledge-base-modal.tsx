@@ -41,34 +41,34 @@ export const DeleteKnowledgeBaseModal = memo(function DeleteKnowledgeBaseModal({
     <ChipConfirmModal
       open={isOpen}
       onOpenChange={onClose}
-      srTitle='Delete Knowledge Base'
-      title='Delete Knowledge Base'
+      srTitle='删除知识库'
+      title='删除知识库'
       text={
         knowledgeBaseName
           ? [
-              'Are you sure you want to delete ',
+              '确定要删除 ',
               { text: knowledgeBaseName, bold: true },
-              '? ',
+              ' 吗?',
               {
-                text: 'All associated documents, chunks, and embeddings will be removed.',
+                text: '所有关联的文档、分块和向量数据都将被移除。',
                 error: true,
               },
-              ' You can restore it from Recently Deleted in Settings.',
+              ' 你可以在设置中的"最近删除"里恢复它。',
             ]
           : [
-              'Are you sure you want to delete this knowledge base? ',
+              '确定要删除此知识库吗?',
               {
-                text: 'All associated documents, chunks, and embeddings will be removed.',
+                text: '所有关联的文档、分块和向量数据都将被移除。',
                 error: true,
               },
-              ' You can restore it from Recently Deleted in Settings.',
+              ' 你可以在设置中的"最近删除"里恢复它。',
             ]
       }
       confirm={{
-        label: 'Delete',
+        label: '删除',
         onClick: onConfirm,
         pending: isDeleting,
-        pendingLabel: 'Deleting...',
+        pendingLabel: '删除中…',
       }}
     />
   )

@@ -105,7 +105,7 @@ const Avatar = React.forwardRef<React.ElementRef<typeof AvatarPrimitive.Root>, A
         <span
           data-slot='avatar-status'
           className={cn(avatarStatusVariants({ status, size }))}
-          aria-label={`Status: ${status}`}
+          aria-label={`状态:${status}`}
         />
       )}
     </div>

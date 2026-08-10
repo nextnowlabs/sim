@@ -695,13 +695,13 @@ export const Toolbar = memo(
           onClick={focusSearch}
           onKeyDown={(event) => handleKeyboardActivation(event, focusSearch)}
         >
-          <h2 className='font-medium text-[var(--text-primary)] text-sm'>Toolbar</h2>
+          <h2 className='font-medium text-[var(--text-primary)] text-sm'>工具栏</h2>
           <div className='flex shrink-0 items-center gap-2'>
             {!isSearchActive ? (
               <Button
                 variant='ghost'
                 className='p-0'
-                aria-label='Search toolbar'
+                aria-label='搜索工具栏'
                 onClick={focusSearch}
               >
                 <Search className='size-[14px]' />
@@ -722,8 +722,8 @@ export const Toolbar = memo(
         {/* Single scroll container with three collapsible sections */}
         <div className='flex flex-1 flex-col overflow-y-auto overflow-x-hidden overscroll-none pb-3'>
           <ToolbarSection
-            label='Triggers'
-            tooltip='Events that start a workflow'
+            label='触发器'
+            tooltip='触发工作流的事件'
             sectionKey='triggers'
             items={filteredTriggers}
             isTrigger={true}
@@ -737,8 +737,8 @@ export const Toolbar = memo(
             onContextMenu={handleItemContextMenu}
           />
           <ToolbarSection
-            label='Core Blocks'
-            tooltip='Core building blocks for agent logic'
+            label='核心节点'
+            tooltip='智能体逻辑的核心积木'
             sectionKey='blocks'
             items={filteredBlocks}
             isTrigger={false}
@@ -752,8 +752,8 @@ export const Toolbar = memo(
             onContextMenu={handleItemContextMenu}
           />
           <ToolbarSection
-            label='Integrations'
-            tooltip='Connect agents to external services'
+            label='集成'
+            tooltip='将智能体连接到外部服务'
             sectionKey='tools'
             items={filteredTools}
             isTrigger={false}

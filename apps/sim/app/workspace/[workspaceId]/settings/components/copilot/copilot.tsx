@@ -29,7 +29,7 @@ const logger = createLogger('CopilotSettings')
 
 /** Formats a key's last-used timestamp, falling back to "Never" when unset. */
 function formatLastUsed(dateString?: string | null): string {
-  if (!dateString) return 'Never'
+  if (!dateString) return '从未使用'
   return formatDate(new Date(dateString))
 }
 
@@ -66,9 +66,7 @@ export function Copilot() {
     const trimmedName = newKeyName.trim()
     const isDuplicate = keys.some((k) => k.name === trimmedName)
     if (isDuplicate) {
-      setCreateError(
-        `A Chat API key named "${trimmedName}" already exists. Please choose a different name.`
-      )
+      setCreateError(`名为"${trimmedName}"的对话 API 密钥已存在,请选择其他名称。`)
       return
     }
 
@@ -84,7 +82,7 @@ export function Copilot() {
       }
     } catch (error) {
       logger.error('Failed to generate copilot API key', { error })
-      setCreateError('Failed to create API key. Please check your connection and try again.')
+      setCreateError('创建 API 密钥失败,请检查网络连接后重试。')
     }
   }
 
@@ -107,7 +105,7 @@ export function Copilot() {
 
   const actions: SettingsAction[] = [
     {
-      text: 'Create API key',
+      text: '创建 API 密钥',
       icon: Plus,
       variant: 'primary',
       onSelect: () => {
@@ -124,12 +122,12 @@ export function Copilot() {
         search={{
           value: searchTerm,
           onChange: setSearchTerm,
-          placeholder: 'Search API keys...',
+          placeholder: '搜索 API 密钥...',
         }}
         actions={actions}
       >
         {isLoading ? null : showEmptyState ? (
-          <SettingsEmptyState>Click "Create API key" above to get started</SettingsEmptyState>
+          <SettingsEmptyState>点击上方"创建 API 密钥"以开始使用</SettingsEmptyState>
         ) : (
           <div className='flex flex-col gap-2'>
             {filteredKeys.map((key) => (
@@ -137,10 +135,10 @@ export function Copilot() {
                 <div className='flex min-w-0 flex-col justify-center gap-[1px]'>
                   <div className='flex items-center gap-1.5'>
                     <span className='max-w-[280px] truncate text-[14px] text-[var(--text-body)]'>
-                      {key.name || 'Unnamed Key'}
+                      {key.name || '未命名密钥'}
                     </span>
                     <span className='text-[var(--text-secondary)] text-sm'>
-                      (last used: {formatLastUsed(key.lastUsed).toLowerCase()})
+                      (上次使用:{formatLastUsed(key.lastUsed).toLowerCase()})
                     </span>
                   </div>
                   <p className='truncate text-[12px] text-[var(--text-muted)]'>{key.displayKey}</p>
@@ -152,13 +150,13 @@ export function Copilot() {
                     setShowDeleteDialog(true)
                   }}
                 >
-                  Delete
+                  删除
                 </Chip>
               </div>
             ))}
             {showNoResults && (
               <SettingsEmptyState variant='inline'>
-                No API keys found matching "{searchTerm}"
+                未找到匹配"{searchTerm}"的 API 密钥
               </SettingsEmptyState>
             )}
           </div>
@@ -168,25 +166,24 @@ export function Copilot() {
       <ChipModal
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
-        srTitle='Create new API key'
+        srTitle='创建新的 API 密钥'
       >
         <ChipModalHeader onClose={() => setIsCreateDialogOpen(false)}>
-          Create new API key
+          创建新的 API 密钥
         </ChipModalHeader>
         <ChipModalBody>
           <p className='px-2 text-[var(--text-secondary)] text-sm'>
-            This key will allow access to Chat features. Make sure to copy it after creation as you
-            won't be able to see it again.
+            此密钥将允许访问对话功能。创建后请务必立即复制,之后将无法再次查看。
           </p>
           <ChipModalField
             type='input'
-            title='Key name'
+            title='密钥名称'
             value={newKeyName}
             onChange={(value) => {
               setNewKeyName(value)
               if (createError) setCreateError(null)
             }}
-            placeholder='e.g., Development, Production'
+            placeholder='例如:开发环境、生产环境'
             required
           />
           <ChipModalError>{createError}</ChipModalError>
@@ -198,7 +195,7 @@ export function Copilot() {
             setCreateError(null)
           }}
           primaryAction={{
-            label: generateKey.isPending ? 'Creating...' : 'Create',
+            label: generateKey.isPending ? '创建中...' : '创建',
             onClick: handleCreateKey,
             disabled: !newKeyName.trim() || generateKey.isPending,
           }}
@@ -213,7 +210,7 @@ export function Copilot() {
             setNewKey(null)
           }
         }}
-        srTitle='Your API key has been created'
+        srTitle='你的 API 密钥已创建'
       >
         <ChipModalHeader
           onClose={() => {
@@ -221,10 +218,10 @@ export function Copilot() {
             setNewKey(null)
           }}
         >
-          Your API key has been created
+          你的 API 密钥已创建
         </ChipModalHeader>
         <ChipModalBody>
-          <ChipModalField type='custom' title="Copy it now — it won't be shown again">
+          <ChipModalField type='custom' title='请立即复制——之后将不再显示'>
             {newKey && <SecretReveal value={newKey} />}
           </ChipModalField>
         </ChipModalBody>
@@ -234,7 +231,7 @@ export function Copilot() {
             setNewKey(null)
           }}
           primaryAction={{
-            label: 'Done',
+            label: '完成',
             onClick: () => {
               setShowNewKeyDialog(false)
               setNewKey(null)
@@ -251,20 +248,20 @@ export function Copilot() {
             setDeleteKey(null)
           }
         }}
-        srTitle='Delete API key'
-        title='Delete API key'
+        srTitle='删除 API 密钥'
+        title='删除 API 密钥'
         text={[
-          'Deleting ',
-          { text: deleteKey?.name || 'Unnamed Key', bold: true },
+          '删除 ',
+          { text: deleteKey?.name || '未命名密钥', bold: true },
           ' ',
-          { text: 'will immediately revoke access for any integrations using it.', error: true },
-          ' This action cannot be undone.',
+          { text: '将立即撤销使用它的所有集成的访问权限。', error: true },
+          ' 此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Delete',
+          label: '删除',
           onClick: handleDeleteKey,
           pending: deleteKeyMutation.isPending,
-          pendingLabel: 'Deleting...',
+          pendingLabel: '删除中...',
         }}
       />
     </>

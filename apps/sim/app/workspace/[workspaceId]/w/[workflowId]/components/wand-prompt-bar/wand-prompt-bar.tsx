@@ -23,7 +23,7 @@ export function WandPromptBar({
   onSubmit,
   onCancel,
   onChange,
-  placeholder = 'Describe what you want to generate...',
+  placeholder = '描述你想生成的内容…',
   className,
 }: WandPromptBarProps) {
   const promptBarRef = useRef<HTMLDivElement>(null)
@@ -91,7 +91,7 @@ export function WandPromptBar({
         <div className='relative flex-1'>
           <input
             type='text'
-            value={isStreaming ? 'Generating...' : promptValue}
+            value={isStreaming ? '生成中…' : promptValue}
             onChange={(e) => !isStreaming && onChange(e.target.value)}
             placeholder={placeholder}
             autoComplete='off'

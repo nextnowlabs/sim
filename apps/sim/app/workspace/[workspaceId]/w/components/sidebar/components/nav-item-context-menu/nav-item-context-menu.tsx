@@ -48,7 +48,7 @@ export function NavItemContextMenu({
           }}
         >
           <SquareArrowUpRight />
-          Open in new tab
+          在新标签页中打开
         </DropdownMenuItem>
         <DropdownMenuItem
           onSelect={() => {
@@ -57,7 +57,7 @@ export function NavItemContextMenu({
           }}
         >
           <Duplicate />
-          Copy link
+          复制链接
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

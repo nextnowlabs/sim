@@ -51,7 +51,7 @@ export function RenameDocumentModal({
     const trimmedName = name.trim()
 
     if (!trimmedName) {
-      setError('Name is required')
+      setError('名称不能为空')
       return
     }
 
@@ -68,7 +68,7 @@ export function RenameDocumentModal({
       onOpenChange(false)
     } catch (err) {
       logger.error('Error renaming document:', err)
-      setError(getErrorMessage(err, 'Failed to rename document'))
+      setError(getErrorMessage(err, '重命名文档失败'))
     } finally {
       setIsSubmitting(false)
     }
@@ -82,18 +82,18 @@ export function RenameDocumentModal({
   }
 
   return (
-    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Rename Document'>
-      <ChipModalHeader onClose={() => onOpenChange(false)}>Rename Document</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='重命名文档'>
+      <ChipModalHeader onClose={() => onOpenChange(false)}>重命名文档</ChipModalHeader>
       <ChipModalBody onKeyDown={handleKeyDown}>
         <ChipModalField
           type='input'
-          title='Name'
+          title='名称'
           value={name}
           onChange={(value) => {
             setName(value)
             setError(null)
           }}
-          placeholder='Enter document name'
+          placeholder='输入文档名称'
           maxLength={255}
           autoComplete='off'
           disabled={isSubmitting}
@@ -105,7 +105,7 @@ export function RenameDocumentModal({
         onCancel={() => onOpenChange(false)}
         cancelDisabled={isSubmitting}
         primaryAction={{
-          label: isSubmitting ? 'Renaming...' : 'Rename',
+          label: isSubmitting ? '重命名中…' : '重命名',
           onClick: () => void handleSubmit(),
           disabled: isSubmitting || !name?.trim() || name.trim() === initialName,
         }}

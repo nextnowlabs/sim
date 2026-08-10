@@ -17,8 +17,8 @@ import { createMentionStore } from './mention-store'
 import type { MentionItem } from './types'
 
 const items: MentionItem[] = [
-  { kind: 'file', id: 'a', label: 'Alpha', group: 'Files', icon: File },
-  { kind: 'file', id: 'b', label: 'Beta', group: 'Files', icon: File },
+  { kind: 'file', id: 'a', label: 'Alpha', group: '文件', icon: File },
+  { kind: 'file', id: 'b', label: 'Beta', group: '文件', icon: File },
 ]
 
 const arrowDown = { event: new KeyboardEvent('keydown', { key: 'ArrowDown' }) }
@@ -84,7 +84,7 @@ describe('MentionList keyboard nav', () => {
       kind: 'file',
       id: `x${i}`,
       label: `report-${i}`,
-      group: 'Files',
+      group: '文件',
       icon: File,
     }))
 
@@ -107,7 +107,7 @@ describe('MentionList keyboard nav', () => {
       kind: 'file',
       id: `f${i}`,
       label: `alpha-${i}`,
-      group: 'Files',
+      group: '文件',
       icon: File,
     }))
 

@@ -31,7 +31,7 @@ import {
 
 /** Job title shown in audit logs / listings, derived from the prompt the user wrote. */
 function titleFromPrompt(prompt: string): string {
-  return truncate(prompt.trim(), 80) || 'Scheduled task'
+  return truncate(prompt.trim(), 80) || '定时任务'
 }
 
 function draftToCreateBody(draft: TaskDraft, workspaceId: string): CreateScheduleBody {

@@ -146,22 +146,22 @@ export function AddDocumentsModal({
   }
 
   return (
-    <ChipModal open={open} onOpenChange={handleOpenChange} srTitle='New Documents' size='md'>
-      <ChipModalHeader onClose={() => handleOpenChange(false)}>New Documents</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={handleOpenChange} srTitle='新建文档' size='md'>
+      <ChipModalHeader onClose={() => handleOpenChange(false)}>新建文档</ChipModalHeader>
 
       <ChipModalBody>
         <ChipModalField
           type='file'
-          title='Upload Documents'
+          title='上传文档'
           accept={ACCEPT_ATTRIBUTE}
           multiple
           onChange={processFiles}
-          description='PDF, DOC, DOCX, TXT, CSV, XLS, XLSX, MD, PPT, PPTX, HTML, JSONL (max 100MB each)'
+          description='PDF、DOC、DOCX、TXT、CSV、XLS、XLSX、MD、PPT、PPTX、HTML、JSONL(单个最大 100MB)'
           error={fileError}
         />
 
         {files.length > 0 && (
-          <ChipModalField type='custom' title='Selected Files'>
+          <ChipModalField type='custom' title='已选文件'>
             <div className='flex flex-col gap-2'>
               {files.map((file, index) => {
                 const fileStatus = uploadProgress.fileStatuses?.[index]
@@ -233,11 +233,11 @@ export function AddDocumentsModal({
         primaryAction={{
           label: isUploading
             ? uploadProgress.stage === 'uploading'
-              ? `Uploading ${uploadProgress.filesCompleted}/${uploadProgress.totalFiles}...`
+              ? `上传中 ${uploadProgress.filesCompleted}/${uploadProgress.totalFiles}…`
               : uploadProgress.stage === 'processing'
-                ? 'Processing...'
-                : 'Uploading...'
-            : 'Upload',
+                ? '处理中…'
+                : '上传中…'
+            : '上传',
           onClick: handleUpload,
           disabled: files.length === 0 || isUploading,
         }}

@@ -27,7 +27,7 @@ export const SendButton = React.memo(function SendButton({
         onClick={onStopGeneration}
         variant='ghost'
         className={cn(SEND_BUTTON_BASE, SEND_BUTTON_ACTIVE)}
-        title='Stop generation'
+        title='停止生成'
       >
         <svg
           className='block h-[14px] w-[14px] fill-white dark:fill-black'

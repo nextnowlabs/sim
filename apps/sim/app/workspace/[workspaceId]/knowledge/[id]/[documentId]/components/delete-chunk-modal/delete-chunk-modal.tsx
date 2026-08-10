@@ -33,14 +33,14 @@ export function DeleteChunkModal({
     <ChipConfirmModal
       open={isOpen}
       onOpenChange={onClose}
-      srTitle='Delete Chunk'
-      title='Delete Chunk'
-      text='Are you sure you want to delete this chunk? This action cannot be undone.'
+      srTitle='删除分块'
+      title='删除分块'
+      text='确定要删除此分块吗?此操作无法撤销。'
       confirm={{
-        label: 'Delete',
+        label: '删除',
         onClick: handleDeleteChunk,
         pending: isDeleting,
-        pendingLabel: 'Deleting...',
+        pendingLabel: '删除中…',
       }}
     />
   )

@@ -31,10 +31,10 @@ const logger = createLogger('DocumentTagsModal')
 
 /** Field type display labels */
 const FIELD_TYPE_LABELS: Record<string, string> = {
-  text: 'Text',
-  number: 'Number',
-  date: 'Date',
-  boolean: 'Boolean',
+  text: '文本',
+  number: '数字',
+  date: '日期',
+  boolean: '布尔',
 }
 
 /**
@@ -54,7 +54,7 @@ function formatValueForDisplay(value: string, fieldType: string): string {
   if (!value) return ''
   switch (fieldType) {
     case 'boolean':
-      return value === 'true' ? 'True' : 'False'
+      return value === 'true' ? '是' : '否'
     case 'date':
       try {
         const date = new Date(value)
@@ -382,15 +382,15 @@ export function DocumentTagsModal({
   }
 
   return (
-    <ChipModal open={open} onOpenChange={handleClose} srTitle='Document Tags' size='sm'>
+    <ChipModal open={open} onOpenChange={handleClose} srTitle='文档标签' size='sm'>
       <ChipModalHeader onClose={() => handleClose(false)}>
         <div className='flex items-center justify-between'>
-          <span>Document Tags</span>
+          <span>文档标签</span>
         </div>
       </ChipModalHeader>
 
       <ChipModalBody>
-        <ChipModalField type='custom' title='Tags'>
+        <ChipModalField type='custom' title='标签'>
           <div className='space-y-2'>
             {documentTags.map((tag, index) => (
               <div key={tag.displayName} className='space-y-2'>
@@ -431,7 +431,7 @@ export function DocumentTagsModal({
                 {editingTagIndex === index && (
                   <div className='space-y-2 rounded-md border p-3'>
                     <div className='flex flex-col gap-2'>
-                      <Label htmlFor={`tagName-${index}`}>Tag Name</Label>
+                      <Label htmlFor={`tagName-${index}`}>标签名称</Label>
                       {availableDefinitions.length > 0 ? (
                         <ChipCombobox
                           id={`tagName-${index}`}
@@ -454,7 +454,7 @@ export function DocumentTagsModal({
                               ),
                             })
                           }}
-                          placeholder='Enter or select tag name'
+                          placeholder='输入或选择标签名称'
                           editable={true}
                         />
                       ) : (
@@ -464,7 +464,7 @@ export function DocumentTagsModal({
                           onChange={(e) =>
                             setEditTagForm({ ...editTagForm, displayName: e.target.value })
                           }
-                          placeholder='Enter tag name'
+                          placeholder='输入标签名称'
                           error={tagNameConflict}
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && canSaveTag) {
@@ -480,24 +480,24 @@ export function DocumentTagsModal({
                       )}
                       {tagNameConflict && (
                         <span className='text-[var(--text-error)] text-caption'>
-                          A tag with this name already exists
+                          已存在同名标签
                         </span>
                       )}
                     </div>
 
                     <div className='flex flex-col gap-2'>
-                      <Label htmlFor={`tagValue-${index}`}>Value</Label>
+                      <Label htmlFor={`tagValue-${index}`}>值</Label>
                       {editTagForm.fieldType === 'boolean' ? (
                         <ChipCombobox
                           id={`tagValue-${index}`}
                           options={[
-                            { label: 'True', value: 'true' },
-                            { label: 'False', value: 'false' },
+                            { label: '是', value: 'true' },
+                            { label: '否', value: 'false' },
                           ]}
                           value={editTagForm.value}
                           selectedValue={editTagForm.value}
                           onChange={(value) => setEditTagForm({ ...editTagForm, value })}
-                          placeholder='Select value'
+                          placeholder='选择值'
                         />
                       ) : editTagForm.fieldType === 'number' ? (
                         <ChipInput
@@ -510,7 +510,7 @@ export function DocumentTagsModal({
                               setEditTagForm({ ...editTagForm, value: val })
                             }
                           }}
-                          placeholder='Enter number'
+                          placeholder='输入数字'
                           inputMode='decimal'
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && canSaveTag) {
@@ -527,7 +527,7 @@ export function DocumentTagsModal({
                         <ChipDatePicker
                           value={editTagForm.value || undefined}
                           onChange={(value) => setEditTagForm({ ...editTagForm, value })}
-                          placeholder='Select date'
+                          placeholder='选择日期'
                           fullWidth
                         />
                       ) : (
@@ -537,7 +537,7 @@ export function DocumentTagsModal({
                           onChange={(e) =>
                             setEditTagForm({ ...editTagForm, value: e.target.value })
                           }
-                          placeholder='Enter tag value'
+                          placeholder='输入标签值'
                           onKeyDown={(e) => {
                             if (e.key === 'Enter' && canSaveTag) {
                               e.preventDefault()
@@ -577,14 +577,14 @@ export function DocumentTagsModal({
                 disabled={!canAddNewTag}
                 className='w-full'
               >
-                Add Tag
+                添加标签
               </Button>
             )}
 
             {(isCreatingTag || documentTags.length === 0) && editingTagIndex === null && (
               <div className='space-y-2 rounded-md border p-3'>
                 <div className='flex flex-col gap-2'>
-                  <Label htmlFor='newTagName'>Tag Name</Label>
+                  <Label htmlFor='newTagName'>标签名称</Label>
                   {tagNameOptions.length > 0 ? (
                     <ChipCombobox
                       id='newTagName'
@@ -607,7 +607,7 @@ export function DocumentTagsModal({
                           ),
                         })
                       }}
-                      placeholder='Enter or select tag name'
+                      placeholder='输入或选择标签名称'
                       editable={true}
                     />
                   ) : (
@@ -617,7 +617,7 @@ export function DocumentTagsModal({
                       onChange={(e) =>
                         setEditTagForm({ ...editTagForm, displayName: e.target.value })
                       }
-                      placeholder='Enter tag name'
+                      placeholder='输入标签名称'
                       error={tagNameConflict}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && canSaveTag) {
@@ -639,18 +639,18 @@ export function DocumentTagsModal({
                 </div>
 
                 <div className='flex flex-col gap-2'>
-                  <Label htmlFor='newTagValue'>Value</Label>
+                  <Label htmlFor='newTagValue'>值</Label>
                   {editTagForm.fieldType === 'boolean' ? (
                     <ChipCombobox
                       id='newTagValue'
                       options={[
-                        { label: 'True', value: 'true' },
-                        { label: 'False', value: 'false' },
+                        { label: '是', value: 'true' },
+                        { label: '否', value: 'false' },
                       ]}
                       value={editTagForm.value}
                       selectedValue={editTagForm.value}
                       onChange={(value) => setEditTagForm({ ...editTagForm, value })}
-                      placeholder='Select value'
+                      placeholder='选择值'
                     />
                   ) : editTagForm.fieldType === 'number' ? (
                     <ChipInput
@@ -663,7 +663,7 @@ export function DocumentTagsModal({
                           setEditTagForm({ ...editTagForm, value: val })
                         }
                       }}
-                      placeholder='Enter number'
+                      placeholder='输入数字'
                       inputMode='decimal'
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && canSaveTag) {
@@ -680,7 +680,7 @@ export function DocumentTagsModal({
                     <ChipDatePicker
                       value={editTagForm.value || undefined}
                       onChange={(value) => setEditTagForm({ ...editTagForm, value })}
-                      placeholder='Select date'
+                      placeholder='选择日期'
                       fullWidth
                     />
                   ) : (
@@ -733,7 +733,7 @@ export function DocumentTagsModal({
                         ))
                     }
                   >
-                    {isSavingTag ? 'Creating...' : 'Create Tag'}
+                    {isSavingTag ? '创建中…' : '创建标签'}
                   </Button>
                 </div>
               </div>
@@ -744,7 +744,7 @@ export function DocumentTagsModal({
 
       <ChipModalFooter
         onCancel={() => handleClose(false)}
-        primaryAction={{ label: 'Close', onClick: () => handleClose(false) }}
+        primaryAction={{ label: '关闭', onClick: () => handleClose(false) }}
       />
     </ChipModal>
   )

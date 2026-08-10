@@ -5,6 +5,7 @@ import { Plus } from '@sim/emcn'
 import { createLogger } from '@sim/logger'
 import { useSession } from '@/lib/auth/auth-client'
 import { getSubscriptionAccessState } from '@/lib/billing/client/utils'
+import { getEnv, isTruthy } from '@/lib/core/config/env'
 import { getBaseUrl } from '@/lib/core/utils/urls'
 import { generateSlug, isAdminOrOwner, type Member } from '@/lib/workspaces/organization'
 import { SettingsPanel } from '@/app/workspace/[workspaceId]/settings/components/settings-panel'
@@ -26,7 +27,6 @@ import {
   useTransferOwnership,
 } from '@/hooks/queries/organization'
 import { useOpenBillingPortal, useSubscriptionData } from '@/hooks/queries/subscription'
-import { getEnv, isTruthy } from '@/lib/core/config/env'
 import { usePermissionConfig } from '@/hooks/use-permission-config'
 
 const logger = createLogger('TeamManagement')
@@ -127,7 +127,7 @@ export function TeamManagement() {
 
   useEffect(() => {
     if ((hasTeamPlan || hasEnterprisePlan) && session?.user?.name && !orgName) {
-      const defaultName = `${session.user.name}'s Team`
+      const defaultName = `${session.user.name} 的团队`
       setOrgName(defaultName)
       setOrgSlug(generateSlug(defaultName))
     }
@@ -167,8 +167,8 @@ export function TeamManagement() {
 
       const isLeavingSelf = member.user?.email === session.user.email
       const displayName = isLeavingSelf
-        ? 'yourself'
-        : member.user?.name || member.user?.email || 'this member'
+        ? '你自己'
+        : member.user?.name || member.user?.email || '该成员'
 
       setRemoveMemberDialog({
         open: true,
@@ -274,9 +274,7 @@ export function TeamManagement() {
           portalWindow?.close()
           logger.error('Failed to open billing portal from transfer dialog', { error })
           setTransferPortalError(
-            error instanceof Error
-              ? error.message
-              : 'Failed to open Stripe billing portal. Please try again.'
+            error instanceof Error ? error.message : '无法打开 Stripe 计费门户,请重试。'
           )
         },
       }
@@ -319,12 +317,12 @@ export function TeamManagement() {
       <SettingsPanel
         actions={[
           {
-            text: 'Invite',
+            text: '邀请',
             icon: Plus,
             variant: 'primary',
             onSelect: () => setInviteModalOpen(true),
             disabled: isInvitationsDisabled,
-            tooltip: isInvitationsDisabled ? 'Invitations are disabled' : undefined,
+            tooltip: isInvitationsDisabled ? '邀请功能已禁用' : undefined,
           },
         ]}
       >

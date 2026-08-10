@@ -155,7 +155,7 @@ const Combobox = memo(
         multiSelectValues,
         onChange,
         onMultiSelectChange,
-        placeholder = 'Select...',
+        placeholder = '选择…',
         disabled,
         editable = false,
         overlayContent,
@@ -169,11 +169,11 @@ const Combobox = memo(
         onOpenChange,
         onArrowLeft,
         searchable = false,
-        searchPlaceholder = 'Search...',
+        searchPlaceholder = '搜索…',
         align = 'start',
         dropdownWidth = 'trigger',
         showAllOption = false,
-        allOptionLabel = 'All',
+        allOptionLabel = '全部',
         groups,
         maxHeight = 192,
         emptyMessage,
@@ -573,7 +573,7 @@ const Combobox = memo(
                     )}
                     <button
                       type='button'
-                      aria-label={open ? 'Close options' : 'Open options'}
+                      aria-label={open ? '关闭选项' : '打开选项'}
                       className='-translate-y-1/2 absolute top-1/2 right-[4px] z-10 flex size-6 cursor-pointer items-center justify-center border-0 bg-transparent p-0'
                       onMouseDown={handleChevronClick}
                     >
@@ -708,7 +708,7 @@ const Combobox = memo(
                     <div className='flex items-center justify-center py-3.5'>
                       <Loader className='size-[16px] text-[var(--text-muted)]' animate />
                       <span className='ml-2 text-[var(--text-muted)] text-caption'>
-                        Loading options...
+                        加载选项…
                       </span>
                     </div>
                   ) : error ? (
@@ -719,8 +719,8 @@ const Combobox = memo(
                     <div className='py-3.5 text-center text-[var(--text-muted)] text-caption'>
                       {emptyMessage ||
                         (searchQuery || (editable && value)
-                          ? 'No matching options found'
-                          : 'No options available')}
+                          ? '未找到匹配选项'
+                          : '暂无可用选项')}
                     </div>
                   ) : filteredGroups ? (
                     // Render grouped options with section headers

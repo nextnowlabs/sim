@@ -74,6 +74,18 @@ const ALL_CATEGORY_SECTIONS: readonly { label: string; integrations: Integration
   })).sort((a, b) => a.label.localeCompare(b.label))
 })()
 
+/**
+ * zh-CN display label for a category. The raw `All`/`Featured`/`Connected`
+ * values stay in the URL and drive the selection logic; only the rendered
+ * text is localized.
+ */
+function categoryDisplayLabel(category: string): string {
+  if (category === ALL_CATEGORY) return '全部'
+  if (category === FEATURED_LABEL) return '精选'
+  if (category === CONNECTED_LABEL) return '已连接'
+  return formatIntegrationType(category)
+}
+
 interface IntegrationItemProps {
   blockType: string
   slug: string
@@ -298,12 +310,12 @@ export function Integrations() {
         className='min-h-0 flex-1 overflow-y-auto px-6 [scrollbar-gutter:stable_both-edges]'
       >
         <div className='mx-auto flex max-w-[48rem] flex-col gap-7 pb-3'>
-          <ShowcaseWithExplore prompt='Explain the integrations in Sim and what I should connect.' />
+          <ShowcaseWithExplore prompt='介绍 Sim 中的集成,以及我应该连接哪些。' />
           <div className='flex items-center gap-2'>
             <ChipInput
               icon={Search}
               className='min-w-0 flex-1'
-              placeholder='Search integrations...'
+              placeholder='搜索集成…'
               value={urlSearchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               disabled={credentialsLoading}
@@ -312,9 +324,7 @@ export function Integrations() {
               <DropdownMenuTrigger asChild>
                 <button type='button' className={chipVariants({ variant: 'filled', flush: true })}>
                   <span className='text-[var(--text-body)]'>
-                    {selectedCategory === ALL_CATEGORY
-                      ? selectedCategory
-                      : formatIntegrationType(selectedCategory)}
+                    {categoryDisplayLabel(selectedCategory)}
                   </span>
                   <ChevronDown className='h-[7px] w-[9px] text-[var(--text-icon)]' />
                 </button>
@@ -322,7 +332,7 @@ export function Integrations() {
               <DropdownMenuContent align='end' className='min-w-[160px]'>
                 {categoryOptions.map((category) => (
                   <DropdownMenuItem key={category} onSelect={() => setSelectedCategory(category)}>
-                    {category === ALL_CATEGORY ? category : formatIntegrationType(category)}
+                    {categoryDisplayLabel(category)}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -331,7 +341,7 @@ export function Integrations() {
 
           <div className='flex flex-col gap-7'>
             {visibleConnectedItems.length > 0 && (
-              <IntegrationSection label={CONNECTED_LABEL}>
+              <IntegrationSection label={categoryDisplayLabel(CONNECTED_LABEL)}>
                 {visibleConnectedItems.map((item) => (
                   <ConnectedItem
                     key={item.credential.id}
@@ -346,7 +356,10 @@ export function Integrations() {
             )}
 
             {filteredCategorySections.map((section) => (
-              <IntegrationSection key={section.label} label={formatIntegrationType(section.label)}>
+              <IntegrationSection
+                key={section.label}
+                label={categoryDisplayLabel(section.label)}
+              >
                 {section.integrations.map((integration) => {
                   const Icon = blockTypeToIconMap[integration.type]
                   if (!Icon) return null
@@ -368,8 +381,8 @@ export function Integrations() {
             {showNoResults && (
               <div className='py-4 text-center text-[var(--text-muted)] text-sm'>
                 {urlSearchTerm.trim()
-                  ? `No integrations found matching “${urlSearchTerm}”`
-                  : 'No integrations in this category'}
+                  ? `没有找到匹配 “${urlSearchTerm}” 的集成`
+                  : '此分类下暂无集成'}
               </div>
             )}
           </div>

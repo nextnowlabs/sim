@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { chipPrimaryFillTokens, cn } from '@sim/emcn'
 import { format } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import { zonedClockDate } from '@/lib/core/utils/timezone'
 import { CalendarEventChip } from '@/app/workspace/[workspaceId]/scheduled-tasks/components/schedule-calendar/components/calendar-event-chip'
 import {
@@ -181,7 +182,9 @@ export function TimeGrid({
               dayIndex === days.length - 1 && 'pr-6'
             )}
           >
-            <span className='text-[var(--text-muted)] text-caption'>{format(day.date, 'EEE')}</span>
+            <span className='text-[var(--text-muted)] text-caption'>
+              {format(day.date, 'EEE', { locale: zhCN })}
+            </span>
             <span
               className={cn(
                 'flex size-[26px] items-center justify-center rounded-lg text-caption',

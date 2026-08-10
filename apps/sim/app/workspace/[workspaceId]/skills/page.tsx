@@ -4,7 +4,7 @@ import { IntegrationTabsHeader } from '@/app/workspace/[workspaceId]/integration
 import { Skills } from '@/app/workspace/[workspaceId]/skills/skills'
 
 export const metadata: Metadata = {
-  title: 'Skills',
+  title: '技能',
 }
 
 /**

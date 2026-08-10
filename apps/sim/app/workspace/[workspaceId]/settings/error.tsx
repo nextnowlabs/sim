@@ -7,8 +7,8 @@ export default function SettingsError({ error, reset }: ErrorBoundaryProps) {
     <ErrorState
       error={error}
       reset={reset}
-      title='Failed to load settings'
-      description='Something went wrong while loading your settings. Please try again.'
+      title='无法加载设置'
+      description='加载设置时出错,请重试。'
       loggerName='SettingsError'
     />
   )

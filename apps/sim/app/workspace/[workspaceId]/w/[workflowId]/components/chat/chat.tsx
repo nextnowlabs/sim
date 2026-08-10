@@ -572,7 +572,7 @@ export function Chat() {
 
             if (event === 'final' && eventData) {
               if ('success' in eventData && !eventData.success) {
-                finalError = eventData.error || 'Workflow execution failed'
+                finalError = eventData.error || '工作流执行失败'
               }
               return true
             }
@@ -653,7 +653,7 @@ export function Chat() {
         const errorMessage =
           'error' in result && typeof result.error === 'string'
             ? result.error
-            : 'Workflow execution failed.'
+            : '工作流执行失败。'
         addMessage({
           content: `Error: ${errorMessage}`,
           workflowId: activeWorkflowId,
@@ -685,7 +685,7 @@ export function Chat() {
       const attachmentsWithData = await processFileAttachments(chatFiles)
 
       const messageContent =
-        sentMessage || (chatFiles.length > 0 ? `Uploaded ${chatFiles.length} file(s)` : '')
+        sentMessage || (chatFiles.length > 0 ? `已上传 ${chatFiles.length} 个文件` : '')
       addMessage({
         content: messageContent,
         workflowId: activeWorkflowId,
@@ -868,7 +868,7 @@ export function Chat() {
     <div
       ref={preventZoomRef}
       role='dialog'
-      aria-label='Chat'
+      aria-label='对话'
       className='fixed z-30 flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-1)] px-2.5 pt-0.5 pb-2'
       style={{
         left: `${actualPosition.x}px`,
@@ -888,7 +888,7 @@ export function Chat() {
         onMouseDown={handleMouseDown}
       >
         <span className='flex-shrink-0 pr-0.5 font-medium text-[var(--text-primary)] text-sm'>
-          Chat
+          对话
         </span>
 
         {/* Start inputs button and output selector - with max-width to prevent overflow */}
@@ -900,14 +900,14 @@ export function Chat() {
             <button
               type='button'
               className='flex flex-none cursor-pointer items-center whitespace-nowrap rounded-md border border-[var(--border-1)] bg-[var(--surface-5)] px-2.5 py-0.5 font-medium font-sans text-[var(--text-primary)] text-caption hover-hover:bg-[var(--surface-active)]'
-              title='Add chat inputs to Start block'
+              title='将对话输入添加到开始节点'
               onMouseDown={(e) => e.stopPropagation()}
               onClick={(e) => {
                 e.stopPropagation()
                 handleConfigureStartInputs()
               }}
             >
-              <span className='whitespace-nowrap'>Add inputs</span>
+              <span className='whitespace-nowrap'>添加输入</span>
             </button>
           )}
 
@@ -916,7 +916,7 @@ export function Chat() {
             selectedOutputs={selectedOutputs}
             onOutputSelect={handleOutputSelection}
             disabled={!activeWorkflowId}
-            placeholder='Outputs'
+            placeholder='输出'
             align='end'
             maxHeight={180}
           />
@@ -950,7 +950,7 @@ export function Chat() {
                   disabled={workflowMessages.length === 0}
                 >
                   <Download className='size-[13px]' />
-                  <span>Export</span>
+                  <span>导出</span>
                 </PopoverItem>
                 <PopoverItem
                   onClick={() => {
@@ -960,7 +960,7 @@ export function Chat() {
                   disabled={workflowMessages.length === 0}
                 >
                   <Trash className='size-[13px]' />
-                  <span>Clear</span>
+                  <span>清空</span>
                 </PopoverItem>
               </PopoverScrollArea>
             </PopoverContent>
@@ -1108,7 +1108,7 @@ export function Chat() {
                       <Paperclip className='!h-3.5 !w-3.5' />
                     </Badge>
                   </Tooltip.Trigger>
-                  <Tooltip.Content>Attach file</Tooltip.Content>
+                  <Tooltip.Content>添加附件</Tooltip.Content>
                 </Tooltip.Root>
 
                 {isStreaming ? (

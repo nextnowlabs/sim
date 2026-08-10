@@ -100,12 +100,12 @@ export function IntegrationBlockDetail({ integration, workspaceId }: Integration
     ? [
         {
           value: CONNECT_MODE.oauth,
-          label: 'Connect with OAuth',
+          label: '通过 OAuth 连接',
           icon: oauthService.serviceIcon,
         },
         {
           value: CONNECT_MODE.serviceAccount,
-          label: 'Add service account',
+          label: '添加服务账号',
           icon: oauthService.serviceIcon,
         },
       ]
@@ -125,7 +125,7 @@ export function IntegrationBlockDetail({ integration, workspaceId }: Integration
     <div className='flex h-full flex-col bg-[var(--bg)]'>
       <div className='flex flex-shrink-0 items-center bg-[var(--bg)] px-[16px] pt-[8.5px] pb-[8.5px]'>
         <ChipLink href={`/workspace/${workspaceId}/integrations`} leftIcon={ArrowLeft}>
-          Integrations
+          集成
         </ChipLink>
         <div className='ml-auto flex items-center'>
           {oauthService ? (
@@ -133,7 +133,7 @@ export function IntegrationBlockDetail({ integration, workspaceId }: Integration
               <ChipDropdown
                 variant='primary'
                 leftIcon={Plus}
-                placeholder='Add to Sim'
+                placeholder='添加到 Sim'
                 showSelectedCheck={false}
                 options={connectOptions}
                 onChange={handleSelectConnectOption}
@@ -141,12 +141,12 @@ export function IntegrationBlockDetail({ integration, workspaceId }: Integration
               />
             ) : (
               <Chip variant='primary' leftIcon={Plus} onClick={() => setOAuthOpen(true)}>
-                Add to Sim
+                添加到 Sim
               </Chip>
             )
           ) : (
             <Chip variant='primary' leftIcon={Plus} onClick={handleAddInChat}>
-              Add to Sim
+              添加到 Sim
             </Chip>
           )}
         </div>
@@ -200,7 +200,7 @@ export function IntegrationBlockDetail({ integration, workspaceId }: Integration
           </div>
 
           {connectedCredentials.length > 0 && (
-            <IntegrationSection label='Connected'>
+            <IntegrationSection label='已连接'>
               {connectedCredentials.map((credential) => (
                 <Link
                   key={credential.id}
@@ -259,7 +259,7 @@ function TemplatesSection({ integration, templates, workspaceId }: TemplatesSect
 
   return (
     <section className='flex flex-col'>
-      <span className='pl-0.5 text-[var(--text-muted)] text-small'>Templates</span>
+      <span className='pl-0.5 text-[var(--text-muted)] text-small'>模板</span>
       <div className='mt-[9px] mb-3 h-px bg-[var(--border)]' />
       <div className='-mx-2 flex flex-col gap-y-0.5'>
         {templates.map((template) => {

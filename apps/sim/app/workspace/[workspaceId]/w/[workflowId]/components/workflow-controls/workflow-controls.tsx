@@ -118,7 +118,7 @@ export const WorkflowControls = memo(function WorkflowControls() {
                 </Button>
               </div>
             </PopoverTrigger>
-            <Tooltip.Content side='top'>{mode === 'hand' ? 'Mover' : 'Pointer'}</Tooltip.Content>
+            <Tooltip.Content side='top'>{mode === 'hand' ? '移动画布' : '选择指针'}</Tooltip.Content>
           </Tooltip.Root>
           <PopoverContent side='top' sideOffset={8} maxWidth={100} minWidth={100}>
             <PopoverItem
@@ -128,7 +128,7 @@ export const WorkflowControls = memo(function WorkflowControls() {
               }}
             >
               <Hand className='size-3' />
-              <span>Mover</span>
+              <span>移动画布</span>
             </PopoverItem>
             <PopoverItem
               onClick={() => {
@@ -137,7 +137,7 @@ export const WorkflowControls = memo(function WorkflowControls() {
               }}
             >
               <Cursor className='size-3' />
-              <span>Pointer</span>
+              <span>选择指针</span>
             </PopoverItem>
           </PopoverContent>
         </Popover>
@@ -156,7 +156,7 @@ export const WorkflowControls = memo(function WorkflowControls() {
             </Button>
           </Tooltip.Trigger>
           <Tooltip.Content side='top'>
-            <Tooltip.Shortcut keys='⌘Z'>Undo</Tooltip.Shortcut>
+            <Tooltip.Shortcut keys='⌘Z'>撤销</Tooltip.Shortcut>
           </Tooltip.Content>
         </Tooltip.Root>
 
@@ -172,7 +172,7 @@ export const WorkflowControls = memo(function WorkflowControls() {
             </Button>
           </Tooltip.Trigger>
           <Tooltip.Content side='top'>
-            <Tooltip.Shortcut keys='⌘⇧Z'>Redo</Tooltip.Shortcut>
+            <Tooltip.Shortcut keys='⌘⇧Z'>重做</Tooltip.Shortcut>
           </Tooltip.Content>
         </Tooltip.Root>
 
@@ -189,7 +189,7 @@ export const WorkflowControls = memo(function WorkflowControls() {
             </Button>
           </Tooltip.Trigger>
           <Tooltip.Content side='top'>
-            <Tooltip.Shortcut keys='⌘⇧F'>Fit to View</Tooltip.Shortcut>
+            <Tooltip.Shortcut keys='⌘⇧F'>适应视图</Tooltip.Shortcut>
           </Tooltip.Content>
         </Tooltip.Root>
       </div>
@@ -211,7 +211,7 @@ export const WorkflowControls = memo(function WorkflowControls() {
           }}
         />
         <PopoverContent ref={menuRef} align='start' side='bottom' sideOffset={4}>
-          <PopoverItem onClick={handleHide}>Hide canvas controls</PopoverItem>
+          <PopoverItem onClick={handleHide}>隐藏画布控件</PopoverItem>
         </PopoverContent>
       </Popover>
     </>

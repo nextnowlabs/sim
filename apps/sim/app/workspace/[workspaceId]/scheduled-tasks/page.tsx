@@ -4,7 +4,7 @@ import ScheduledTasksLoading from '@/app/workspace/[workspaceId]/scheduled-tasks
 import { ScheduledTasks } from './scheduled-tasks'
 
 export const metadata: Metadata = {
-  title: 'Scheduled Tasks',
+  title: '定时任务',
 }
 
 /**

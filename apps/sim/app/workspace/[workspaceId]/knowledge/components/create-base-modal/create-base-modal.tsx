@@ -40,12 +40,12 @@ interface CreateBaseModalProps {
 }
 
 const STRATEGY_OPTIONS = [
-  { value: 'auto', label: 'Auto (detect from content)' },
-  { value: 'text', label: 'Text (word boundary splitting)' },
-  { value: 'recursive', label: 'Recursive (configurable separators)' },
-  { value: 'sentence', label: 'Sentence' },
-  { value: 'token', label: 'Token (fixed-size)' },
-  { value: 'regex', label: 'Regex (custom pattern)' },
+  { value: 'auto', label: '自动(根据内容检测)' },
+  { value: 'text', label: '文本(按单词边界拆分)' },
+  { value: 'recursive', label: '递归(可配置分隔符)' },
+  { value: 'sentence', label: '句子' },
+  { value: 'token', label: 'Token(固定大小)' },
+  { value: 'regex', label: '正则(自定义模式)' },
 ] as const
 
 const STRATEGY_COMBOBOX_OPTIONS: ComboboxOption[] = STRATEGY_OPTIONS.map((o) => ({
@@ -57,24 +57,24 @@ const FormSchema = z
   .object({
     name: z
       .string()
-      .min(1, 'Name is required')
-      .max(100, 'Name must be less than 100 characters')
-      .refine((value) => value.trim().length > 0, 'Name cannot be empty'),
+      .min(1, '名称不能为空')
+      .max(100, '名称不能超过 100 个字符')
+      .refine((value) => value.trim().length > 0, '名称不能为空'),
     description: z
       .string()
       .max(
         KNOWLEDGE_BASE_DESCRIPTION_MAX_LENGTH,
-        `Description must be ${KNOWLEDGE_BASE_DESCRIPTION_MAX_LENGTH} characters or less`
+        `描述不能超过 ${KNOWLEDGE_BASE_DESCRIPTION_MAX_LENGTH} 个字符`
       )
       .optional(),
     minChunkSize: z
       .number()
-      .min(1, 'Min chunk size must be at least 1 character')
-      .max(2000, 'Min chunk size must be less than 2000 characters'),
+      .min(1, '最小分块大小至少为 1 个字符')
+      .max(2000, '最小分块大小不能超过 2000 个字符'),
     maxChunkSize: z
       .number()
-      .min(100, 'Max chunk size must be at least 100 tokens')
-      .max(4000, 'Max chunk size must be less than 4000 tokens'),
+      .min(100, '最大分块大小至少为 100 tokens')
+      .max(4000, '最大分块大小不能超过 4000 tokens'),
     overlapSize: z
       .number()
       .min(0, 'Overlap must be non-negative')
@@ -99,7 +99,7 @@ const FormSchema = z
       return data.overlapSize < data.maxChunkSize
     },
     {
-      message: 'Overlap must be less than max chunk size',
+      message: '重叠大小必须小于最大分块大小',
       path: ['overlapSize'],
     }
   )
@@ -111,7 +111,7 @@ const FormSchema = z
       return true
     },
     {
-      message: 'Regex pattern is required when using the regex strategy',
+      message: '使用正则策略时必须提供正则模式',
       path: ['regexPattern'],
     }
   )
@@ -236,7 +236,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
       (fieldError) => typeof fieldError?.message === 'string'
     )?.message
     toast.error(
-      typeof firstMessage === 'string' ? firstMessage : 'Please fix the highlighted fields'
+      typeof firstMessage === 'string' ? firstMessage : '请修复高亮的字段'
     )
   }
 
@@ -300,14 +300,14 @@ export const CreateBaseModal = memo(function CreateBaseModal({
       logger.error('Error creating knowledge base:', error)
       setSubmitStatus({
         type: 'error',
-        message: getErrorMessage(error, 'An unknown error occurred'),
+        message: getErrorMessage(error, '发生未知错误'),
       })
     }
   }
 
   return (
-    <ChipModal open={open} onOpenChange={handleClose} srTitle='Create Knowledge Base' size='lg'>
-      <ChipModalHeader onClose={() => handleClose(false)}>Create Knowledge Base</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={handleClose} srTitle='创建知识库' size='lg'>
+      <ChipModalHeader onClose={() => handleClose(false)}>创建知识库</ChipModalHeader>
 
       <form onSubmit={handleSubmit(onSubmit, onInvalid)} className='flex min-h-0 flex-1 flex-col'>
         <button type='submit' hidden disabled={isSubmitting || !nameValue?.trim()} />
@@ -321,9 +321,9 @@ export const CreateBaseModal = memo(function CreateBaseModal({
             readOnly
           />
 
-          <ChipModalField type='custom' title='Name'>
+          <ChipModalField type='custom' title='名称'>
             <ChipInput
-              placeholder='Enter knowledge base name'
+              placeholder='输入知识库名称'
               {...register('name')}
               error={Boolean(errors.name)}
               autoComplete='off'
@@ -334,9 +334,9 @@ export const CreateBaseModal = memo(function CreateBaseModal({
             />
           </ChipModalField>
 
-          <ChipModalField type='custom' title='Description' error={errors.description?.message}>
+          <ChipModalField type='custom' title='描述' error={errors.description?.message}>
             <ChipTextarea
-              placeholder='Describe this knowledge base (optional)'
+              placeholder='描述此知识库(可选)'
               rows={4}
               {...register('description')}
               error={Boolean(errors.description)}
@@ -344,7 +344,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
           </ChipModalField>
 
           <div className='flex gap-3'>
-            <ChipModalField type='custom' title='Min Chunk Size (characters)' className='flex-1'>
+            <ChipModalField type='custom' title='最小分块大小(字符)' className='flex-1'>
               <ChipInput
                 type='number'
                 min={1}
@@ -358,7 +358,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
               />
             </ChipModalField>
 
-            <ChipModalField type='custom' title='Max Chunk Size (tokens)' className='flex-1'>
+            <ChipModalField type='custom' title='最大分块大小(tokens)' className='flex-1'>
               <ChipInput
                 type='number'
                 min={100}
@@ -375,7 +375,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
 
           <ChipModalField
             type='custom'
-            title='Overlap (tokens)'
+            title='重叠(tokens)'
             hint='1 token ≈ 4 characters. Max chunk size and overlap are in tokens.'
           >
             <ChipInput
@@ -393,7 +393,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
 
           <ChipModalField
             type='custom'
-            title='Chunking Strategy'
+            title='分块策略'
             hint='Auto detects the best strategy based on file content type.'
           >
             <ChipCombobox
@@ -409,7 +409,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
             <>
               <ChipModalField
                 type='custom'
-                title='Regex Pattern'
+                title='正则模式'
                 error={errors.regexPattern?.message}
                 hint='Text will be split at each match of this regex pattern.'
               >
@@ -424,7 +424,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
 
               <ChipModalField
                 type='custom'
-                title='Chunk Boundaries'
+                title='分块边界'
                 hint='Preserve boundaries exactly. Recommended when each match is a discrete record (e.g. one QA pair per chunk).'
               >
                 <label
@@ -449,7 +449,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
           {strategyValue === 'recursive' && (
             <ChipModalField
               type='custom'
-              title='Custom Separators (optional)'
+              title='自定义分隔符(可选)'
               hint='Comma-separated list of delimiters in priority order. Leave empty for default separators.'
             >
               <ChipInput
@@ -463,7 +463,7 @@ export const CreateBaseModal = memo(function CreateBaseModal({
 
           <ChipModalField
             type='file'
-            title='Upload Documents'
+            title='上传文档'
             accept={ACCEPT_ATTRIBUTE}
             multiple
             onChange={processFiles}
@@ -531,12 +531,12 @@ export const CreateBaseModal = memo(function CreateBaseModal({
             label: isSubmitting
               ? isUploading
                 ? uploadProgress.stage === 'uploading'
-                  ? `Uploading ${uploadProgress.filesCompleted}/${uploadProgress.totalFiles}...`
+                  ? `上传中 ${uploadProgress.filesCompleted}/${uploadProgress.totalFiles}…`
                   : uploadProgress.stage === 'processing'
-                    ? 'Processing...'
-                    : 'Creating...'
-                : 'Creating...'
-              : 'Create',
+                    ? '处理中…'
+                    : '创建中…'
+                : '创建中…'
+              : '创建',
             onClick: handleSubmit(onSubmit, onInvalid),
             disabled: isSubmitting || !nameValue?.trim(),
           }}

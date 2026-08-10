@@ -1083,7 +1083,7 @@ const PopoverBackButton = React.forwardRef<HTMLDivElement, PopoverBackButtonProp
           {...props}
         >
           <ChevronLeft className={STYLES.size[size].icon} />
-          <span>Back</span>
+          <span>返回</span>
         </div>
         {folderTitle && onFolderSelect && (
           <div
@@ -1143,7 +1143,7 @@ interface PopoverSearchProps extends React.HTMLAttributes<HTMLDivElement> {
  * Search input for filtering popover items.
  */
 const PopoverSearch = React.forwardRef<HTMLDivElement, PopoverSearchProps>(
-  ({ className, placeholder = 'Search...', onValueChange, ...props }, ref) => {
+  ({ className, placeholder = '搜索…', onValueChange, ...props }, ref) => {
     const { searchQuery, setSearchQuery, size, colorScheme } = usePopoverContext()
     const inputRef = React.useRef<HTMLInputElement>(null)
 

@@ -10,6 +10,6 @@ export interface CredentialRoleOption {
  * surface (Integrations, Secrets) so role choices never drift between them.
  */
 export const ROLE_OPTIONS: readonly CredentialRoleOption[] = [
-  { value: 'member', label: 'Member' },
-  { value: 'admin', label: 'Admin' },
+  { value: 'member', label: '成员' },
+  { value: 'admin', label: '管理员' },
 ] as const

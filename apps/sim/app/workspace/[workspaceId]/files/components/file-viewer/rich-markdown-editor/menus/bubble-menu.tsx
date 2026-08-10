@@ -208,7 +208,7 @@ export function EditorBubbleMenu({ editor, scrollContainerRef }: EditorBubbleMen
       options={FLOATING_OPTIONS}
       appendTo={APPEND_TO_BODY}
       role='toolbar'
-      aria-label='Text formatting'
+      aria-label='文本格式'
       updateDelay={0}
       shouldShow={({ editor: e, from, to }) => {
         // Read-only never shows the menu — even mid-link-edit (e.g. a stream starting) — so a link
@@ -232,46 +232,46 @@ export function EditorBubbleMenu({ editor, scrollContainerRef }: EditorBubbleMen
           {active.link && (
             <ToolbarButton
               icon={Unlink}
-              label='Remove link'
+              label='移除链接'
               isActive={false}
               onClick={removeLink}
             />
           )}
-          <ToolbarButton icon={Check} label='Apply link' isActive={false} onClick={commitLink} />
+          <ToolbarButton icon={Check} label='应用链接' isActive={false} onClick={commitLink} />
         </>
       ) : (
         <>
           <ToolbarButton
             icon={Bold}
-            label='Bold'
+            label='加粗'
             shortcut='⌘B'
             isActive={active.bold}
             onClick={() => editor.chain().focus().toggleBold().run()}
           />
           <ToolbarButton
             icon={Italic}
-            label='Italic'
+            label='斜体'
             shortcut='⌘I'
             isActive={active.italic}
             onClick={() => editor.chain().focus().toggleItalic().run()}
           />
           <ToolbarButton
             icon={Strikethrough}
-            label='Strikethrough'
+            label='删除线'
             shortcut='⌘⇧S'
             isActive={active.strike}
             onClick={() => editor.chain().focus().toggleStrike().run()}
           />
           <ToolbarButton
             icon={Code}
-            label='Code'
+            label='代码'
             shortcut='⌘E'
             isActive={active.code}
             onClick={() => editor.chain().focus().toggleCode().run()}
           />
           <ToolbarButton
             icon={LinkIcon}
-            label='Link'
+            label='链接'
             shortcut='⌘K'
             isActive={active.link}
             onClick={openLinkEditor}
@@ -279,14 +279,14 @@ export function EditorBubbleMenu({ editor, scrollContainerRef }: EditorBubbleMen
           <ToolbarDivider />
           <ToolbarButton
             icon={Heading1}
-            label='Heading 1'
+            label='标题 1'
             shortcut='⌘⌥1'
             isActive={active.heading1}
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
           />
           <ToolbarButton
             icon={Heading2}
-            label='Heading 2'
+            label='标题 2'
             shortcut='⌘⌥2'
             isActive={active.heading2}
             onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
@@ -294,28 +294,28 @@ export function EditorBubbleMenu({ editor, scrollContainerRef }: EditorBubbleMen
           <ToolbarDivider />
           <ToolbarButton
             icon={List}
-            label='Bulleted list'
+            label='无序列表'
             shortcut='⌘⇧8'
             isActive={active.bulletList}
             onClick={() => editor.chain().focus().toggleBulletList().run()}
           />
           <ToolbarButton
             icon={ListOrdered}
-            label='Numbered list'
+            label='有序列表'
             shortcut='⌘⇧7'
             isActive={active.orderedList}
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
           />
           <ToolbarButton
             icon={ListChecks}
-            label='Checklist'
+            label='任务清单'
             shortcut='⌘⇧9'
             isActive={active.taskList}
             onClick={() => editor.chain().focus().toggleTaskList().run()}
           />
           <ToolbarButton
             icon={TextQuote}
-            label='Quote'
+            label='引用'
             shortcut='⌘⇧B'
             isActive={active.blockquote}
             onClick={() => editor.chain().focus().toggleBlockquote().run()}

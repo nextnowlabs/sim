@@ -24,14 +24,14 @@ export const DeleteConfirmModal = memo(function DeleteConfirmModal({
 }: DeleteConfirmModalProps) {
   const totalCount = fileCount + folderCount
   const hasFolders = folderCount > 0
-  const title = totalCount > 1 ? 'Delete Items' : hasFolders ? 'Delete Folder' : 'Delete File'
+  const title = totalCount > 1 ? '删除项目' : hasFolders ? '删除文件夹' : '删除文件'
   const consequence = hasFolders
     ? totalCount > 1
-      ? 'This will also delete files and folders inside any selected folders.'
-      : 'This will also delete files and folders inside it.'
+      ? '这也将删除所选文件夹内的文件和文件夹。'
+      : '这也将删除所选文件夹内的内容。'
     : totalCount > 1
-      ? 'You can restore them from Recently Deleted in Settings.'
-      : 'You can restore it from Recently Deleted in Settings.'
+      ? '你可以在设置中的"最近删除"里恢复它们。'
+      : '你可以在设置中的"最近删除"里恢复它。'
 
   return (
     <ChipConfirmModal
@@ -40,17 +40,17 @@ export const DeleteConfirmModal = memo(function DeleteConfirmModal({
       srTitle={title}
       title={title}
       text={[
-        'Are you sure you want to delete ',
+        '确定要删除 ',
         fileName
           ? { text: fileName, bold: true }
-          : `${totalCount} item${totalCount === 1 ? '' : 's'}`,
+          : `${totalCount} 个项目`,
         `? ${consequence}`,
       ]}
       confirm={{
-        label: 'Delete',
+        label: '删除',
         onClick: onDelete,
         pending: isPending,
-        pendingLabel: 'Deleting...',
+        pendingLabel: '删除中…',
       }}
     />
   )

@@ -78,7 +78,7 @@ const ChipDatePicker = forwardRef<HTMLButtonElement, ChipDatePickerProps>(
     const {
       variant = 'filled',
       label,
-      placeholder = props.mode === 'range' ? 'Select date range' : 'Select date',
+      placeholder = props.mode === 'range' ? '选择日期范围' : '选择日期',
       align = 'start',
       disabled,
       fullWidth,

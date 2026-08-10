@@ -252,7 +252,7 @@ const ReadOnlyTextPreview = memo(function ReadOnlyTextPreview({
   } = useWorkspaceFileContent(workspaceId, file.id, file.key)
 
   const resolvedError = resolvePreviewError((error as Error | null) ?? null, null)
-  if (resolvedError) return <PreviewError label='file' error={resolvedError} />
+  if (resolvedError) return <PreviewError label='文件' error={resolvedError} />
   if (isLoading || content == null) return <PreviewLoadingFrame className='h-full' tone='surface' />
 
   if (resolvePreviewType(file.type, file.name)) {
@@ -363,7 +363,7 @@ const MediaPreview = memo(function MediaPreview({
   }, [file.type, fileData, kind, replaceBlobUrl])
 
   const error = blobUrl !== null ? null : resolvePreviewError(fetchError, null)
-  if (error) return <PreviewError label={kind} error={error} />
+  if (error) return <PreviewError label={kind === 'audio' ? '音频' : '视频'} error={error} />
 
   if (isLoading && !blobUrl) {
     return <PreviewLoadingFrame className='h-full' tone='surface' />
@@ -404,10 +404,10 @@ const UnsupportedPreview = memo(function UnsupportedPreview({
   return (
     <div className='flex flex-1 flex-col items-center justify-center gap-[8px]'>
       <p className='font-medium text-[14px] text-[var(--text-primary)]'>
-        Preview not available{ext ? ` for .${ext} files` : ' for this file'}
+        无法预览{ext ? ` .${ext} 文件` : '此文件'}
       </p>
       <p className='text-[13px] text-[var(--text-muted)]'>
-        Use the download button to view this file
+        使用下载按钮查看此文件
       </p>
     </div>
   )

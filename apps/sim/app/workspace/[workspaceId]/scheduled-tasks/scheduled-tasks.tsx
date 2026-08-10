@@ -140,7 +140,7 @@ export function ScheduledTasks() {
   const headerActions: ResourceAction[] = useMemo(
     () => [
       {
-        text: 'New scheduled task',
+        text: '新建定时任务',
         icon: Plus,
         onSelect: handleOpenCreate,
         variant: 'primary',
@@ -152,7 +152,7 @@ export function ScheduledTasks() {
   return (
     <>
       <Resource onContextMenu={handleContentContextMenu}>
-        <Resource.Header icon={Calendar} title='Scheduled Tasks' actions={headerActions} />
+        <Resource.Header icon={Calendar} title='定时任务' actions={headerActions} />
         <ScheduleCalendar
           scope={calendar.scope}
           anchor={calendar.anchor}

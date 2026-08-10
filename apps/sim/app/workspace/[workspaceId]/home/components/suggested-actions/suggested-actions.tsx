@@ -59,11 +59,11 @@ interface Candidate {
 
 /** Generic table starters for workspaces without integration context. */
 const TABLE_STARTERS: readonly Candidate[] = [
-  { label: 'Create a CRM with sample data', prompt: 'Create a CRM with sample data.' },
-  { label: 'Build a project tracker', prompt: 'Build a project tracker table.' },
-  { label: 'Create a content calendar', prompt: 'Create a content calendar table.' },
-  { label: 'Build an expense tracker', prompt: 'Build an expense tracker table.' },
-  { label: 'Create a bug tracker', prompt: 'Create a bug tracker table.' },
+  { label: '用示例数据创建 CRM', prompt: 'Create a CRM with sample data.' },
+  { label: '搭建项目追踪表', prompt: 'Build a project tracker table.' },
+  { label: '创建内容日历', prompt: 'Create a content calendar table.' },
+  { label: '搭建费用记录表', prompt: 'Build an expense tracker table.' },
+  { label: '创建 Bug 追踪表', prompt: 'Create a bug tracker table.' },
 ].map(({ label, prompt }, i) => ({
   id: `table-starter-${i}`,
   blockType: `table-starter-${i}`,
@@ -180,7 +180,7 @@ function toIntegrationAction(service: ServiceInfo, slug: string): Action {
   return {
     kind: 'integration',
     id: `integrate-${service.providerId}`,
-    label: `Integrate with ${service.name}`,
+    label: `连接 ${service.name}`,
     icon: service.icon,
     slug,
   }
@@ -233,14 +233,14 @@ const INITIAL_ACTIONS: Action[] = [
   {
     kind: 'integration',
     id: 'integrate-slack',
-    label: 'Integrate with Slack',
+    label: '连接 Slack',
     icon: SlackIcon,
     slug: 'slack',
   },
   {
     kind: 'integration',
     id: 'integrate-gmail',
-    label: 'Integrate with Gmail',
+    label: '连接 Gmail',
     icon: GmailIcon,
     slug: 'gmail',
   },
@@ -360,7 +360,7 @@ export function SuggestedActions({ onSelectPrompt }: SuggestedActionsProps) {
           aria-expanded={expanded}
           className='flex items-center gap-2'
         >
-          <span className='text-[var(--text-muted)] text-small'>Suggested actions</span>
+          <span className='text-[var(--text-muted)] text-small'>推荐操作</span>
           <ChevronDown
             className={cn(
               'h-[7px] w-[9px] text-[var(--text-icon)] transition-transform duration-150',
@@ -371,7 +371,7 @@ export function SuggestedActions({ onSelectPrompt }: SuggestedActionsProps) {
         <button
           type='button'
           onClick={handleShuffle}
-          aria-label='Shuffle suggested actions'
+          aria-label='换一批推荐操作'
           aria-hidden={!expanded}
           tabIndex={expanded ? undefined : -1}
           className={cn(
@@ -380,7 +380,7 @@ export function SuggestedActions({ onSelectPrompt }: SuggestedActionsProps) {
             expanded ? 'opacity-100' : 'pointer-events-none opacity-0'
           )}
         >
-          <span className='-mt-px text-[var(--text-muted)] text-small'>Shuffle</span>
+          <span className='-mt-px text-[var(--text-muted)] text-small'>换一批</span>
           <Shuffle className='size-[16px] flex-shrink-0 text-[var(--text-icon)]' />
         </button>
       </div>

@@ -56,7 +56,7 @@ interface RichMarkdownFieldProps {
 function LoadedRichMarkdownField({
   value,
   onChange,
-  placeholder = "Write something, or press '/' for commands…",
+  placeholder = "输入内容,或按 '/' 查看命令…",
   disabled = false,
   isStreaming = false,
   autoFocus = false,

@@ -7,8 +7,8 @@ export default function ChatError({ error, reset }: ErrorBoundaryProps) {
     <ErrorState
       error={error}
       reset={reset}
-      title='Failed to load chat'
-      description='Something went wrong while loading this chat. Please try again.'
+      title='无法加载对话'
+      description='加载对话时出错,请重试。'
       loggerName='ChatError'
     />
   )

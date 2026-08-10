@@ -7,8 +7,8 @@ export default function KnowledgeBaseError({ error, reset }: ErrorBoundaryProps)
     <ErrorState
       error={error}
       reset={reset}
-      title='Failed to load knowledge base'
-      description='Something went wrong while loading this knowledge base. Please try again.'
+      title='无法加载知识库'
+      description='加载此知识库时出错,请重试。'
       loggerName='KnowledgeBaseError'
     />
   )

@@ -20,9 +20,9 @@ import { useInviteMember } from '@/hooks/queries/organization'
 const logger = createLogger('OrganizationInviteModal')
 
 const ROLE_OPTIONS = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'write', label: 'Write' },
-  { value: 'read', label: 'Read' },
+  { value: 'admin', label: '管理员' },
+  { value: 'write', label: '编辑' },
+  { value: 'read', label: '只读' },
 ] as const
 
 const EMPTY_EMAILS: string[] = []
@@ -87,16 +87,16 @@ export function OrganizationInviteModal({
     (email: string): string | null => {
       const formatResult = quickValidateEmail(email)
       if (!formatResult.isValid) {
-        return formatResult.reason ?? 'Invalid email'
+        return formatResult.reason ?? '邮箱格式无效'
       }
       if (session?.user?.email && session.user.email.toLowerCase() === email) {
-        return 'You cannot invite yourself'
+        return '不能邀请自己'
       }
       if (externalEmailSet.has(email)) {
-        return `${email} belongs to another organization and can't be invited. Invite them to individual workspaces from the Teammates tab.`
+        return `${email} 属于另一个组织,无法邀请。请在“团队成员”页面向其发送独立工作区邀请。`
       }
       if (pendingEmailSet.has(email)) {
-        return `${email} already has a pending invitation`
+        return `${email} 已有待接受的邀请`
       }
       return null
     },
@@ -136,10 +136,10 @@ export function OrganizationInviteModal({
           // Surface partial successes even when some addresses fail.
           const parts: string[] = []
           if (addedCount > 0) {
-            parts.push(`${addedCount} member${addedCount === 1 ? '' : 's'} added`)
+            parts.push(`${addedCount} 位成员已添加`)
           }
           if (sentCount > 0) {
-            parts.push(`${sentCount} invite${sentCount === 1 ? '' : 's'} sent`)
+            parts.push(`${sentCount} 封邀请已发送`)
           }
           if (parts.length > 0) {
             toast.success(parts.join(' · '))
@@ -151,7 +151,7 @@ export function OrganizationInviteModal({
             setErrorMessage(
               failed.length === 1
                 ? failed[0].error
-                : `${failed.length} invitations failed. ${failed[0].error}`
+                : `${failed.length} 封邀请发送失败。${failed[0].error}`
             )
             return
           }
@@ -162,7 +162,7 @@ export function OrganizationInviteModal({
         },
         onError: (error) => {
           logger.error('Failed to invite members', { error })
-          setErrorMessage(error.message || 'An unexpected error occurred. Please try again.')
+          setErrorMessage(error.message || '发生意外错误,请重试。')
         },
       }
     )
@@ -187,33 +187,29 @@ export function OrganizationInviteModal({
     isSubmitting || emails.length === 0 || selectedWorkspaceIds.length === 0 || !organizationId
 
   return (
-    <ChipModal
-      open={open}
-      onOpenChange={handleOpenChange}
-      srTitle='Invite teammates to organization'
-    >
-      <ChipModalHeader onClose={() => handleOpenChange(false)}>Invite teammates</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={handleOpenChange} srTitle='邀请团队成员加入组织'>
+      <ChipModalHeader onClose={() => handleOpenChange(false)}>邀请团队成员</ChipModalHeader>
       <ChipModalBody>
         <ChipModalField
           type='emails'
-          title='Emails'
+          title='邮箱'
           value={emails}
           onChange={handleEmailsChange}
           validate={validateEmail}
           error={errorMessage}
-          placeholder='Enter emails'
+          placeholder='输入邮箱'
           disabled={isSubmitting}
         />
-        <ChipModalField type='custom' title='Workspaces'>
+        <ChipModalField type='custom' title='工作区'>
           <ChipDropdown
             multiple
             value={selectedWorkspaceIds}
             onChange={setSelectedWorkspaceIds}
             options={workspaceOptions}
-            allLabel='Select workspaces'
+            allLabel='选择工作区'
             showAllOption={false}
             searchable
-            searchPlaceholder='Search workspaces...'
+            searchPlaceholder='搜索工作区...'
             fullWidth
             flush
             disabled={isSubmitting || workspaceOptions.length === 0}
@@ -221,10 +217,10 @@ export function OrganizationInviteModal({
         </ChipModalField>
         <ChipModalField
           type='dropdown'
-          title='Invite as'
+          title='邀请为'
           options={ROLE_OPTIONS}
           value={inviteRole}
-          placeholder='Select role'
+          placeholder='选择角色'
           align='start'
           onChange={(role) => setInviteRole(role as PermissionType)}
         />
@@ -232,7 +228,7 @@ export function OrganizationInviteModal({
       <ChipModalFooter
         onCancel={() => handleOpenChange(false)}
         primaryAction={{
-          label: isSubmitting ? 'Sending...' : 'Send invites',
+          label: isSubmitting ? '发送中...' : '发送邀请',
           onClick: handleSend,
           disabled: isSendDisabled,
         }}

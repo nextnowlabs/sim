@@ -47,27 +47,27 @@ interface KnowledgeBaseWithDocCount extends KnowledgeBaseData {
 }
 
 const COLUMNS: ResourceColumn[] = [
-  { id: 'name', header: 'Name' },
-  { id: 'documents', header: 'Documents', widthMultiplier: 0.6 },
+  { id: 'name', header: '名称' },
+  { id: 'documents', header: '文档', widthMultiplier: 0.6 },
   { id: 'tokens', header: 'Tokens', widthMultiplier: 0.6 },
-  { id: 'connectors', header: 'Connectors', widthMultiplier: 0.7 },
-  { id: 'created', header: 'Created' },
-  { id: 'owner', header: 'Owner' },
-  { id: 'updated', header: 'Last Updated' },
+  { id: 'connectors', header: '连接器', widthMultiplier: 0.7 },
+  { id: 'created', header: '创建时间' },
+  { id: 'owner', header: '所有者' },
+  { id: 'updated', header: '最后更新' },
 ]
 
 const KNOWLEDGE_BASE_ICON = <Database className='size-[14px]' />
 
 const CONNECTOR_FILTER_OPTIONS: ChipDropdownOption[] = [
-  { value: 'all', label: 'All' },
-  { value: 'connected', label: 'With connectors' },
-  { value: 'unconnected', label: 'Without connectors' },
+  { value: 'all', label: '全部' },
+  { value: 'connected', label: '有连接器' },
+  { value: 'unconnected', label: '无连接器' },
 ]
 
 const CONTENT_FILTER_OPTIONS: ChipDropdownOption[] = [
-  { value: 'all', label: 'All' },
-  { value: 'has-docs', label: 'Has documents' },
-  { value: 'empty', label: 'Empty' },
+  { value: 'all', label: '全部' },
+  { value: 'has-docs', label: '有文档' },
+  { value: 'empty', label: '空' },
 ]
 
 const FILTER_SECTION_LABEL_CLASS = 'text-[var(--text-muted)] text-small'
@@ -390,7 +390,7 @@ export function Knowledge() {
   const headerActions: ResourceAction[] = useMemo(
     () => [
       {
-        text: 'New base',
+        text: '新建知识库',
         icon: Plus,
         onSelect: handleOpenCreateModal,
         disabled: !canEdit,
@@ -413,13 +413,13 @@ export function Knowledge() {
   const sortConfig: SortConfig = useMemo(
     () => ({
       options: [
-        { id: 'name', label: 'Name' },
-        { id: 'documents', label: 'Documents' },
+        { id: 'name', label: '名称' },
+        { id: 'documents', label: '文档' },
         { id: 'tokens', label: 'Tokens' },
-        { id: 'connectors', label: 'Connectors' },
-        { id: 'created', label: 'Created' },
-        { id: 'updated', label: 'Last Updated' },
-        { id: 'owner', label: 'Owner' },
+        { id: 'connectors', label: '连接器' },
+        { id: 'created', label: '创建时间' },
+        { id: 'updated', label: '最后更新' },
+        { id: 'owner', label: '所有者' },
       ],
       active: activeSort,
       onSort: (column, direction) => setActiveSort({ column, direction }),
@@ -515,9 +515,9 @@ export function Knowledge() {
               options={memberOptions}
               value={ownerFilter}
               onChange={setOwnerFilter}
-              allLabel='All'
+              allLabel='全部'
               searchable
-              searchPlaceholder='Search members...'
+              searchPlaceholder='搜索成员…'
               align='start'
               fullWidth
               flush
@@ -534,22 +534,22 @@ export function Knowledge() {
     if (connectorFilter.length > 0) {
       const label =
         connectorFilter.length === 1
-          ? `Connectors: ${connectorFilter[0] === 'connected' ? 'With connectors' : 'Without connectors'}`
-          : `Connectors: ${connectorFilter.length} types`
+          ? `连接器: ${connectorFilter[0] === 'connected' ? '有连接器' : '无连接器'}`
+          : `连接器: ${connectorFilter.length} 种类型`
       tags.push({ label, onRemove: () => setConnectorFilter([]) })
     }
     if (contentFilter.length > 0) {
       const label =
         contentFilter.length === 1
-          ? `Content: ${contentFilter[0] === 'has-docs' ? 'Has documents' : 'Empty'}`
-          : `Content: ${contentFilter.length} types`
+          ? `内容: ${contentFilter[0] === 'has-docs' ? '有文档' : '空'}`
+          : `内容: ${contentFilter.length} 种类型`
       tags.push({ label, onRemove: () => setContentFilter([]) })
     }
     if (ownerFilter.length > 0) {
       const label =
         ownerFilter.length === 1
-          ? `Owner: ${members?.find((m) => m.userId === ownerFilter[0])?.name ?? '1 member'}`
-          : `Owner: ${ownerFilter.length} members`
+          ? `所有者: ${members?.find((m) => m.userId === ownerFilter[0])?.name ?? '1 名成员'}`
+          : `所有者: ${ownerFilter.length} 名成员`
       tags.push({ label, onRemove: () => setOwnerFilter([]) })
     }
     return tags
@@ -558,7 +558,7 @@ export function Knowledge() {
   return (
     <>
       <Resource onContextMenu={handleContentContextMenu}>
-        <Resource.Header icon={Database} title='Knowledge Base' actions={headerActions} />
+        <Resource.Header icon={Database} title='知识库' actions={headerActions} />
         <Resource.Options
           search={searchConfig}
           sort={sortConfig}

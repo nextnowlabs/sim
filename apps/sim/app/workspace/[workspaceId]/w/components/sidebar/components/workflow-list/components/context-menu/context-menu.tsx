@@ -173,7 +173,7 @@ export function ContextMenu({
             }}
           >
             <SquareArrowUpRight />
-            Open in new tab
+            在新标签页中打开
           </DropdownMenuItem>
         )}
         {hasNavigationSection && (hasStatusSection || hasEditSection || hasCopySection) && (
@@ -189,7 +189,7 @@ export function ContextMenu({
             }}
           >
             <Eye />
-            Mark as read
+            标记为已读
           </DropdownMenuItem>
         )}
         {showMarkAsUnread && onMarkAsUnread && (
@@ -201,7 +201,7 @@ export function ContextMenu({
             }}
           >
             <Mail />
-            Mark as unread
+            标记为未读
           </DropdownMenuItem>
         )}
         {showPin && onTogglePin && (
@@ -212,7 +212,7 @@ export function ContextMenu({
             }}
           >
             {isPinned ? <PinOff className='size-[14px]' /> : <Pin className='size-[14px]' />}
-            {isPinned ? 'Unpin' : 'Pin'}
+            {isPinned ? '取消置顶' : '置顶'}
           </DropdownMenuItem>
         )}
         {hasStatusSection && (hasEditSection || hasCopySection) && <DropdownMenuSeparator />}
@@ -226,7 +226,7 @@ export function ContextMenu({
             }}
           >
             <Pencil />
-            Rename
+            重命名
           </DropdownMenuItem>
         )}
         {showCreate && onCreate && (
@@ -238,7 +238,7 @@ export function ContextMenu({
             }}
           >
             <Plus />
-            Create workflow
+            新建工作流
           </DropdownMenuItem>
         )}
         {showCreateFolder && onCreateFolder && (
@@ -250,7 +250,7 @@ export function ContextMenu({
             }}
           >
             <FolderPlus />
-            Create folder
+            新建文件夹
           </DropdownMenuItem>
         )}
         {showUploadLogo && onUploadLogo && (
@@ -262,7 +262,7 @@ export function ContextMenu({
             }}
           >
             <ImageUp />
-            Upload logo
+            上传徽标
           </DropdownMenuItem>
         )}
         {showLock && onToggleLock && (
@@ -274,7 +274,7 @@ export function ContextMenu({
             }}
           >
             {isLocked ? <Unlock /> : <Lock />}
-            {isLocked ? 'Unlock' : 'Lock'}
+            {isLocked ? '解锁' : '锁定'}
           </DropdownMenuItem>
         )}
 
@@ -288,7 +288,7 @@ export function ContextMenu({
             }}
           >
             <Duplicate />
-            Duplicate
+            复制
           </DropdownMenuItem>
         )}
         {showExport && onExport && (
@@ -300,7 +300,7 @@ export function ContextMenu({
             }}
           >
             <Download />
-            Export
+            导出
           </DropdownMenuItem>
         )}
 
@@ -314,7 +314,7 @@ export function ContextMenu({
             }}
           >
             <Shuffle />
-            Manage Forks
+            管理副本
           </DropdownMenuItem>
         )}
         {showSync && onSync && (
@@ -325,7 +325,7 @@ export function ContextMenu({
             }}
           >
             <Rocket />
-            Sync workspace
+            同步工作区
           </DropdownMenuItem>
         )}
 
@@ -344,7 +344,7 @@ export function ContextMenu({
             }}
           >
             <LogOut />
-            Leave
+            退出
           </DropdownMenuItem>
         )}
         {showDelete && (
@@ -356,7 +356,7 @@ export function ContextMenu({
             }}
           >
             <Trash />
-            Delete
+            删除
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

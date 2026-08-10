@@ -49,10 +49,10 @@ interface CalendarEvent {
  * All-day events use the date field; timed events use dateTime.
  */
 function formatEventTime(eventTime?: CalendarEventTime): string {
-  if (!eventTime) return 'Unknown'
+  if (!eventTime) return '未知'
   if (eventTime.dateTime) {
     const date = new Date(eventTime.dateTime)
-    return date.toLocaleString('en-US', {
+    return date.toLocaleString('zh-CN', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -65,14 +65,14 @@ function formatEventTime(eventTime?: CalendarEventTime): string {
   }
   if (eventTime.date) {
     const date = new Date(`${eventTime.date}T00:00:00`)
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('zh-CN', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric',
     })
   }
-  return 'Unknown'
+  return '未知'
 }
 
 /**
@@ -89,7 +89,7 @@ function formatAttendees(attendees?: CalendarAttendee[]): string {
   if (!attendees || attendees.length === 0) return ''
   return attendees
     .filter((a) => !a.resource)
-    .map((a) => a.displayName || a.email || 'Unknown')
+    .map((a) => a.displayName || a.email || '未知')
     .join(', ')
 }
 

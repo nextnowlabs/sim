@@ -106,11 +106,11 @@ export function AddPeopleModal({ credentialId, open, onOpenChange }: AddPeopleMo
         (result): result is PromiseRejectedResult => result.status === 'rejected'
       )
       logger.error('Failed to add some credential members', firstError?.reason)
-      const reason = getErrorMessage(firstError?.reason, 'Please try again in a moment.')
+      const reason = getErrorMessage(firstError?.reason, '请稍后再试。')
       setSubmitError(
         failures.length === targets.length
-          ? `Couldn't add people. ${reason}`
-          : `Couldn't add ${failures.length} of ${targets.length} people. ${reason}`
+          ? `无法添加成员。${reason}`
+          : `无法添加 ${failures.length} / ${targets.length} 位成员。${reason}`
       )
     } finally {
       setIsAdding(false)
@@ -132,25 +132,25 @@ export function AddPeopleModal({ credentialId, open, onOpenChange }: AddPeopleMo
       onOpenChange={(next) => {
         if (!next) handleClose()
       }}
-      srTitle='Add people'
+      srTitle='添加成员'
     >
-      <ChipModalHeader onClose={handleClose}>Add people</ChipModalHeader>
+      <ChipModalHeader onClose={handleClose}>添加成员</ChipModalHeader>
       <ChipModalBody>
         <ChipModalField
           type='emails'
-          title='Emails'
+          title='邮箱'
           value={emailsToAdd}
           onChange={setEmailsToAdd}
           validate={validateAddEmail}
-          placeholder='Enter emails'
+          placeholder='输入邮箱'
           disabled={isAdding}
         />
         <ChipModalField
           type='dropdown'
-          title='Role'
+          title='角色'
           options={ROLE_OPTIONS}
           value={roleToAdd}
-          placeholder='Select role'
+          placeholder='选择角色'
           align='start'
           onChange={(role) => setRoleToAdd(role as WorkspaceCredentialRole)}
           disabled={isAdding}
@@ -160,7 +160,7 @@ export function AddPeopleModal({ credentialId, open, onOpenChange }: AddPeopleMo
       <ChipModalFooter
         onCancel={handleClose}
         primaryAction={{
-          label: isAdding ? 'Adding...' : 'Add',
+          label: isAdding ? '添加中…' : '添加',
           onClick: handleAddPeople,
           disabled: emailsToAdd.length === 0 || isAdding,
         }}

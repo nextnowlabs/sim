@@ -316,7 +316,7 @@ const ModalHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
           className='relative size-[16px] flex-shrink-0 p-0 before:absolute before:inset-[-14px] before:content-[""]'
         >
           <X className='size-[16px]' />
-          <span className='sr-only'>Close</span>
+          <span className='sr-only'>关闭</span>
         </Button>
       </DialogPrimitive.Close>
     </div>

@@ -100,7 +100,7 @@ export function useSubscriptionUpgrade() {
               })
               const existingPlanName = getDisplayPlanName(existingOrgSub.plan)
               throw new Error(
-                `This organization is already on the ${existingPlanName} plan. Manage it from the billing settings.`
+                `该组织已在使用 ${existingPlanName} 套餐。可在账单设置中管理。`
               )
             }
 
@@ -121,7 +121,7 @@ export function useSubscriptionUpgrade() {
             }
           } else if (orgsData.isMemberOfAnyOrg) {
             throw new Error(
-              'You are already a member of an organization. Please leave it or ask an admin to upgrade.'
+              '你已经是某个组织的成员。请退出该组织或请管理员升级。'
             )
           } else {
             logger.info('Will create organization after payment succeeds', { userId })

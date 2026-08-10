@@ -114,7 +114,7 @@ function LogDropdownItem({ item }: DropdownItemRenderProps) {
 export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfig> = {
   generic: {
     type: 'generic',
-    label: 'Results',
+    label: '结果',
     icon: TerminalWindow,
     renderTabIcon: (_resource, className) => (
       <TerminalWindow className={cn(className, 'text-[var(--text-icon)]')} />
@@ -123,7 +123,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   workflow: {
     type: 'workflow',
-    label: 'Workflows',
+    label: '工作流',
     icon: Workflow,
     renderTabIcon: (_resource, className) => (
       <Workflow className={cn(className, 'text-[var(--text-icon)]')} />
@@ -132,7 +132,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   table: {
     type: 'table',
-    label: 'Tables',
+    label: '表格',
     icon: TableIcon,
     renderTabIcon: (_resource, className) => (
       <TableIcon className={cn(className, 'text-[var(--text-icon)]')} />
@@ -141,7 +141,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   file: {
     type: 'file',
-    label: 'Files',
+    label: '文件',
     icon: FileIcon,
     renderTabIcon: (resource, className) => {
       const DocIcon = getDocumentIcon('', resource.title)
@@ -151,7 +151,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   knowledgebase: {
     type: 'knowledgebase',
-    label: 'Knowledge Bases',
+    label: '知识库',
     icon: Database,
     renderTabIcon: (_resource, className) => (
       <Database className={cn(className, 'text-[var(--text-icon)]')} />
@@ -160,7 +160,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   folder: {
     type: 'folder',
-    label: 'Folders',
+    label: '文件夹',
     icon: FolderIcon,
     renderTabIcon: (_resource, className) => (
       <FolderIcon className={cn(className, 'text-[var(--text-icon)]')} />
@@ -169,7 +169,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   filefolder: {
     type: 'filefolder',
-    label: 'File Folders',
+    label: '文件文件夹',
     icon: FolderIcon,
     renderTabIcon: (_resource, className) => (
       <FolderIcon className={cn(className, 'text-[var(--text-icon)]')} />
@@ -178,7 +178,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   task: {
     type: 'task',
-    label: 'Chats',
+    label: '对话',
     icon: Task,
     renderTabIcon: (_resource, className) => (
       <Task className={cn(className, 'text-[var(--text-icon)]')} />
@@ -187,7 +187,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   scheduledtask: {
     type: 'scheduledtask',
-    label: 'Scheduled Tasks',
+    label: '定时任务',
     icon: Calendar,
     renderTabIcon: (_resource, className) => (
       <Calendar className={cn(className, 'text-[var(--text-icon)]')} />
@@ -196,7 +196,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   log: {
     type: 'log',
-    label: 'Logs',
+    label: '日志',
     icon: Library,
     renderTabIcon: (_resource, className) => (
       <Library className={cn(className, 'text-[var(--text-icon)]')} />
@@ -205,7 +205,7 @@ export const RESOURCE_REGISTRY: Record<MothershipResourceType, ResourceTypeConfi
   },
   integration: {
     type: 'integration',
-    label: 'Integrations',
+    label: '集成',
     icon: Connections,
     renderTabIcon: (_resource, className) => (
       <Connections className={cn(className, 'text-[var(--text-icon)]')} />

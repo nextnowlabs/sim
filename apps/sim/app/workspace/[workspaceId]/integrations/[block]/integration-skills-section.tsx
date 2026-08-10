@@ -33,11 +33,11 @@ function SkillRow({ skill, added, pending, disabled, onAdd }: SkillRowProps) {
       </div>
       {added ? (
         <Chip leftIcon={Check} disabled flush>
-          Added
+          已添加
         </Chip>
       ) : (
         <Chip variant='primary' leftIcon={Plus} onClick={onAdd} disabled={disabled} flush>
-          {pending ? 'Adding...' : 'Add'}
+          {pending ? '添加中…' : '添加'}
         </Chip>
       )}
     </div>
@@ -78,7 +78,7 @@ export function IntegrationSkillsSection({
         skill_count: skills.length,
       })
     } catch {
-      toast.error(`Failed to add "${skill.name}" — please try again`)
+      toast.error(`添加 "${skill.name}" 失败 — 请重试`)
     } finally {
       inFlightRef.current.delete(skill.name)
       setPendingNames((prev) => {
@@ -91,7 +91,7 @@ export function IntegrationSkillsSection({
 
   return (
     <section className='flex flex-col'>
-      <span className='pl-0.5 text-[var(--text-muted)] text-small'>Skills</span>
+      <span className='pl-0.5 text-[var(--text-muted)] text-small'>技能</span>
       <div className='mt-[9px] mb-3 h-px bg-[var(--border)]' />
       <div className='-mx-2 flex flex-col gap-y-0.5'>
         {skills.map((skill, index) => (

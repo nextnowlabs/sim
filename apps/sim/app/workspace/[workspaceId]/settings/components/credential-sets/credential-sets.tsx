@@ -130,7 +130,7 @@ export function CredentialSets() {
         (inv) => inv.email?.toLowerCase() === normalized
       )
       if (isPendingInvitation) {
-        setEmailError(`${normalized} already has a pending invitation`)
+        setEmailError(`${normalized} 已有待处理邀请`)
         return false
       }
 
@@ -138,7 +138,7 @@ export function CredentialSets() {
         (m) => m.userEmail?.toLowerCase() === normalized && m.status === 'active'
       )
       if (isActiveMember) {
-        setEmailError(`${normalized} is already a member of this group`)
+        setEmailError(`${normalized} 已是此轮询组的成员`)
         return false
       }
 
@@ -147,7 +147,7 @@ export function CredentialSets() {
         {
           value: normalized,
           isValid,
-          error: isValid ? undefined : (validation.reason ?? 'Invalid email format'),
+          error: isValid ? undefined : (validation.reason ?? '邮箱格式无效'),
         },
       ])
 
@@ -240,7 +240,7 @@ export function CredentialSets() {
       if (error instanceof Error) {
         setCreateError(error.message)
       } else {
-        setCreateError('Failed to create polling group')
+        setCreateError('创建轮询组失败')
       }
     }
   }, [newSetName, newSetDescription, newSetProvider, activeOrganization?.id, createCredentialSet])
@@ -425,19 +425,19 @@ export function CredentialSets() {
 
     return (
       <SettingsPanel
-        back={{ text: 'Email polling', icon: ArrowLeft, onSelect: handleBackToList }}
+        back={{ text: '邮件轮询', icon: ArrowLeft, onSelect: handleBackToList }}
         title={viewingSet.name}
       >
         <div className='flex flex-col gap-7'>
-          <SettingsSection label='Details'>
+          <SettingsSection label='详情'>
             <div className='flex items-center gap-4.5'>
               <div className='flex items-center gap-2'>
-                <span className='font-medium text-[var(--text-primary)] text-sm'>Group Name</span>
+                <span className='font-medium text-[var(--text-primary)] text-sm'>轮询组名称</span>
                 <span className='text-[var(--text-secondary)] text-sm'>{viewingSet.name}</span>
               </div>
               <div className='h-4 w-px bg-[var(--border)]' />
               <div className='flex items-center gap-2'>
-                <span className='font-medium text-[var(--text-primary)] text-sm'>Provider</span>
+                <span className='font-medium text-[var(--text-primary)] text-sm'>提供方</span>
                 <div className='flex items-center gap-1.5'>
                   {getProviderIcon(viewingSet.providerId)}
                   <span className='text-[var(--text-secondary)] text-sm'>
@@ -448,15 +448,15 @@ export function CredentialSets() {
             </div>
           </SettingsSection>
 
-          <SettingsSection label='Invite'>
+          <SettingsSection label='邀请'>
             <div className='flex flex-col gap-1'>
               <div className='flex items-center gap-2'>
                 <TagInput
                   items={emailItems}
                   onAdd={(value) => addEmail(value)}
                   onRemove={removeEmailItem}
-                  placeholder='Enter email addresses'
-                  placeholderWithTags='Add another email'
+                  placeholder='输入邮箱地址'
+                  placeholderWithTags='添加其他邮箱'
                   disabled={createInvitation.isPending}
                   fileInputOptions={fileInputOptions}
                   className='flex-1'
@@ -465,22 +465,20 @@ export function CredentialSets() {
                   onClick={handleInviteMembers}
                   disabled={createInvitation.isPending || validEmails.length === 0}
                 >
-                  {createInvitation.isPending ? 'Sending...' : 'Invite'}
+                  {createInvitation.isPending ? '发送中…' : '邀请'}
                 </Chip>
               </div>
               {emailError && <p className='text-[var(--text-error)] text-small'>{emailError}</p>}
             </div>
           </SettingsSection>
 
-          <SettingsSection label='Members'>
+          <SettingsSection label='成员'>
             {membersLoading || pendingInvitationsLoading ? null : totalCount === 0 ? (
-              <p className='text-[var(--text-muted)] text-sm'>
-                No members yet. Send invitations above.
-              </p>
+              <p className='text-[var(--text-muted)] text-sm'>暂无成员。请在上方发送邀请。</p>
             ) : (
               <div className='flex flex-col gap-4.5'>
                 {activeMembers.map((member) => {
-                  const name = member.userName || 'Unknown'
+                  const name = member.userName || '未知'
                   const avatarInitial = name.charAt(0).toUpperCase()
 
                   return (
@@ -505,7 +503,7 @@ export function CredentialSets() {
                             </span>
                             {member.credentials.length === 0 && (
                               <Badge variant='red' size='sm'>
-                                Disconnected
+                                未连接
                               </Badge>
                             )}
                           </div>
@@ -517,10 +515,10 @@ export function CredentialSets() {
 
                       <div className='ml-4 flex items-center gap-1'>
                         <RowActionsMenu
-                          label='Member actions'
+                          label='成员操作'
                           actions={[
                             {
-                              label: 'Remove',
+                              label: '移除',
                               destructive: true,
                               disabled: removeMember.isPending,
                               onSelect: () => handleRemoveMember(member.id),
@@ -533,7 +531,7 @@ export function CredentialSets() {
                 })}
 
                 {pendingInvitations.map((invitation) => {
-                  const email = invitation.email || 'Unknown'
+                  const email = invitation.email || '未知'
                   const emailPrefix = email.split('@')[0]
                   const avatarInitial = emailPrefix.charAt(0).toUpperCase()
 
@@ -555,7 +553,7 @@ export function CredentialSets() {
                               {emailPrefix}
                             </span>
                             <Badge variant='gray-secondary' size='sm'>
-                              Pending
+                              待处理
                             </Badge>
                           </div>
                           <div className='truncate text-[var(--text-muted)] text-small'>
@@ -566,23 +564,21 @@ export function CredentialSets() {
 
                       <div className='ml-4 flex items-center gap-1'>
                         <RowActionsMenu
-                          label='Invitation actions'
+                          label='邀请操作'
                           actions={[
                             {
                               label: resendingInvitations.has(invitation.id)
-                                ? 'Sending...'
+                                ? '发送中…'
                                 : resendCooldowns[invitation.id]
-                                  ? `Resend (${resendCooldowns[invitation.id]}s)`
-                                  : 'Resend',
+                                  ? `重新发送 (${resendCooldowns[invitation.id]}s)`
+                                  : '重新发送',
                               disabled:
                                 resendingInvitations.has(invitation.id) ||
                                 (resendCooldowns[invitation.id] ?? 0) > 0,
                               onSelect: () => handleResendInvitation(invitation.id, email),
                             },
                             {
-                              label: cancellingInvitations.has(invitation.id)
-                                ? 'Cancelling...'
-                                : 'Cancel',
+                              label: cancellingInvitations.has(invitation.id) ? '取消中…' : '取消',
                               destructive: true,
                               disabled: cancellingInvitations.has(invitation.id),
                               onSelect: () => handleCancelInvitation(invitation.id),
@@ -607,13 +603,13 @@ export function CredentialSets() {
         search={{
           value: searchTerm,
           onChange: setSearchTerm,
-          placeholder: 'Search polling groups...',
+          placeholder: '搜索轮询组…',
         }}
         actions={
           canManageCredentialSets
             ? [
                 {
-                  text: 'Create group',
+                  text: '创建轮询组',
                   icon: Plus,
                   variant: 'primary',
                   onSelect: () => setShowCreateModal(true),
@@ -625,17 +621,16 @@ export function CredentialSets() {
         <div className='relative'>
           {hasNoContent && !canManageCredentialSets ? (
             <SettingsEmptyState>
-              You're not a member of any polling groups yet. When someone invites you, it will
-              appear here.
+              你还不是任何轮询组的成员。当有人邀请你时，它会显示在这里。
             </SettingsEmptyState>
           ) : hasNoResults ? (
             <SettingsEmptyState variant='inline'>
-              No results found matching "{searchTerm}"
+              未找到与"{searchTerm}"匹配的结果
             </SettingsEmptyState>
           ) : (
             <div className='flex flex-col gap-4.5'>
               {filteredInvitations.length > 0 && (
-                <SettingsSection label='Pending Invitations'>
+                <SettingsSection label='待处理邀请'>
                   <div className='flex flex-col gap-2'>
                     {filteredInvitations.map((invitation) => (
                       <SettingsResourceRow
@@ -649,7 +644,7 @@ export function CredentialSets() {
                             onClick={() => handleAcceptInvitation(invitation.token)}
                             disabled={acceptInvitation.isPending}
                           >
-                            {acceptInvitation.isPending ? 'Accepting...' : 'Accept'}
+                            {acceptInvitation.isPending ? '接受中…' : '接受'}
                           </Chip>
                         }
                       />
@@ -659,7 +654,7 @@ export function CredentialSets() {
               )}
 
               {filteredMemberships.length > 0 && (
-                <SettingsSection label='My Memberships'>
+                <SettingsSection label='我的轮询组'>
                   <div className='flex flex-col gap-2'>
                     {filteredMemberships.map((membership) => (
                       <SettingsResourceRow
@@ -674,7 +669,7 @@ export function CredentialSets() {
                             }
                             disabled={leaveCredentialSet.isPending}
                           >
-                            Leave
+                            退出
                           </Chip>
                         }
                       />
@@ -687,11 +682,9 @@ export function CredentialSets() {
                 (filteredOwnedSets.length > 0 ||
                   ownedSetsLoading ||
                   (!searchTerm.trim() && ownedSets.length === 0)) && (
-                  <SettingsSection label='Manage'>
+                  <SettingsSection label='管理'>
                     {ownedSetsLoading ? null : !searchTerm.trim() && ownedSets.length === 0 ? (
-                      <div className='text-[var(--text-muted)] text-sm'>
-                        No polling groups created yet
-                      </div>
+                      <div className='text-[var(--text-muted)] text-sm'>尚未创建轮询组</div>
                     ) : (
                       <div className='flex flex-col gap-2'>
                         {filteredOwnedSets.map((set) => (
@@ -699,14 +692,14 @@ export function CredentialSets() {
                             key={set.id}
                             icon={getProviderIcon(set.providerId)}
                             title={set.name}
-                            description={`${set.memberCount} member${set.memberCount !== 1 ? 's' : ''}`}
+                            description={`${set.memberCount} 名成员`}
                             trailing={
                               <RowActionsMenu
-                                label='Group actions'
+                                label='轮询组操作'
                                 actions={[
-                                  { label: 'Details', onSelect: () => setViewingSet(set) },
+                                  { label: '详情', onSelect: () => setViewingSet(set) },
                                   {
-                                    label: 'Delete',
+                                    label: '删除',
                                     destructive: true,
                                     disabled: deletingSetIds.has(set.id),
                                     onSelect: () => handleDeleteClick(set),
@@ -725,32 +718,28 @@ export function CredentialSets() {
         </div>
       </SettingsPanel>
 
-      <ChipModal
-        open={showCreateModal}
-        onOpenChange={handleCloseCreateModal}
-        srTitle='Create Polling Group'
-      >
-        <ChipModalHeader onClose={handleCloseCreateModal}>Create Polling Group</ChipModalHeader>
+      <ChipModal open={showCreateModal} onOpenChange={handleCloseCreateModal} srTitle='创建轮询组'>
+        <ChipModalHeader onClose={handleCloseCreateModal}>创建轮询组</ChipModalHeader>
         <ChipModalBody>
           <ChipModalField
             type='input'
-            title='Name'
+            title='名称'
             value={newSetName}
             onChange={(value) => {
               setNewSetName(value)
               if (createError) setCreateError(null)
             }}
             required
-            placeholder='e.g., Marketing Team'
+            placeholder='例如：营销团队'
           />
           <ChipModalField
             type='input'
-            title='Description'
+            title='描述'
             value={newSetDescription}
             onChange={setNewSetDescription}
-            placeholder='e.g., Poll emails for marketing automations'
+            placeholder='例如：为营销自动化轮询邮件'
           />
-          <ChipModalField type='custom' title='Email Provider'>
+          <ChipModalField type='custom' title='邮箱提供方'>
             <ButtonGroup
               value={newSetProvider}
               onValueChange={(v) => setNewSetProvider(v as PollingProvider)}
@@ -759,7 +748,7 @@ export function CredentialSets() {
               <ButtonGroupItem value='outlook'>Outlook</ButtonGroupItem>
             </ButtonGroup>
             <p className='mt-1 text-[var(--text-muted)] text-small'>
-              Members will connect their {getProviderDisplayName(newSetProvider)} account
+              成员将连接他们的 {getProviderDisplayName(newSetProvider)} 账号
             </p>
           </ChipModalField>
           <ChipModalError>{createError}</ChipModalError>
@@ -767,7 +756,7 @@ export function CredentialSets() {
         <ChipModalFooter
           onCancel={handleCloseCreateModal}
           primaryAction={{
-            label: createCredentialSet.isPending ? 'Creating...' : 'Create',
+            label: createCredentialSet.isPending ? '创建中…' : '创建',
             onClick: handleCreateCredentialSet,
             disabled: !newSetName.trim() || createCredentialSet.isPending,
           }}
@@ -779,18 +768,18 @@ export function CredentialSets() {
         onOpenChange={(open) => {
           if (!open) setLeavingMembership(null)
         }}
-        srTitle='Leave Polling Group'
-        title='Leave Polling Group'
+        srTitle='退出轮询组'
+        title='退出轮询组'
         text={[
-          'Are you sure you want to leave ',
-          { text: leavingMembership?.name ?? 'this group', bold: true },
-          '? Your email account will no longer be polled in workflows using this group.',
+          '确定要退出 ',
+          { text: leavingMembership?.name ?? '此轮询组', bold: true },
+          '？使用此轮询组的工作流将不再轮询你的邮箱账号。',
         ]}
         confirm={{
-          label: 'Leave',
+          label: '退出',
           onClick: confirmLeave,
           pending: leaveCredentialSet.isPending,
-          pendingLabel: 'Leaving...',
+          pendingLabel: '退出中…',
         }}
       />
 
@@ -799,18 +788,18 @@ export function CredentialSets() {
         onOpenChange={(open) => {
           if (!open) setDeletingSet(null)
         }}
-        srTitle='Delete Polling Group'
-        title='Delete Polling Group'
+        srTitle='删除轮询组'
+        title='删除轮询组'
         text={[
-          'Are you sure you want to delete ',
-          { text: deletingSet?.name ?? 'this group', bold: true },
-          '? This action cannot be undone.',
+          '确定要删除 ',
+          { text: deletingSet?.name ?? '此轮询组', bold: true },
+          '？此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Delete',
+          label: '删除',
           onClick: confirmDelete,
           pending: deleteCredentialSet.isPending,
-          pendingLabel: 'Deleting...',
+          pendingLabel: '删除中…',
         }}
       />
     </>

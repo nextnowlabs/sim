@@ -38,10 +38,10 @@ export function TaskDeleteDialog({
         onOpenChange={(open) => {
           if (!open) onClose()
         }}
-        title='Delete scheduled task'
-        text='This task will be removed from the calendar and will not run.'
+        title='删除定时任务'
+        text='此任务将从日历中移除且不再运行。'
         confirm={{
-          label: 'Delete',
+          label: '删除',
           onClick: () => {
             onDeleteSeries(task)
             onClose()
@@ -58,23 +58,23 @@ export function TaskDeleteDialog({
         if (!open) onClose()
       }}
       size='sm'
-      srTitle='Delete recurring task'
+      srTitle='删除重复任务'
     >
       {task && (
         <>
           <ChipModalHeader icon={Calendar} onClose={onClose}>
-            Delete recurring task
+            删除重复任务
           </ChipModalHeader>
           <ChipModalBody>
             <p className='px-2 text-[var(--text-body)] text-sm'>
-              This is a recurring task. Delete only this occurrence, or the entire series?
+              这是一个重复任务。仅删除此实例,还是删除整个系列?
             </p>
           </ChipModalBody>
           <ChipModalFooter
             onCancel={onClose}
             secondaryActions={[
               {
-                label: 'This task',
+                label: '仅此任务',
                 variant: 'destructive',
                 onClick: () => {
                   onDeleteOccurrence(task)
@@ -83,7 +83,7 @@ export function TaskDeleteDialog({
               },
             ]}
             primaryAction={{
-              label: 'All tasks',
+              label: '全部任务',
               variant: 'destructive',
               onClick: () => {
                 onDeleteSeries(task)

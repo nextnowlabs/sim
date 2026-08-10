@@ -77,13 +77,13 @@ export function TableSelector({
       options={options}
       value={tableId ?? undefined}
       onChange={handleChange}
-      placeholder={subBlock.placeholder || 'Select a table'}
+      placeholder={subBlock.placeholder || '选择表格'}
       disabled={disabled || isPreview}
       editable={false}
       isLoading={isLoading}
       error={errorMessage}
       searchable={options.length > 5}
-      searchPlaceholder='Search...'
+      searchPlaceholder='搜索…'
       overlayContent={
         workflowSearchHighlight ? (
           <span className='block truncate'>

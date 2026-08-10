@@ -75,8 +75,8 @@ export function useSecretValue({ workspaceId, credential }: UseSecretValueParams
       if (isPersonal) {
         const { data: latest } = await refetchPersonal()
         if (!latest) {
-          toast.error("Couldn't save value", {
-            description: 'Could not load your latest secrets. Please try again in a moment.',
+          toast.error('无法保存密钥', {
+            description: '无法加载最新密钥,请稍后重试。',
           })
           logger.warn('Aborted personal secret save: latest environment unavailable')
           return
@@ -90,8 +90,8 @@ export function useSecretValue({ workspaceId, credential }: UseSecretValueParams
         await upsertWorkspace.mutateAsync({ workspaceId, variables: { [envKey]: draft } })
       }
     } catch (error) {
-      toast.error("Couldn't save value", {
-        description: getErrorMessage(error, 'Please try again in a moment.'),
+      toast.error('无法保存密钥', {
+        description: getErrorMessage(error, '请稍后重试。'),
       })
       logger.error('Failed to save secret value', error)
     }

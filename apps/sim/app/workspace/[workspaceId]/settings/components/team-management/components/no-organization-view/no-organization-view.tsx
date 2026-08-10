@@ -48,13 +48,11 @@ export function NoOrganizationView({
         <div className='flex flex-col gap-5'>
           {/* Header - matching settings page style */}
           <div>
-            <h4 className='font-medium text-[var(--text-primary)] text-base'>
-              Create Your Team Workspace
-            </h4>
+            <h4 className='font-medium text-[var(--text-primary)] text-base'>创建你的团队工作区</h4>
             <p className='mt-1 text-[var(--text-muted)] text-small'>
               {isSelfHostedOrgEnabled
-                ? 'Organizations are enabled. Create an organization to manage members and access enterprise features.'
-                : `You're subscribed to a ${hasEnterprisePlan ? 'enterprise' : 'team'} plan. Create your workspace to start collaborating with your team.`}
+                ? '组织功能已启用。创建组织以管理成员并使用企业版功能。'
+                : `你已订阅 ${hasEnterprisePlan ? 'Enterprise' : 'Team'} 套餐。创建工作区,开始与你的团队成员协作。`}
             </p>
           </div>
 
@@ -69,17 +67,17 @@ export function NoOrganizationView({
               tabIndex={-1}
               readOnly
               aria-hidden='true'
-              aria-label='Ignore this field'
+              aria-label='请忽略此字段'
             />
             <div>
               <Label htmlFor='team-name-field' className='font-medium text-small'>
-                Team Name
+                团队名称
               </Label>
               <ChipInput
                 id='team-name-field'
                 value={orgName}
                 onChange={onOrgNameChange}
-                placeholder='My Team'
+                placeholder='我的团队'
                 className='mt-1'
                 name='team_name_field'
                 autoComplete='off'
@@ -92,7 +90,7 @@ export function NoOrganizationView({
 
             <div>
               <Label htmlFor='orgSlug' className='font-medium text-small'>
-                Team URL
+                团队 URL
               </Label>
               <div className='mt-1 flex items-center'>
                 <div className='rounded-l-[6px] border border-[var(--border-1)] border-r-0 bg-[var(--surface-4)] px-3 py-1.5 text-[var(--text-muted)] text-small'>
@@ -118,7 +116,7 @@ export function NoOrganizationView({
                   onClick={onCreateOrganization}
                   disabled={!orgName || !orgSlug || isCreatingOrg}
                 >
-                  {isCreatingOrg ? 'Creating...' : 'Create Team Workspace'}
+                  {isCreatingOrg ? '创建中...' : '创建团队工作区'}
                 </Button>
               </div>
             </div>
@@ -128,10 +126,10 @@ export function NoOrganizationView({
         <ChipModal
           open={createOrgDialogOpen}
           onOpenChange={setCreateOrgDialogOpen}
-          srTitle='Create Team Organization'
+          srTitle='创建团队组织'
         >
           <ChipModalHeader onClose={() => setCreateOrgDialogOpen(false)}>
-            Create Team Organization
+            创建团队组织
           </ChipModalHeader>
           <ChipModalBody>
             {/* Hidden decoy field to prevent browser autofill */}
@@ -143,23 +141,23 @@ export function NoOrganizationView({
               tabIndex={-1}
               readOnly
               aria-hidden='true'
-              aria-label='Ignore this field'
+              aria-label='请忽略此字段'
             />
             <ChipModalField
               type='input'
-              title='Organization Name'
+              title='组织名称'
               value={orgName}
               onChange={(value) =>
                 onOrgNameChange({ target: { value } } as React.ChangeEvent<HTMLInputElement>)
               }
-              placeholder='Enter organization name'
+              placeholder='输入组织名称'
               disabled={isCreatingOrg}
               autoComplete='off'
               required
             />
             <ChipModalField
               type='input'
-              title='Organization Slug'
+              title='组织 Slug'
               value={orgSlug}
               onChange={setOrgSlug}
               placeholder='organization-slug'
@@ -172,7 +170,7 @@ export function NoOrganizationView({
             onCancel={() => setCreateOrgDialogOpen(false)}
             cancelDisabled={isCreatingOrg}
             primaryAction={{
-              label: isCreatingOrg ? 'Creating...' : 'Create Organization',
+              label: isCreatingOrg ? '创建中...' : '创建组织',
               onClick: onCreateOrganization,
               disabled: isCreatingOrg || !orgName.trim(),
             }}
@@ -185,16 +183,15 @@ export function NoOrganizationView({
   return (
     <div className='flex flex-col gap-5'>
       <div className='flex flex-col gap-2'>
-        <h3 className='font-medium text-[var(--text-primary)] text-base'>No Team Workspace</h3>
+        <h3 className='font-medium text-[var(--text-primary)] text-base'>没有团队工作区</h3>
         <p className='text-[var(--text-secondary)] text-small'>
-          You don't have a team workspace yet. To collaborate with others, first upgrade to a team
-          or enterprise plan.
+          你还没有团队工作区。要与他人协作,请先升级到 Team 或 Enterprise 套餐。
         </p>
       </div>
 
       <div>
         <Button variant='primary' onClick={() => navigateToSettings({ section: 'billing' })}>
-          Upgrade to Team Plan
+          升级到 Team 套餐
         </Button>
       </div>
     </div>

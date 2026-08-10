@@ -40,11 +40,10 @@ export function Inbox() {
             <div className='flex flex-col items-center justify-center gap-4 py-20'>
               <div className='text-center'>
                 <h3 className='font-medium text-[16px] text-[var(--text-primary)]'>
-                  Sim Mailer requires an active Max plan
+                  Sim 邮件服务需要有效的 Max 套餐
                 </h3>
                 <p className='mt-1.5 text-[14px] text-[var(--text-muted)]'>
-                  Upgrade to Max and ensure billing is active to receive tasks via email and let Sim
-                  work on your behalf.
+                  升级到 Max 并确保账单处于活跃状态,即可通过邮件接收任务,让 Sim 替你工作。
                 </p>
               </div>
               <Chip
@@ -52,7 +51,7 @@ export function Inbox() {
                 rightIcon={ArrowRight}
                 onClick={() => router.push(`/workspace/${workspaceId}/settings/billing`)}
               >
-                Upgrade to Max
+                升级到 Max
               </Chip>
             </div>
           </div>
@@ -69,10 +68,8 @@ export function Inbox() {
         <>
           <InboxSettingsTab />
 
-          <SettingsSection label='Inbox'>
-            <p className='mb-3 text-[12px] text-[var(--text-muted)]'>
-              Email tasks received by this workspace.
-            </p>
+          <SettingsSection label='收件箱'>
+            <p className='mb-3 text-[12px] text-[var(--text-muted)]'>此工作区收到的邮件任务。</p>
             <InboxTaskList />
           </SettingsSection>
         </>

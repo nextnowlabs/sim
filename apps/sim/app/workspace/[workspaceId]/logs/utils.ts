@@ -16,7 +16,7 @@ export const LOG_COLUMNS = {
   duration: { width: 'w-[20%]', minWidth: 'min-w-[100px]', label: 'Duration' },
 } as const
 
-export const DELETED_WORKFLOW_LABEL = 'Deleted Workflow'
+export const DELETED_WORKFLOW_LABEL = '已删除的工作流'
 
 export type LogStatus = 'error' | 'pending' | 'running' | 'info' | 'cancelled' | 'cancelling'
 
@@ -52,14 +52,14 @@ export const STATUS_CONFIG: Record<
     filterable: boolean
   }
 > = {
-  error: { variant: 'red', label: 'Error', color: 'var(--text-error)', filterable: true },
-  pending: { variant: 'amber', label: 'Pending', color: '#f59e0b', filterable: true },
-  running: { variant: 'amber', label: 'Running', color: '#f59e0b', filterable: true },
-  cancelling: { variant: 'amber', label: 'Cancelling...', color: '#f59e0b', filterable: false },
-  cancelled: { variant: 'orange', label: 'Cancelled', color: '#f97316', filterable: true },
+  error: { variant: 'red', label: '错误', color: 'var(--text-error)', filterable: true },
+  pending: { variant: 'amber', label: '等待中', color: '#f59e0b', filterable: true },
+  running: { variant: 'amber', label: '运行中', color: '#f59e0b', filterable: true },
+  cancelling: { variant: 'amber', label: '取消中…', color: '#f59e0b', filterable: false },
+  cancelled: { variant: 'orange', label: '已取消', color: '#f97316', filterable: true },
   info: {
     variant: 'gray',
-    label: 'Info',
+    label: '信息',
     color: 'var(--terminal-status-info-color)',
     filterable: true,
   },
@@ -205,7 +205,7 @@ export function formatDateShort(dateStr: string): string {
 export const formatDate = (dateString: string) => {
   const date = new Date(dateString)
   return {
-    full: date.toLocaleDateString('en-US', {
+    full: date.toLocaleDateString('zh-CN', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',

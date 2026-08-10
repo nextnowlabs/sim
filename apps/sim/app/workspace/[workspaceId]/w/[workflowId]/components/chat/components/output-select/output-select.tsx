@@ -83,7 +83,7 @@ export function OutputSelect({
   selectedOutputs = EMPTY_OUTPUTS,
   onOutputSelect,
   disabled = false,
-  placeholder = 'Select outputs',
+  placeholder = '选择输出',
   valueMode = 'id',
   align = 'start',
   maxHeight = 200,

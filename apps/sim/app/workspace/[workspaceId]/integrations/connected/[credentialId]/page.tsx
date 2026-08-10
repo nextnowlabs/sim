@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { ConnectedCredentialDetail } from '@/app/workspace/[workspaceId]/integrations/connected/[credentialId]/connected-credential-detail'
 
 export const metadata: Metadata = {
-  title: 'Connected Integration',
+  title: '已连接的集成',
 }
 
 export default async function ConnectedCredentialPage({

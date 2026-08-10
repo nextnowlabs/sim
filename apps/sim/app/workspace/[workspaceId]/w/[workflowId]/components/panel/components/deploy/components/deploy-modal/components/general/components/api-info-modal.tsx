@@ -181,7 +181,7 @@ export function ApiInfoModal({ open, onOpenChange, workflowId }: ApiInfoModalPro
         await updateWorkflowMutation.mutateAsync({
           workspaceId,
           workflowId,
-          metadata: { description: description.trim() || 'New workflow' },
+          metadata: { description: description.trim() || '新工作流' },
         })
       }
 
@@ -195,7 +195,7 @@ export function ApiInfoModal({ open, onOpenChange, workflowId }: ApiInfoModalPro
 
       onOpenChange(false)
     } catch (err: unknown) {
-      const message = getErrorMessage(err, 'Failed to update access settings')
+      const message = getErrorMessage(err, '更新访问设置失败')
       setSaveError(message)
     } finally {
       setIsSaving(false)
@@ -207,38 +207,38 @@ export function ApiInfoModal({ open, onOpenChange, workflowId }: ApiInfoModalPro
       <ChipModal
         open={open}
         onOpenChange={(openState) => !openState && handleCloseAttempt()}
-        srTitle='Edit API Info'
+        srTitle='编辑 API 信息'
       >
-        <ChipModalHeader onClose={() => onOpenChange(false)}>Edit API Info</ChipModalHeader>
+        <ChipModalHeader onClose={() => onOpenChange(false)}>编辑 API 信息</ChipModalHeader>
         <ChipModalBody>
           <ChipModalField
             type='textarea'
-            title='Description'
+            title='描述'
             value={description}
             onChange={setDescription}
-            placeholder='Describe what this workflow API does...'
+            placeholder='描述此工作流 API 的用途…'
             minHeight={80}
           />
 
           {!isPublicApiDisabled && (
-            <ChipModalField type='custom' title='Access'>
+            <ChipModalField type='custom' title='访问权限'>
               <ButtonGroup
                 value={accessMode}
                 onValueChange={(val) => setAccessMode(val as 'api_key' | 'public')}
               >
-                <ButtonGroupItem value='api_key'>API Key</ButtonGroupItem>
-                <ButtonGroupItem value='public'>Public</ButtonGroupItem>
+                <ButtonGroupItem value='api_key'>API 密钥</ButtonGroupItem>
+                <ButtonGroupItem value='public'>公开</ButtonGroupItem>
               </ButtonGroup>
               <p className='mt-1 text-[var(--text-secondary)] text-caption'>
                 {accessMode === 'public'
-                  ? 'Anyone can call this API without authentication. You will be billed for all usage.'
-                  : 'Requires a valid API key to call this endpoint.'}
+                  ? '任何人都可以无认证调用此 API。所有使用量将计入你的账单。'
+                  : '调用此端点需要有效的 API 密钥。'}
               </p>
             </ChipModalField>
           )}
 
           {inputFormat.length > 0 && (
-            <ChipModalField type='custom' title={`Parameters (${inputFormat.length})`}>
+            <ChipModalField type='custom' title={`参数 (${inputFormat.length})`}>
               <div className='flex flex-col gap-2'>
                 {inputFormat.map((field) => (
                   <div
@@ -257,11 +257,11 @@ export function ApiInfoModal({ open, onOpenChange, workflowId }: ApiInfoModalPro
                     </div>
                     <div className='rounded-b-[4px] border-[var(--border-1)] border-t bg-[var(--surface-2)] px-2.5 pt-1.5 pb-2.5'>
                       <div className='flex flex-col gap-1.5'>
-                        <Label className='text-small'>Description</Label>
+                        <Label className='text-small'>描述</Label>
                         <Input
                           value={paramDescriptions[field.name] || ''}
                           onChange={(e) => handleParamDescriptionChange(field.name, e.target.value)}
-                          placeholder={`Enter description for ${field.name}`}
+                          placeholder={`为 ${field.name} 输入描述`}
                         />
                       </div>
                     </div>
@@ -277,7 +277,7 @@ export function ApiInfoModal({ open, onOpenChange, workflowId }: ApiInfoModalPro
           onCancel={handleCloseAttempt}
           cancelDisabled={isSaving}
           primaryAction={{
-            label: 'Save',
+            label: '保存',
             onClick: handleSave,
             disabled: !hasChanges || isSaving,
           }}
@@ -287,12 +287,12 @@ export function ApiInfoModal({ open, onOpenChange, workflowId }: ApiInfoModalPro
       <ChipConfirmModal
         open={showUnsavedChangesAlert}
         onOpenChange={setShowUnsavedChangesAlert}
-        srTitle='Unsaved Changes'
-        title='Unsaved Changes'
-        text='You have unsaved changes. Are you sure you want to discard them?'
-        dismissLabel='Keep editing'
+        srTitle='未保存的更改'
+        title='未保存的更改'
+        text='你有未保存的更改。确定要放弃它们吗?'
+        dismissLabel='继续编辑'
         confirm={{
-          label: 'Discard Changes',
+          label: '放弃更改',
           onClick: handleDiscardChanges,
         }}
       />

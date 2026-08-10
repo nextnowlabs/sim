@@ -8,7 +8,7 @@ import { Home } from './home'
 import { HomeFallback } from './home-fallback'
 
 export const metadata: Metadata = {
-  title: 'New chat',
+  title: '新建对话',
 }
 
 export default async function HomePage({ params }: { params: Promise<{ workspaceId: string }> }) {

@@ -5,7 +5,7 @@ import { Home } from '@/app/workspace/[workspaceId]/home/home'
 import { HomeFallback } from '@/app/workspace/[workspaceId]/home/home-fallback'
 
 export const metadata: Metadata = {
-  title: 'Chat',
+  title: '对话',
 }
 
 interface ChatPageProps {

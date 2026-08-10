@@ -11,22 +11,22 @@ import {
 const noop = () => {}
 
 const COLUMNS = [
-  { id: 'name', header: 'Name', widthMultiplier: 0.8 },
-  { id: 'size', header: 'Size', widthMultiplier: 0.75 },
+  { id: 'name', header: '名称', widthMultiplier: 0.8 },
+  { id: 'size', header: '大小', widthMultiplier: 0.75 },
   { id: 'tokens', header: 'Tokens', widthMultiplier: 0.75 },
-  { id: 'chunks', header: 'Chunks', widthMultiplier: 0.75 },
-  { id: 'uploaded', header: 'Uploaded' },
-  { id: 'status', header: 'Status', widthMultiplier: 0.75 },
-  { id: 'tags', header: 'Tags' },
+  { id: 'chunks', header: '分块数', widthMultiplier: 0.75 },
+  { id: 'uploaded', header: '上传时间' },
+  { id: 'status', header: '状态', widthMultiplier: 0.75 },
+  { id: 'tags', header: '标签' },
 ]
 
 const ACTIONS: ChromeActionSpec[] = [
-  { text: 'New connector', icon: Plus },
-  { text: 'New documents', icon: Plus, variant: 'primary' },
+  { text: '新建连接器', icon: Plus },
+  { text: '新建文档', icon: Plus, variant: 'primary' },
 ]
 
 const BREADCRUMBS: BreadcrumbItem[] = [
-  { label: 'Knowledge Base', icon: Database, onClick: noop },
+  { label: '知识库', icon: Database, onClick: noop },
   { label: '…', icon: Database, terminal: true },
 ]
 

@@ -104,7 +104,7 @@ function DayCell({
             }}
             className='cursor-pointer px-1.5 py-0.5 text-left text-[var(--text-muted)] text-micro outline-none transition-colors hover-hover:text-[var(--text-body)]'
           >
-            {hiddenCount} more
+            还有 {hiddenCount} 个
           </button>
         )}
       </div>

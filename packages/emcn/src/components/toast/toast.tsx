@@ -337,8 +337,8 @@ function ToastItem({ toast: t, geometry, reduceMotion, onDismiss, onMeasure }: T
             <Button
               variant='quiet'
               onClick={dismiss}
-              aria-label='Dismiss notification'
-              title='Dismiss'
+              aria-label='关闭通知'
+              title='关闭'
               className='size-[18px] rounded-sm p-0'
             >
               <X className='size-[16px]' />
@@ -592,7 +592,7 @@ export function ToastProvider({ children }: { children?: ReactNode }) {
                 <motion.ol
                   key='toast-stack'
                   aria-live='polite'
-                  aria-label='Notifications'
+                  aria-label='通知'
                   className='fixed z-[var(--z-toast)] m-0 list-none p-0'
                   exit={{
                     opacity: 0,

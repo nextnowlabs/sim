@@ -36,10 +36,10 @@ export function useCsvTruncationImport(
     useImportTrayStore
       .getState()
       .startUpload({ uploadId: pendingId, workspaceId, title: file.name })
-    toast.success(`Importing "${file.name}" as a table`, {
-      description: 'This runs in the background.',
+    toast.success(`正在将 "${file.name}" 作为表格导入`, {
+      description: '这将在后台运行。',
       action: {
-        label: 'View tables',
+        label: '查看表格',
         onClick: () => router.push(`/workspace/${workspaceId}/tables`),
       },
     })
@@ -61,9 +61,9 @@ export function useCsvTruncationImport(
   useEffect(() => {
     if (readOnly || !truncated || notifiedKeyRef.current === file.key) return
     notifiedKeyRef.current = file.key
-    toast.warning(`Showing the first ${CSV_PREVIEW_MAX_ROWS.toLocaleString()} rows`, {
-      description: 'Import this file as a table to view all of its rows.',
-      action: { label: 'Import as a table', onClick: importAsTable },
+    toast.warning(`仅显示前 ${CSV_PREVIEW_MAX_ROWS.toLocaleString()} 行`, {
+      description: '将此文件作为表格导入以查看其全部行。',
+      action: { label: '作为表格导入', onClick: importAsTable },
     })
   }, [readOnly, truncated, file.key, importAsTable])
 }

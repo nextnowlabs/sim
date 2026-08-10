@@ -220,7 +220,7 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
       }
       closeEditModal()
     } catch (err) {
-      setError(getErrorMessage(err, 'Failed to save API key'))
+      setError(getErrorMessage(err, '保存 API 密钥失败'))
       logger.error('Failed to save BYOK key', { error: err })
     }
   }
@@ -250,7 +250,7 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
     if (!hasStoredKey(provider.id)) {
       return (
         <Chip variant='primary' onClick={() => openEditModal(provider.id)}>
-          Add Key
+          添加密钥
         </Chip>
       )
     }
@@ -259,18 +259,16 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
       const keyCount = getProviderKeys(provider.id).length
       return (
         <div className='flex flex-shrink-0 items-center gap-2'>
-          <span className='text-[12px] text-[var(--text-muted)]'>
-            {keyCount} {keyCount === 1 ? 'key' : 'keys'}
-          </span>
-          <Chip onClick={() => setManagingProviderId(provider.id)}>Manage</Chip>
+          <span className='text-[12px] text-[var(--text-muted)]'>{keyCount} 个密钥</span>
+          <Chip onClick={() => setManagingProviderId(provider.id)}>管理</Chip>
         </div>
       )
     }
 
     return (
       <div className='flex flex-shrink-0 items-center gap-2'>
-        <Chip onClick={() => openEditModal(provider.id)}>Update</Chip>
-        <Chip onClick={() => openDeleteConfirm(provider.id)}>Delete</Chip>
+        <Chip onClick={() => openEditModal(provider.id)}>更新</Chip>
+        <Chip onClick={() => openDeleteConfirm(provider.id)}>删除</Chip>
       </div>
     )
   }
@@ -299,8 +297,8 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
               strokeWidth={2}
             />
             <input
-              aria-label='Search providers'
-              placeholder='Search providers...'
+              aria-label='搜索提供方'
+              placeholder='搜索提供方...'
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               disabled={isLoading}
@@ -319,7 +317,7 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
           </div>
         ) : showNoResults ? (
           <SettingsEmptyState variant='inline'>
-            No providers found matching "{searchTerm}"
+            未找到与"{searchTerm}"匹配的提供方
           </SettingsEmptyState>
         ) : sections ? (
           <div className='flex flex-col gap-7'>
@@ -361,22 +359,22 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
         onOpenChange={(open) => {
           if (!open) closeEditModal()
         }}
-        srTitle='Add/Update API Key'
+        srTitle='添加/更新 API 密钥'
       >
         <ChipModalHeader onClose={closeEditModal}>
           {editingMeta && (
             <>
-              {isUpdatingExistingKey ? 'Update' : 'Add'} {editingMeta.name} API Key
+              {isUpdatingExistingKey ? '更新' : '添加'} {editingMeta.name} API 密钥
             </>
           )}
         </ChipModalHeader>
         <ChipModalBody>
           <p className='px-2 text-[var(--text-secondary)] text-sm'>
             {props.multiKey
-              ? `Requests are distributed evenly across all ${editingMeta?.name} keys in this workspace. Your key is encrypted and stored securely.`
-              : `This key will be used for all ${editingMeta?.name} requests in this workspace. Your key is encrypted and stored securely.`}
+              ? `请求会均匀分配到本工作区的所有 ${editingMeta?.name} 密钥上。你的密钥已加密并安全存储。`
+              : `本工作区的所有 ${editingMeta?.name} 请求都将使用此密钥。你的密钥已加密并安全存储。`}
           </p>
-          <ChipModalField type='custom' title='API Key' required>
+          <ChipModalField type='custom' title='API 密钥' required>
             <input
               type='text'
               name='fakeusernameremembered'
@@ -393,7 +391,7 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
             />
             <div className={CHIP_FIELD_SHELL}>
               <input
-                aria-label='API Key'
+                aria-label='API 密钥'
                 type={showApiKey ? 'text' : 'password'}
                 value={apiKeyInput}
                 onChange={(e) => {
@@ -416,7 +414,7 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
                 variant='quiet'
                 className='size-[18px] shrink-0 rounded-sm p-0'
                 onClick={() => setShowApiKey(!showApiKey)}
-                aria-label={showApiKey ? 'Hide API key' : 'Show API key'}
+                aria-label={showApiKey ? '隐藏 API 密钥' : '显示 API 密钥'}
               >
                 {showApiKey ? <EyeOff className='size-[13px]' /> : <Eye className='size-[13px]' />}
               </Button>
@@ -425,10 +423,10 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
           {props.multiKey && (
             <ChipModalField
               type='input'
-              title='Name'
+              title='名称'
               value={nameInput}
               onChange={setNameInput}
-              placeholder='e.g. Production key'
+              placeholder='例如：生产密钥'
               maxLength={120}
               onSubmit={handleSave}
             />
@@ -439,7 +437,7 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
           onCancel={closeEditModal}
           cancelDisabled={isSaving}
           primaryAction={{
-            label: isSaving ? 'Saving...' : 'Save',
+            label: isSaving ? '保存中...' : '保存',
             onClick: handleSave,
             disabled: !apiKeyInput.trim() || isSaving,
           }}
@@ -451,22 +449,22 @@ export function BYOKKeyManager(props: BYOKKeyManagerProps) {
         onOpenChange={(open) => {
           if (!open) setDeleteConfirm(null)
         }}
-        srTitle='Delete API Key'
-        title='Delete API Key'
+        srTitle='删除 API 密钥'
+        title='删除 API 密钥'
         text={[
-          'Are you sure you want to delete the ',
-          { text: deleteMeta?.name ?? 'selected', bold: true },
-          ' API key? ',
+          '确定要删除',
+          { text: deleteMeta?.name ?? '所选', bold: true },
+          ' API 密钥吗？',
           isDeletingLastKey
-            ? { text: 'This workspace will revert to using platform hosted keys.', error: true }
-            : `Requests will continue using the remaining ${deleteMeta?.name ?? 'provider'} keys.`,
-          ' This action cannot be undone.',
+            ? { text: '该工作区将恢复使用平台托管的密钥。', error: true }
+            : `请求将继续使用剩余的 ${deleteMeta?.name ?? '提供方'} 密钥。`,
+          '此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Delete',
+          label: '删除',
           onClick: handleDelete,
           pending: isDeleting,
-          pendingLabel: 'Deleting...',
+          pendingLabel: '删除中...',
         }}
       />
     </>

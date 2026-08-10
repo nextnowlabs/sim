@@ -23,9 +23,9 @@ import { useOrganizationBilling } from '@/hooks/queries/organization'
 const logger = createLogger('InviteModal')
 
 const ROLE_OPTIONS = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'write', label: 'Write' },
-  { value: 'read', label: 'Read' },
+  { value: 'admin', label: '管理员' },
+  { value: 'write', label: '编辑' },
+  { value: 'read', label: '只读' },
 ] as const
 
 interface InviteModalProps {
@@ -71,20 +71,20 @@ export function InviteModal({
   const hasSeatData = !!organizationId && isEnterpriseOrg && totalSeats > 0
   const exceedsSeatCapacity = hasSeatData && userPerms.canAdmin && emails.length > availableSeats
   const seatLimitReason = exceedsSeatCapacity
-    ? `Only ${availableSeats} internal seat${availableSeats === 1 ? '' : 's'} available. External workspace invites do not require seats.`
+    ? `仅剩 ${availableSeats} 个内部席位。外部工作区邀请不需要席位。`
     : null
 
   const validateEmail = useCallback(
     (email: string): string | null => {
       const formatResult = quickValidateEmail(email)
       if (!formatResult.isValid) {
-        return formatResult.reason ?? 'Invalid email'
+        return formatResult.reason ?? '邮箱格式无效'
       }
       if (workspacePermissions?.users?.some((user) => user.email === email)) {
-        return `${email} is already a teammate in this workspace`
+        return `${email} 已是该工作区的成员`
       }
       if (session?.user?.email && session.user.email.toLowerCase() === email) {
-        return 'You cannot invite yourself'
+        return '不能邀请自己'
       }
       return null
     },
@@ -108,12 +108,10 @@ export function InviteModal({
         onSuccess: (result) => {
           const parts: string[] = []
           if (result.added.length > 0) {
-            parts.push(`${result.added.length} member${result.added.length === 1 ? '' : 's'} added`)
+            parts.push(`${result.added.length} 位成员已添加`)
           }
           if (result.successful.length > 0) {
-            parts.push(
-              `${result.successful.length} invite${result.successful.length === 1 ? '' : 's'} sent`
-            )
+            parts.push(`${result.successful.length} 封邀请已发送`)
           }
           if (parts.length > 0) {
             toast.success(parts.join(' · '))
@@ -125,7 +123,7 @@ export function InviteModal({
             setErrorMessage(
               result.failed.length === 1
                 ? result.failed[0].error
-                : `${result.failed.length} invitations failed. ${result.failed[0].error}`
+                : `${result.failed.length} 封邀请发送失败。${result.failed[0].error}`
             )
             return
           }
@@ -135,7 +133,7 @@ export function InviteModal({
         },
         onError: (error) => {
           logger.error('Error inviting teammates:', error)
-          setErrorMessage(error.message || 'An unexpected error occurred. Please try again.')
+          setErrorMessage(error.message || '发生意外错误,请重试。')
         },
       }
     )
@@ -172,31 +170,29 @@ export function InviteModal({
     <ChipModal
       open={open}
       onOpenChange={handleOpenChange}
-      srTitle={`Invite teammates to ${workspaceName || 'workspace'}`}
+      srTitle={`邀请团队成员加入${workspaceName || '工作区'}`}
     >
-      <ChipModalHeader onClose={() => handleOpenChange(false)}>Invite teammates</ChipModalHeader>
+      <ChipModalHeader onClose={() => handleOpenChange(false)}>邀请团队成员</ChipModalHeader>
       <ChipModalBody>
         <ChipModalField
           type='emails'
-          title='Emails'
+          title='邮箱'
           value={emails}
           onChange={handleEmailsChange}
           validate={validateEmail}
           error={errorMessage}
           hint={fieldHint}
           placeholder={
-            !canInviteMembers
-              ? inviteDisabledReason || 'Only administrators can invite new teammates'
-              : 'Enter emails'
+            !canInviteMembers ? inviteDisabledReason || '只有管理员可以邀请新成员' : '输入邮箱'
           }
           disabled={isSubmitting || !canInviteMembers}
         />
         <ChipModalField
           type='dropdown'
-          title='Invite as'
+          title='邀请为'
           options={ROLE_OPTIONS}
           value={inviteRole}
-          placeholder='Select role'
+          placeholder='选择角色'
           align='start'
           onChange={(role) => setInviteRole(role as PermissionType)}
         />
@@ -205,7 +201,7 @@ export function InviteModal({
         onCancel={() => handleOpenChange(false)}
         cancelDisabled={isSubmitting}
         primaryAction={{
-          label: isSubmitting ? 'Sending...' : 'Send invites',
+          label: isSubmitting ? '发送中...' : '发送邀请',
           onClick: handleSendInvites,
           disabled: isSendDisabled,
         }}

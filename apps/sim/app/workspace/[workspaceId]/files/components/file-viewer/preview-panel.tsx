@@ -207,7 +207,7 @@ const HtmlPreview = memo(function HtmlPreview({ content }: { content: string }) 
           srcDoc={wrappedContent}
           sandbox='allow-scripts'
           referrerPolicy='no-referrer'
-          title='HTML Preview'
+          title='HTML 预览'
           className='h-full w-full border-0 bg-[var(--surface-2)]'
         />
       )}
@@ -229,7 +229,7 @@ function SvgPreview({ content }: { content: string }) {
       {blobUrl && (
         <img
           src={blobUrl}
-          alt='SVG preview'
+          alt='SVG 预览'
           className='max-h-full max-w-full select-none object-contain'
           draggable={false}
         />
@@ -268,7 +268,7 @@ const CsvPreview = memo(function CsvPreview({
   if (headers.length === 0) {
     return (
       <div className='flex h-full items-center justify-center p-6'>
-        <p className='text-[13px] text-[var(--text-muted)]'>No data to display</p>
+        <p className='text-[13px] text-[var(--text-muted)]'>没有可显示的数据</p>
       </div>
     )
   }

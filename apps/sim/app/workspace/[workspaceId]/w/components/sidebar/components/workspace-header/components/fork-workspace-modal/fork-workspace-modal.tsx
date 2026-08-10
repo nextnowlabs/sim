@@ -50,12 +50,12 @@ type ResourceKey = Exclude<keyof GetForkResourcesResponse, 'deployedWorkflowCoun
 type ResourceSelection = Record<ResourceKey, Set<string>>
 
 const RESOURCE_KINDS: ReadonlyArray<{ key: ResourceKey; label: string }> = [
-  { key: 'files', label: 'Files' },
-  { key: 'tables', label: 'Tables' },
-  { key: 'knowledgeBases', label: 'Knowledge bases' },
-  { key: 'customTools', label: 'Custom tools' },
-  { key: 'skills', label: 'Skills' },
-  { key: 'workflowMcpServers', label: 'Workflow MCP servers' },
+  { key: 'files', label: '文件' },
+  { key: 'tables', label: '表格' },
+  { key: 'knowledgeBases', label: '知识库' },
+  { key: 'customTools', label: '自定义工具' },
+  { key: 'skills', label: '技能' },
+  { key: 'workflowMcpServers', label: '工作流 MCP 服务器' },
 ]
 
 const emptySelection = (): ResourceSelection => ({
@@ -163,11 +163,11 @@ export function ForkWorkspaceModal({
       { workspaceId: sourceWorkspaceId, body: { name: trimmed, copy } },
       {
         onSuccess: (result) => {
-          toast.success(`Forked into "${result.workspace.name}"`)
+          toast.success(`已创建副本 "${result.workspace.name}"`)
           setForkedWorkspace({ id: result.workspace.id, name: result.workspace.name })
           setActiveTab('activity')
         },
-        onError: (err) => setError(err.message || 'Failed to fork workspace'),
+        onError: (err) => setError(err.message || '创建副本失败'),
       }
     )
   }
@@ -187,18 +187,18 @@ export function ForkWorkspaceModal({
         workspaceId: sourceWorkspaceId,
         body: { otherWorkspaceId: undoableRun.otherWorkspaceId },
       })
-      toast.success(`Undid sync from "${undoableRun.otherName}"`)
+      toast.success(`已撤销来自 "${undoableRun.otherName}" 的同步`)
       setConfirmRollbackOpen(false)
       setActiveTab('activity')
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Undo failed'))
+      toast.error(getErrorMessage(err, '撤销失败'))
     }
   }
 
   const rollbackDisabled = rollback.isPending || !undoableRun
   const rollbackTooltip = undoableRun
-    ? `The last sync into this workspace (from ${undoableRun.otherName}) can be undone — it restores each workflow's prior deployed version.`
-    : 'No sync to roll back yet.'
+    ? `该工作区的上次同步(来自 ${undoableRun.otherName})可以撤销 — 将恢复每个工作流之前的已发布版本。`
+    : '暂无可回滚的同步。'
   const rollbackChip = (
     <Tooltip.Root>
       <Tooltip.Trigger asChild>
@@ -210,7 +210,7 @@ export function ForkWorkspaceModal({
             disabled={rollbackDisabled}
             className={rollbackDisabled ? 'pointer-events-none' : undefined}
           >
-            Rollback
+            回滚
           </Chip>
         </span>
       </Tooltip.Trigger>
@@ -222,13 +222,13 @@ export function ForkWorkspaceModal({
 
   return (
     <>
-      <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Manage Forks'>
-        <ChipModalHeader onClose={() => onOpenChange(false)}>Manage Forks</ChipModalHeader>
+      <ChipModal open={open} onOpenChange={onOpenChange} srTitle='管理副本'>
+        <ChipModalHeader onClose={() => onOpenChange(false)}>管理副本</ChipModalHeader>
         <ChipModalBody>
           <ChipModalTabs
             tabs={[
-              { value: 'config', label: 'Fork' },
-              { value: 'activity', label: 'Activity' },
+              { value: 'config', label: '创建副本' },
+              { value: 'activity', label: '活动' },
             ]}
             value={activeTab}
             onChange={(value) => setActiveTab(value as 'config' | 'activity')}
@@ -237,20 +237,20 @@ export function ForkWorkspaceModal({
           {activeTab === 'activity' ? (
             <ForkActivityPanel
               pending={isForking || rollback.isPending}
-              pendingLabel={rollback.isPending ? 'Undoing last sync…' : 'Creating fork…'}
+              pendingLabel={rollback.isPending ? '正在撤销上次同步…' : '正在创建副本…'}
               backgroundWorkspaceId={sourceWorkspaceId}
             />
           ) : (
             <>
               <div className='flex flex-col gap-7 px-2'>
-                <SettingsSection label='Forking from'>
-                  <ChipCopyInput value={sourceWorkspaceName} aria-label='Forking from' />
+                <SettingsSection label='副本来源'>
+                  <ChipCopyInput value={sourceWorkspaceName} aria-label='副本来源' />
                 </SettingsSection>
 
                 <SettingsSection
-                  label='Name'
+                  label='名称'
                   headerAccessory={
-                    <span className='text-[var(--text-error)]' title='Required'>
+                    <span className='text-[var(--text-error)]' title='必填'>
                       *
                     </span>
                   }
@@ -264,16 +264,16 @@ export function ForkWorkspaceModal({
                         handleSubmit()
                       }
                     }}
-                    placeholder='Workspace name'
+                    placeholder='工作区名称'
                     maxLength={100}
                     autoComplete='off'
                     disabled={isForking}
-                    aria-label='Workspace name'
+                    aria-label='工作区名称'
                   />
                 </SettingsSection>
 
                 {availableKinds.length > 0 ? (
-                  <SettingsSection label='Copy resources'>
+                  <SettingsSection label='复制资源'>
                     <div className='flex flex-col gap-2'>
                       {availableKinds.map((kind) =>
                         kind.key === 'files' ? (
@@ -341,15 +341,12 @@ export function ForkWorkspaceModal({
                       {hasDeselection ? (
                         <div className='flex items-start gap-1.5 text-[var(--text-secondary)] text-caption'>
                           <AlertTriangle className='mt-[1px] size-[14px] shrink-0' />
-                          <span>
-                            Some resources are not selected — references to them in your workflows
-                            will be cleared in the fork.
-                          </span>
+                          <span>部分资源未被选中 — 工作流中对它们的引用将在副本中被清除。</span>
                         </div>
                       ) : (
                         <p className='text-[var(--text-muted)] text-caption'>
-                          Everything referenced by your workflows is copied. Deselect a resource to
-                          skip it — its references will be cleared.
+                          工作流引用的所有资源都会被复制。取消选择某个资源以跳过它 —
+                          其引用将被清除。
                         </p>
                       )}
                     </div>
@@ -358,7 +355,7 @@ export function ForkWorkspaceModal({
 
                 {noDeployedWorkflows ? (
                   <p className='text-[var(--text-muted)] text-caption'>
-                    No deployed workflows to copy — your fork will start with a blank workflow.
+                    没有已发布的工作流可复制 — 副本将以一个空白工作流开始。
                   </p>
                 ) : null}
               </div>
@@ -373,19 +370,17 @@ export function ForkWorkspaceModal({
           primaryAction={
             activeTab === 'activity'
               ? forkedWorkspace
-                ? { label: 'Open fork', onClick: openFork }
-                : { label: 'Done', onClick: () => onOpenChange(false) }
+                ? { label: '打开副本', onClick: openFork }
+                : { label: '完成', onClick: () => onOpenChange(false) }
               : {
-                  label: isForking ? 'Forking...' : 'Fork',
+                  label: isForking ? '创建副本中...' : '创建副本',
                   onClick: handleSubmit,
                   // At the cap the button stays clickable (no name needed) so it can route to
                   // upgrade. Otherwise it needs a name AND the resources query loaded - forking
                   // before `resources.data` arrives would clear every reference (P1-C).
                   disabled: isForking || (canFork && (!name.trim() || !resources.data)),
                   disabledTooltip:
-                    canFork && name.trim() && !resources.data
-                      ? 'Loading workspace resources…'
-                      : undefined,
+                    canFork && name.trim() && !resources.data ? '正在加载工作区资源…' : undefined,
                 }
           }
         />
@@ -394,25 +389,25 @@ export function ForkWorkspaceModal({
       <ChipConfirmModal
         open={confirmRollbackOpen}
         onOpenChange={setConfirmRollbackOpen}
-        srTitle='Undo last sync'
-        title='Undo last sync'
+        srTitle='撤销上次同步'
+        title='撤销上次同步'
         text={[
-          'This restores each affected workflow to its ',
-          { text: 'prior deployed version', bold: true },
-          ' and removes workflows the sync created. Continue?',
+          '这将把每个受影响的工作流恢复到其 ',
+          { text: '之前的已发布版本', bold: true },
+          '，并移除同步创建的工作流。是否继续？',
         ]}
         confirm={{
-          label: 'Rollback',
+          label: '回滚',
           onClick: () => void runRollback(),
           pending: rollback.isPending,
-          pendingLabel: 'Rolling back...',
+          pendingLabel: '回滚中...',
         }}
       >
         <div className='flex items-start gap-1.5 px-2 text-[var(--text-secondary)] text-caption'>
           <AlertTriangle className='mt-[1px] size-[14px] shrink-0' />
           <span>
-            Resources copied into this workspace during syncs may remain afterward — rollback
-            restores workflows to their prior versions but does not remove copied resources.
+            同步期间复制到该工作区的资源可能会保留 —
+            回滚会恢复工作流的旧版本，但不会移除已复制的资源。
           </span>
         </div>
       </ChipConfirmModal>

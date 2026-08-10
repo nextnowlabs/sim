@@ -101,7 +101,7 @@ export async function extractSkillFromZip(
   })
 
   if (candidates.length === 0) {
-    throw new Error('No SKILL.md file found in the ZIP archive')
+    throw new Error('ZIP 归档中未找到 SKILL.md 文件')
   }
 
   candidates.sort((a, b) => {

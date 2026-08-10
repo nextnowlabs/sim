@@ -13,6 +13,67 @@ import {
 const CELL_ICONS = { slack: SlackIcon } as const
 
 /**
+ * zh-CN labels for section titles in {@link COMPARISON_SECTIONS}. The shared
+ * data file stays English for the public landing pricing page.
+ */
+const SECTION_TITLES: Record<string, string> = {
+  'Credits & pricing': '积分与定价',
+  'Workspaces & teams': '工作区与团队',
+  'Rate limits (runs/min)': '速率限制(运行/分钟)',
+  'Execution timeouts': '执行超时',
+  'Storage & data': '存储与数据',
+  Features: '功能',
+} as const
+
+/** zh-CN labels for row labels in {@link COMPARISON_SECTIONS}. */
+const ROW_LABELS: Record<string, string> = {
+  'Monthly credits': '每月积分',
+  'Daily refresh': '每日刷新',
+  Workspaces: '工作区',
+  'Invite teammates': '邀请团队成员',
+  'Sync executions': '同步执行',
+  'Async executions': '异步执行',
+  'API endpoint': 'API 端点',
+  'Sync timeout': '同步超时',
+  'Async timeout': '异步超时',
+  'File storage': '文件存储',
+  'Max tables': '最大表格数',
+  'Max rows per table': '每张表最大行数',
+  'Log retention': '日志保留',
+  'Sim Mailer (Inbox)': 'Sim Mailer(收件箱)',
+  'KB Live Sync': '知识库实时同步',
+  'Slack Connect': 'Slack Connect',
+  'Access Control': '访问控制',
+  SSO: 'SSO',
+  'SOC2 Compliance': 'SOC2 合规',
+  'Self Hosting': '自托管',
+  'Dedicated Support': '专属支持',
+} as const
+
+/** zh-CN labels for shared static cell values (units and plan-agnostic words). */
+const VALUE_LABELS: Record<string, string> = {
+  Unlimited: '无限',
+  Custom: '自定义',
+  '5 min': '5 分钟',
+  '50 min': '50 分钟',
+  '90 min': '90 分钟',
+  '30 days': '30 天',
+} as const
+
+/** Resolve a display label from the shared English data, falling back to the raw value. */
+function zhLabel(map: Record<string, string>, value: string): string {
+  return map[value] ?? value
+}
+
+/**
+ * Localize a cell value at render time: `true`/`false` render as icons/dashes,
+ * object values as brand icons, and strings are mapped through {@link VALUE_LABELS}.
+ */
+function localizeValue(value: CellValue): CellValue {
+  return typeof value === 'string' ? (VALUE_LABELS[value] ?? value) : value
+}
+
+/**
  * Resolved CTA for a plan column, mirroring the upgrade-page plan cards so the
  * table and cards stay in lockstep (same label, variant, and disabled state).
  */
@@ -150,10 +211,16 @@ export function ComparisonTable({
         {/* Top-left cell: title, subtitle, and billing toggle */}
         <div className='flex h-full flex-col justify-between gap-3 border-[var(--border)] border-r bg-[var(--surface-1)] px-4 py-4'>
           <div className='flex flex-col gap-0.5'>
-            <span className='font-medium text-[var(--text-primary)] text-base'>Compare plans</span>
-            <span className='text-[var(--text-muted)] text-small'>Find the right plan for you</span>
+            <span className='font-medium text-[var(--text-primary)] text-base'>对比套餐</span>
+            <span className='text-[var(--text-muted)] text-small'>找到适合你的套餐</span>
           </div>
-          <BillingPeriodToggle isAnnual={isAnnual} onChange={onIsAnnualChange} />
+          <BillingPeriodToggle
+            isAnnual={isAnnual}
+            onChange={onIsAnnualChange}
+            annualLabel='按年'
+            monthlyLabel='按月'
+            ariaLabel='计费周期'
+          />
         </div>
 
         {PLAN_COLUMNS.map((col) => {
@@ -198,7 +265,7 @@ export function ComparisonTable({
               )}
             >
               <span className='font-medium text-[var(--text-primary)] text-small'>
-                {section.title}
+                {zhLabel(SECTION_TITLES, section.title)}
               </span>
             </div>
             <div
@@ -218,7 +285,9 @@ export function ComparisonTable({
                     rowIdx < section.rows.length - 1 && 'border-[var(--border-1)] border-b'
                   )}
                 >
-                  <span className='text-[var(--text-body)] text-small'>{row.label}</span>
+                  <span className='text-[var(--text-body)] text-small'>
+                    {zhLabel(ROW_LABELS, row.label)}
+                  </span>
                 </div>
 
                 {/* Plan cells */}
@@ -230,7 +299,7 @@ export function ComparisonTable({
                       rowIdx < section.rows.length - 1 && 'border-[var(--border-1)] border-b'
                     )}
                   >
-                    <Cell value={value} />
+                    <Cell value={localizeValue(value)} />
                   </div>
                 ))}
               </div>

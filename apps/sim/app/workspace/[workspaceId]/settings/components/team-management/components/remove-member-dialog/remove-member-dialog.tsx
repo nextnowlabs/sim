@@ -23,11 +23,7 @@ export function RemoveMemberDialog({
   isExternalRemoval = false,
   isSubmitting = false,
 }: RemoveMemberDialogProps) {
-  const title = isSelfRemoval
-    ? 'Leave Organization'
-    : isExternalRemoval
-      ? 'Remove External Member'
-      : 'Remove Team Member'
+  const title = isSelfRemoval ? '退出组织' : isExternalRemoval ? '移除外部成员' : '移除团队成员'
 
   const errorMessage =
     error instanceof Error && error.message ? error.message : error ? String(error) : null
@@ -43,21 +39,17 @@ export function RemoveMemberDialog({
       title={title}
       text={
         isSelfRemoval
-          ? 'Are you sure you want to leave this organization? You will lose access to all team resources. This action cannot be undone.'
+          ? '确定要退出此组织吗?你将失去对所有团队资源的访问权限。此操作无法撤销。'
           : isExternalRemoval
             ? [
-                'Are you sure you want to remove ',
+                '确定要将 ',
                 { text: memberName, bold: true },
-                ' from all organization workspaces? Their workspace access and workspace credential access will be revoked. This action cannot be undone.',
+                ' 从所有组织工作区中移除吗?其工作区访问权限和工作区凭据访问权限将被撤销。此操作无法撤销。',
               ]
-            : [
-                'Are you sure you want to remove ',
-                { text: memberName, bold: true },
-                ' from the team? This action cannot be undone.',
-              ]
+            : ['确定要将 ', { text: memberName, bold: true }, ' 从团队中移除吗?此操作无法撤销。']
       }
       confirm={{
-        label: isSelfRemoval ? 'Leave Organization' : 'Remove',
+        label: isSelfRemoval ? '退出组织' : '移除',
         onClick: () => onConfirmRemove(),
         pending: isSubmitting,
       }}

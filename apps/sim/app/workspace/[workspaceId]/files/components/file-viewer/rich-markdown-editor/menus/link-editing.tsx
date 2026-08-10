@@ -32,7 +32,7 @@ export function LinkUrlInput({ value, onChange, onCommit, onCancel, inputRef }: 
   return (
     <input
       ref={inputRef}
-      aria-label='Link URL'
+      aria-label='链接 URL'
       type='text'
       inputMode='url'
       value={value}
@@ -46,7 +46,7 @@ export function LinkUrlInput({ value, onChange, onCommit, onCancel, inputRef }: 
           onCancel()
         }
       }}
-      placeholder='Paste or type a link…'
+      placeholder='粘贴或输入链接…'
       className='h-[28px] w-[220px] bg-transparent px-2 text-[var(--text-body)] text-small outline-none placeholder:text-[var(--text-subtle)]'
     />
   )

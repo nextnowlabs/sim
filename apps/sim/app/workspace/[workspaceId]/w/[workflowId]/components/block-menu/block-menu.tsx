@@ -118,15 +118,15 @@ export function BlockMenu({
   const canRemoveFromSubflow = showRemoveFromSubflow && !hasTriggerBlock
 
   const getToggleEnabledLabel = () => {
-    if (allEnabled) return 'Disable'
-    if (allDisabled) return 'Enable'
-    return 'Toggle Enabled'
+    if (allEnabled) return '禁用'
+    if (allDisabled) return '启用'
+    return '切换启用状态'
   }
 
   const getToggleLockedLabel = () => {
-    if (allLocked) return 'Unlock'
-    if (allUnlocked) return 'Lock'
-    return 'Toggle Lock'
+    if (allLocked) return '解锁'
+    if (allUnlocked) return '锁定'
+    return '切换锁定状态'
   }
 
   return (
@@ -155,7 +155,7 @@ export function BlockMenu({
             onClose()
           }}
         >
-          <span>Copy</span>
+          <span>复制</span>
           <span className='ml-auto opacity-70 group-hover:opacity-100'>⌘C</span>
         </PopoverItem>
         <PopoverItem
@@ -166,7 +166,7 @@ export function BlockMenu({
             onClose()
           }}
         >
-          <span>Cut</span>
+          <span>剪切</span>
           <span className='ml-auto opacity-70 group-hover:opacity-100'>⌘X</span>
         </PopoverItem>
         <PopoverItem
@@ -177,7 +177,7 @@ export function BlockMenu({
             onClose()
           }}
         >
-          <span>Paste</span>
+          <span>粘贴</span>
           <span className='ml-auto opacity-70 group-hover:opacity-100'>⌘V</span>
         </PopoverItem>
         {!hasSingletonBlock && (
@@ -188,7 +188,7 @@ export function BlockMenu({
               onClose()
             }}
           >
-            Duplicate
+            复制节点
           </PopoverItem>
         )}
 
@@ -204,7 +204,7 @@ export function BlockMenu({
               }
             }}
           >
-            {hasBlockWithDisabledParent ? 'Parent is disabled' : getToggleEnabledLabel()}
+            {hasBlockWithDisabledParent ? '父容器已禁用' : getToggleEnabledLabel()}
           </PopoverItem>
         )}
         {!allNoteBlocks && !isSubflow && (
@@ -215,7 +215,7 @@ export function BlockMenu({
               onClose()
             }}
           >
-            Flip Handles
+            翻转端口
           </PopoverItem>
         )}
         {canRemoveFromSubflow && (
@@ -226,7 +226,7 @@ export function BlockMenu({
               onClose()
             }}
           >
-            Remove from Subflow
+            移出子流程
           </PopoverItem>
         )}
         {canAdmin && onToggleLocked && (
@@ -239,7 +239,7 @@ export function BlockMenu({
               }
             }}
           >
-            {hasBlockWithLockedParent ? 'Parent is locked' : getToggleLockedLabel()}
+            {hasBlockWithLockedParent ? '父容器已锁定' : getToggleLockedLabel()}
           </PopoverItem>
         )}
 
@@ -253,7 +253,7 @@ export function BlockMenu({
               onClose()
             }}
           >
-            Rename
+            重命名
           </PopoverItem>
         )}
         {isSingleBlock && (
@@ -263,7 +263,7 @@ export function BlockMenu({
               onClose()
             }}
           >
-            Open Editor
+            打开编辑器
           </PopoverItem>
         )}
 
@@ -280,7 +280,7 @@ export function BlockMenu({
                 }
               }}
             >
-              Run from block
+              从此节点运行
             </PopoverItem>
             {/* Hide "Run until" for triggers - they're always at the start */}
             {!hasTriggerBlock && (
@@ -293,7 +293,7 @@ export function BlockMenu({
                   }
                 }}
               >
-                Run until block
+                运行至此节点
               </PopoverItem>
             )}
           </>
@@ -309,7 +309,7 @@ export function BlockMenu({
             onClose()
           }}
         >
-          <span>Delete</span>
+          <span>删除</span>
           <span className='ml-auto opacity-70 group-hover:opacity-100'>⌫</span>
         </PopoverItem>
       </PopoverContent>

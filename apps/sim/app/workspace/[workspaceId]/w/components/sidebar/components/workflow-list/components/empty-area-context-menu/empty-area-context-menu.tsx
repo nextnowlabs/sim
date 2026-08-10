@@ -76,7 +76,7 @@ export function EmptyAreaContextMenu({
             onClose()
           }}
         >
-          Create workflow
+          新建工作流
         </PopoverItem>
         <PopoverItem
           disabled={disableCreateFolder}
@@ -85,7 +85,7 @@ export function EmptyAreaContextMenu({
             onClose()
           }}
         >
-          Create folder
+          新建文件夹
         </PopoverItem>
       </PopoverContent>
     </Popover>

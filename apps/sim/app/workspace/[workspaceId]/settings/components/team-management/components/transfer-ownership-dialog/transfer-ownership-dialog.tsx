@@ -85,13 +85,13 @@ export function TransferOwnershipDialog({
     <ChipConfirmModal
       open={open}
       onOpenChange={handleClose}
-      srTitle='Leave organization'
-      title='Leave organization'
+      srTitle='退出组织'
+      title='退出组织'
       confirm={{
-        label: 'Transfer & leave',
+        label: '转让并退出',
         onClick: handleConfirm,
         pending: isSubmitting,
-        pendingLabel: 'Transferring...',
+        pendingLabel: '转让中...',
         disabled: !selectedUserId || !hasCandidates || isLoadingMembers,
       }}
     >
@@ -108,15 +108,12 @@ export function TransferOwnershipDialog({
           </div>
         ) : !hasCandidates ? (
           <p className='px-2 text-[var(--text-secondary)] text-sm'>
-            You're the only member of this organization. Invite another admin before leaving.
+            你是此组织中唯一的成员。退出前请先邀请另一位管理员。
           </p>
         ) : (
           <div className='space-y-3'>
             <p className='px-2 text-[var(--text-secondary)] text-sm'>
-              As the owner, you need to hand off the organization before you can leave. Pick a
-              member to become the new owner. They'll inherit billing access, seat management, and
-              all owner-only permissions. You'll lose access to every shared workspace in this
-              organization.
+              作为所有者,退出前需要先将组织移交出去。选择一位成员成为新的所有者。他将继承计费访问权限、席位管理和所有仅所有者拥有的权限。你将失去对此组织所有共享工作区的访问权限。
             </p>
 
             {hasPaidSubscription && (
@@ -124,17 +121,14 @@ export function TransferOwnershipDialog({
                 variant='default'
                 className='rounded-md px-3 py-2'
                 textClassName='text-[var(--text-primary)]'
-                actionLabel={isOpeningBillingPortal ? 'Opening...' : 'Open Stripe billing portal'}
+                actionLabel={isOpeningBillingPortal ? '打开中...' : '打开 Stripe 计费门户'}
                 actionDisabled={isOpeningBillingPortal}
                 onAction={onOpenBillingPortal}
                 text={
                   <>
-                    <span className='block font-medium'>
-                      Your payment method stays on this organization
-                    </span>
+                    <span className='block font-medium'>你的支付方式仍保留在此组织</span>
                     <span className='block text-[var(--text-secondary)]'>
-                      Future charges will keep hitting the card you added. Open the Stripe billing
-                      portal to remove it before you leave.
+                      后续扣款仍会使用你添加的卡片。退出前,请打开 Stripe 计费门户将其移除。
                     </span>
                   </>
                 }
@@ -147,13 +141,13 @@ export function TransferOwnershipDialog({
               icon={Search}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder='Search members...'
+              placeholder='搜索成员...'
             />
 
             <div className='max-h-[280px] overflow-y-auto rounded-md border border-[var(--border-1)]'>
               {candidates.length === 0 ? (
                 <div className='px-3 py-4 text-center text-[var(--text-muted)] text-small'>
-                  No members match "{search}"
+                  没有匹配 "{search}" 的成员
                 </div>
               ) : (
                 <ul className='divide-y divide-[var(--border-1)]'>
@@ -187,7 +181,7 @@ export function TransferOwnershipDialog({
                               </span>
                               {m.role === 'admin' && (
                                 <Badge variant='gray-secondary' size='sm'>
-                                  Admin
+                                  管理员
                                 </Badge>
                               )}
                             </div>

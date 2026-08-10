@@ -317,7 +317,7 @@ const TraceTreeRow = memo(function TraceTreeRow({
               e.stopPropagation()
               onToggleExpand(id)
             }}
-            aria-label={isExpanded ? 'Collapse' : 'Expand'}
+            aria-label={isExpanded ? '折叠' : '展开'}
           >
             <ChevronDown
               className={cn(
@@ -509,7 +509,7 @@ function DetailCodeSection({
                       )}
                     </Button>
                   </Tooltip.Trigger>
-                  <Tooltip.Content side='top'>{copied ? 'Copied' : 'Copy'}</Tooltip.Content>
+                  <Tooltip.Content side='top'>{copied ? '已复制' : '复制'}</Tooltip.Content>
                 </Tooltip.Root>
                 <Tooltip.Root>
                   <Tooltip.Trigger asChild>
@@ -541,7 +541,7 @@ function DetailCodeSection({
                 type='text'
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder='Search...'
+                placeholder='搜索…'
                 className='mr-0.5 w-[94px]'
               />
               <span
@@ -557,7 +557,7 @@ function DetailCodeSection({
                 className='!p-1'
                 onClick={goToPreviousMatch}
                 disabled={matchCount === 0}
-                aria-label='Previous match'
+                aria-label='上一个匹配'
               >
                 <ArrowUp className='size-[12px]' />
               </Button>
@@ -566,7 +566,7 @@ function DetailCodeSection({
                 className='!p-1'
                 onClick={goToNextMatch}
                 disabled={matchCount === 0}
-                aria-label='Next match'
+                aria-label='下一个匹配'
               >
                 <ArrowDown className='size-[12px]' />
               </Button>
@@ -574,7 +574,7 @@ function DetailCodeSection({
                 variant='ghost'
                 className='!p-1'
                 onClick={closeSearch}
-                aria-label='Close search'
+                aria-label='关闭搜索'
               >
                 <X className='size-[12px]' />
               </Button>
@@ -667,36 +667,36 @@ const TraceDetailPane = memo(function TraceDetailPane({ span }: { span: TraceSpa
   const endedAt = parseTime(span.endTime)
 
   const metaEntries: { label: string; value: string }[] = []
-  metaEntries.push({ label: 'Type', value: span.type })
-  metaEntries.push({ label: 'Duration', value: formatDuration(duration, { precision: 2 }) || '—' })
-  if (span.provider) metaEntries.push({ label: 'Provider', value: span.provider })
-  if (span.model) metaEntries.push({ label: 'Model', value: span.model })
-  if (span.finishReason) metaEntries.push({ label: 'Finish reason', value: span.finishReason })
+  metaEntries.push({ label: '类型', value: span.type })
+  metaEntries.push({ label: '时长', value: formatDuration(duration, { precision: 2 }) || '—' })
+  if (span.provider) metaEntries.push({ label: '提供商', value: span.provider })
+  if (span.model) metaEntries.push({ label: '模型', value: span.model })
+  if (span.finishReason) metaEntries.push({ label: '结束原因', value: span.finishReason })
   const ttftFormatted = formatTtft(span.ttft)
   if (ttftFormatted) metaEntries.push({ label: 'TTFT', value: ttftFormatted })
   const tpsFormatted = isModelSpan ? formatTps(span.tokens?.output, duration) : undefined
-  if (tpsFormatted) metaEntries.push({ label: 'Throughput', value: tpsFormatted })
+  if (tpsFormatted) metaEntries.push({ label: '吞吐量', value: tpsFormatted })
   const inputTokens = formatTokenCount(span.tokens?.input)
   const outputTokens = formatTokenCount(span.tokens?.output)
   const totalTokens = formatTokenCount(span.tokens?.total)
   const cacheRead = formatTokenCount(span.tokens?.cacheRead)
   const cacheWrite = formatTokenCount(span.tokens?.cacheWrite)
   const reasoning = formatTokenCount(span.tokens?.reasoning)
-  if (inputTokens) metaEntries.push({ label: 'Input tokens', value: inputTokens })
-  if (outputTokens) metaEntries.push({ label: 'Output tokens', value: outputTokens })
-  if (totalTokens) metaEntries.push({ label: 'Total tokens', value: totalTokens })
-  if (cacheRead) metaEntries.push({ label: 'Cache read', value: cacheRead })
-  if (cacheWrite) metaEntries.push({ label: 'Cache write', value: cacheWrite })
-  if (reasoning) metaEntries.push({ label: 'Reasoning tokens', value: reasoning })
+  if (inputTokens) metaEntries.push({ label: '输入 tokens', value: inputTokens })
+  if (outputTokens) metaEntries.push({ label: '输出 tokens', value: outputTokens })
+  if (totalTokens) metaEntries.push({ label: '总 tokens', value: totalTokens })
+  if (cacheRead) metaEntries.push({ label: '缓存读取', value: cacheRead })
+  if (cacheWrite) metaEntries.push({ label: '缓存写入', value: cacheWrite })
+  if (reasoning) metaEntries.push({ label: '推理 tokens', value: reasoning })
   // Per-span cost is intentionally not shown: cost lives only in the usage_log
   // ledger (the authoritative, multiplier-inclusive run total drives the header
   // chip). Persisted spans are cost-stripped, so a per-span row would render on
   // live runs but vanish on reload — show one consistent total instead.
-  if (span.errorType) metaEntries.push({ label: 'Error type', value: span.errorType })
+  if (span.errorType) metaEntries.push({ label: '错误类型', value: span.errorType })
   if (span.iterationIndex !== undefined)
-    metaEntries.push({ label: 'Iteration', value: String(span.iterationIndex + 1) })
+    metaEntries.push({ label: '迭代', value: String(span.iterationIndex + 1) })
 
-  const statusLabel = hasError ? 'Error' : 'Success'
+  const statusLabel = hasError ? '错误' : '成功'
 
   return (
     <div className='flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-3.5 pt-3 pb-4'>
@@ -754,7 +754,7 @@ const TraceDetailPane = memo(function TraceDetailPane({ span }: { span: TraceSpa
       {span.output !== undefined && span.output !== null && (
         <DetailCodeSection
           key={isDirectError ? 'error' : 'output'}
-          label={isDirectError ? 'Error' : 'Output'}
+          label={isDirectError ? '错误' : '输出'}
           data={span.output}
           isError={isDirectError}
         />
@@ -766,7 +766,7 @@ const TraceDetailPane = memo(function TraceDetailPane({ span }: { span: TraceSpa
       {span.errorMessage && (
         <DetailCodeSection
           key='error-message'
-          label='Error message'
+          label='错误消息'
           data={span.errorMessage}
           isError
         />
@@ -1015,7 +1015,7 @@ export const TraceView = memo(function TraceView({ traceSpans, runCostDollars }:
             type='text'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder='Filter spans'
+            placeholder='筛选 span'
             className='w-[140px]'
           />
           <Tooltip.Root>
@@ -1025,7 +1025,7 @@ export const TraceView = memo(function TraceView({ traceSpans, runCostDollars }:
                 variant='ghost'
                 className='!p-1'
                 onClick={() => copyTrace(JSON.stringify(traceSpans, null, 2))}
-                aria-label='Copy raw trace'
+                aria-label='复制原始追踪'
               >
                 {traceCopied ? (
                   <Check className='size-[12px] text-[var(--text-success)]' />

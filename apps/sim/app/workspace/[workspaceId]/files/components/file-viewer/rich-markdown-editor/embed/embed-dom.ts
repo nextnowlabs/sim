@@ -28,7 +28,7 @@ export function createEmbedDom(embedInfo: EmbedInfo): HTMLElement {
 
     const iframe = document.createElement('iframe')
     iframe.src = embedInfo.url
-    iframe.title = 'Media'
+    iframe.title = '媒体'
     iframe.allow = IFRAME_ALLOW
     iframe.allowFullscreen = true
     iframe.loading = 'lazy'

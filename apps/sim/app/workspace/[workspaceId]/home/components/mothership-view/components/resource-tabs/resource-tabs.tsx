@@ -106,9 +106,9 @@ const PREVIEW_MODE_ICONS = {
 } satisfies Record<PreviewMode, (props: ComponentProps<typeof Eye>) => ReactNode>
 
 const PREVIEW_MODE_LABELS: Record<PreviewMode, string> = {
-  editor: 'Split Mode',
-  split: 'Preview Mode',
-  preview: 'Edit Mode',
+  editor: '分屏模式',
+  split: '预览模式',
+  preview: '编辑模式',
 }
 
 /**
@@ -552,13 +552,13 @@ export function ResourceTabs({
             variant='subtle'
             onClick={collapseResource}
             className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-            aria-label='Collapse resource view'
+            aria-label='折叠资源视图'
           >
             <PanelLeft className={cn(RESOURCE_TAB_ICON_CLASS, '-scale-x-100')} />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side='bottom'>
-          <p>Collapse</p>
+          <p>折叠</p>
         </Tooltip.Content>
       </Tooltip.Root>
       <div className={cn('flex min-w-0 flex-1 items-center', RESOURCE_TAB_GAP_CLASS)}>
@@ -635,7 +635,7 @@ export function ResourceTabs({
                   variant='subtle'
                   onClick={onCyclePreviewMode}
                   className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-                  aria-label='Cycle preview mode'
+                  aria-label='切换预览模式'
                 >
                   <PreviewModeIcon mode={previewMode} className={RESOURCE_TAB_ICON_CLASS} />
                 </Button>

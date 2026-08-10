@@ -1191,7 +1191,7 @@ try {
         open={showDeleteConfirm}
         onOpenChange={setShowDeleteConfirm}
         srTitle='Delete Custom Tool'
-        title='Delete Custom Tool'
+        title='删除自定义工具'
         text={[
           {
             text: 'This will permanently delete the tool and remove it from any workflows that are using it.',

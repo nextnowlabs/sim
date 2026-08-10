@@ -9,6 +9,7 @@ import {
   Switch,
 } from '@sim/emcn'
 import { format } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import type {
   MonthlyMode,
   Recurrence,
@@ -23,17 +24,17 @@ const DEFAULT_RECURRING_FREQUENCY = 'daily'
 
 /** Sunday-first weekday order with single-letter labels and full names for a11y. */
 const WEEKDAYS = [
-  { value: 0, short: 'S', name: 'Sunday' },
-  { value: 1, short: 'M', name: 'Monday' },
-  { value: 2, short: 'T', name: 'Tuesday' },
-  { value: 3, short: 'W', name: 'Wednesday' },
-  { value: 4, short: 'T', name: 'Thursday' },
-  { value: 5, short: 'F', name: 'Friday' },
-  { value: 6, short: 'S', name: 'Saturday' },
+  { value: 0, short: '日', name: '周日' },
+  { value: 1, short: '一', name: '周一' },
+  { value: 2, short: '二', name: '周二' },
+  { value: 3, short: '三', name: '周三' },
+  { value: 4, short: '四', name: '周四' },
+  { value: 5, short: '五', name: '周五' },
+  { value: 6, short: '六', name: '周六' },
 ] as const
 
 /** Ordinal words for the 1st–5th weekday-of-month, matching a calendar app's labels. */
-const ORDINALS = ['first', 'second', 'third', 'fourth', 'fifth'] as const
+const ORDINALS = ['第一个', '第二个', '第三个', '第四个', '第五个'] as const
 
 /** The frequency presets the dropdown authors, keyed by a synthetic option value. */
 type FrequencyOption = 'daily' | 'weekly' | 'weekdays' | 'monthly' | 'yearly' | 'custom'
@@ -72,14 +73,14 @@ function frequencyOptionFor(recurrence: Recurrence): FrequencyOption {
  * would silently skip months without a 5th occurrence.
  */
 function monthlyModeOptions(launch: Date): Array<{ value: MonthlyMode; label: string }> {
-  const weekdayName = format(launch, 'EEEE')
+  const weekdayName = format(launch, 'EEEE', { locale: zhCN })
   const ordinal = Math.ceil(launch.getDate() / 7)
   const options: Array<{ value: MonthlyMode; label: string }> = [
-    { value: 'day-of-month', label: `On day ${format(launch, 'd')}` },
+    { value: 'day-of-month', label: `每月 ${format(launch, 'd')} 日` },
   ]
   if (ordinal <= 4)
-    options.push({ value: 'nth-weekday', label: `On the ${ORDINALS[ordinal - 1]} ${weekdayName}` })
-  options.push({ value: 'last-weekday', label: `On the last ${weekdayName}` })
+    options.push({ value: 'nth-weekday', label: `每月的${ORDINALS[ordinal - 1]}${weekdayName}` })
+  options.push({ value: 'last-weekday', label: `每月的最后一个${weekdayName}` })
   return options
 }
 
@@ -127,12 +128,12 @@ export function RecurrenceSection({ recurrence, onChange, launchDate }: Recurren
     : 'last-weekday'
 
   const frequencyOptions = [
-    { value: 'daily', label: 'Daily' },
-    { value: 'weekly', label: 'Weekly' },
-    { value: 'weekdays', label: 'Weekdays' },
-    { value: 'monthly', label: 'Monthly' },
-    { value: 'yearly', label: `Yearly on ${format(launch, 'MMM d')}` },
-    ...(recurrence.frequency === 'custom' ? [{ value: 'custom', label: 'Custom' }] : []),
+    { value: 'daily', label: '每天' },
+    { value: 'weekly', label: '每周' },
+    { value: 'weekdays', label: '工作日' },
+    { value: 'monthly', label: '每月' },
+    { value: 'yearly', label: `每年 ${format(launch, 'M月d日')}` },
+    ...(recurrence.frequency === 'custom' ? [{ value: 'custom', label: '自定义' }] : []),
   ]
 
   /**
@@ -209,7 +210,7 @@ export function RecurrenceSection({ recurrence, onChange, launchDate }: Recurren
     <div className='flex flex-col'>
       <ChipModalSeparator />
       <div className='flex flex-col gap-4 px-2 pt-4 pb-4.5'>
-        <ChipModalField type='custom' title='Recurring'>
+        <ChipModalField type='custom' title='重复'>
           <Switch checked={isRecurring} onCheckedChange={handleRecurringToggle} />
         </ChipModalField>
 
@@ -217,14 +218,14 @@ export function RecurrenceSection({ recurrence, onChange, launchDate }: Recurren
           <>
             <ChipModalField
               type='dropdown'
-              title='Frequency'
+              title='频率'
               value={frequencyOptionFor(recurrence)}
               options={frequencyOptions}
               onChange={handleFrequencyChange}
             />
 
             {recurrence.frequency === 'weekly' && (
-              <ChipModalField type='custom' title='Repeat on'>
+              <ChipModalField type='custom' title='重复于'>
                 {/* A one-row extract of the calendar: seven equal day cells built
                     from the same {@link CalendarDayCell} the date picker uses, so
                     the weekday toggles read as a sibling of the calendar rather than
@@ -252,7 +253,7 @@ export function RecurrenceSection({ recurrence, onChange, launchDate }: Recurren
             {recurrence.frequency === 'monthly' && (
               <ChipModalField
                 type='dropdown'
-                title='On'
+                title='在'
                 value={monthlyValue}
                 options={monthlyOptions}
                 onChange={(value) => onChange({ ...recurrence, monthlyMode: value as MonthlyMode })}
@@ -261,18 +262,18 @@ export function RecurrenceSection({ recurrence, onChange, launchDate }: Recurren
 
             <ChipModalField
               type='dropdown'
-              title='Ends'
+              title='结束'
               value={recurrence.end.type}
               options={[
-                { value: 'never', label: 'No end' },
-                { value: 'on', label: 'Ends on' },
-                { value: 'after', label: 'Ends after' },
+                { value: 'never', label: '永不结束' },
+                { value: 'on', label: '在指定日期结束' },
+                { value: 'after', label: '在指定次数后结束' },
               ]}
               onChange={handleEndChange}
             />
 
             {recurrence.end.type === 'on' && (
-              <ChipModalField type='custom' title='End date'>
+              <ChipModalField type='custom' title='结束日期'>
                 <ChipDatePicker
                   value={recurrence.end.date}
                   onChange={(date) => onChange({ ...recurrence, end: { type: 'on', date } })}
@@ -284,7 +285,7 @@ export function RecurrenceSection({ recurrence, onChange, launchDate }: Recurren
             {recurrence.end.type === 'after' && (
               <ChipModalField
                 type='input'
-                title='Number of runs'
+                title='运行次数'
                 value={String(recurrence.end.count)}
                 onChange={(value) => {
                   const count = Math.max(1, Math.floor(Number(value) || 1))

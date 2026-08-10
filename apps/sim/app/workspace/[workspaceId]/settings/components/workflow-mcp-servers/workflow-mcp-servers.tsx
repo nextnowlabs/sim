@@ -353,16 +353,14 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
   )
 
   if (isLoading) {
-    return <SettingsPanel back={{ text: 'MCP servers', icon: ArrowLeft, onSelect: onBack }} />
+    return <SettingsPanel back={{ text: 'MCP 服务器', icon: ArrowLeft, onSelect: onBack }} />
   }
 
   if (error || !data) {
     return (
-      <SettingsPanel back={{ text: 'MCP servers', icon: ArrowLeft, onSelect: onBack }}>
+      <SettingsPanel back={{ text: 'MCP 服务器', icon: ArrowLeft, onSelect: onBack }}>
         <div className='flex min-h-0 flex-1 items-center justify-center'>
-          <p className='text-[var(--text-error)] text-xs leading-tight'>
-            Failed to load server details
-          </p>
+          <p className='text-[var(--text-error)] text-xs leading-tight'>加载服务器详情失败</p>
         </div>
       </SettingsPanel>
     )
@@ -373,27 +371,25 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
   return (
     <>
       <SettingsPanel
-        back={{ text: 'MCP servers', icon: ArrowLeft, onSelect: onBack }}
+        back={{ text: 'MCP 服务器', icon: ArrowLeft, onSelect: onBack }}
         title={server.name}
         actions={[
-          { text: 'Edit server', onSelect: handleOpenEditServer },
+          { text: '编辑服务器', onSelect: handleOpenEditServer },
           {
-            text: 'Add workflows',
+            text: '添加工作流',
             icon: Plus,
             variant: 'primary',
             onSelect: () => setShowAddWorkflow(true),
             disabled: !canAddWorkflow,
-            tooltip: showAddDisabledTooltip
-              ? 'All deployed workflows have been added to this server.'
-              : undefined,
+            tooltip: showAddDisabledTooltip ? '所有已发布的工作流都已添加到此服务器。' : undefined,
           },
         ]}
       >
         <div className='flex min-h-0 flex-1 flex-col'>
           <ChipModalTabs
             tabs={[
-              { value: 'details', label: 'Details' },
-              { value: 'workflows', label: 'Workflows' },
+              { value: 'details', label: '详情' },
+              { value: 'workflows', label: '工作流' },
             ]}
             value={activeServerTab}
             onChange={(value) => setActiveServerTab(value as 'workflows' | 'details')}
@@ -402,12 +398,11 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
           <div className='min-h-[300px] pt-4'>
             {activeServerTab === 'workflows' && (
               <div className='flex flex-col gap-4.5'>
-                <span className='font-medium text-[var(--text-primary)] text-sm'>Workflows</span>
+                <span className='font-medium text-[var(--text-primary)] text-sm'>工作流</span>
 
                 {tools.length === 0 ? (
                   <p className='text-[var(--text-muted)] text-sm'>
-                    No workflows added yet. Click &quot;Add Workflow&quot; to add a deployed
-                    workflow.
+                    尚未添加工作流。点击"添加工作流"添加已发布的工作流。
                   </p>
                 ) : (
                   <div className='flex flex-col gap-2'>
@@ -418,16 +413,16 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                             {tool.toolName}
                           </span>
                           <p className='truncate text-[12px] text-[var(--text-muted)]'>
-                            {tool.toolDescription || 'No description'}
+                            {tool.toolDescription || '暂无描述'}
                           </p>
                         </div>
                         <div className='flex flex-shrink-0 items-center gap-1'>
                           <RowActionsMenu
-                            label='Tool actions'
+                            label='工具操作'
                             actions={[
-                              { label: 'Edit', onSelect: () => handleOpenToolEdit(tool) },
+                              { label: '编辑', onSelect: () => handleOpenToolEdit(tool) },
                               {
-                                label: 'Remove',
+                                label: '移除',
                                 destructive: true,
                                 disabled: deleteToolMutation.isPending,
                                 onSelect: () => setToolToDelete(tool),
@@ -442,7 +437,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
 
                 {deployedWorkflows.length === 0 && !isLoadingWorkflows && (
                   <p className='mt-1 text-[var(--text-muted)] text-xs'>
-                    Deploy a workflow first to add it to this server.
+                    请先发布工作流，再将其添加到此服务器。
                   </p>
                 )}
               </div>
@@ -453,29 +448,25 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                 <div className='grid grid-cols-[1fr_1fr_1fr] gap-x-6 gap-y-3.5'>
                   <div className='flex flex-col gap-1'>
                     <span className='font-medium text-[var(--text-primary)] text-sm'>
-                      Server Name
+                      服务器名称
                     </span>
                     <p className='text-[var(--text-secondary)] text-base'>{server.name}</p>
                   </div>
                   <div className='flex flex-col gap-1'>
-                    <span className='font-medium text-[var(--text-primary)] text-sm'>
-                      Transport
-                    </span>
+                    <span className='font-medium text-[var(--text-primary)] text-sm'>传输方式</span>
                     <p className='text-[var(--text-secondary)] text-base'>Streamable-HTTP</p>
                   </div>
                   <div className='flex flex-col gap-1'>
-                    <span className='font-medium text-[var(--text-primary)] text-sm'>Access</span>
+                    <span className='font-medium text-[var(--text-primary)] text-sm'>访问权限</span>
                     <p className='text-[var(--text-secondary)] text-base'>
-                      {server.isPublic ? 'Public' : 'API Key'}
+                      {server.isPublic ? '公开' : 'API 密钥'}
                     </p>
                   </div>
                 </div>
 
                 {server.description?.trim() && (
                   <div className='flex flex-col gap-1'>
-                    <span className='font-medium text-[var(--text-primary)] text-sm'>
-                      Description
-                    </span>
+                    <span className='font-medium text-[var(--text-primary)] text-sm'>描述</span>
                     <p className='text-[var(--text-secondary)] text-base'>{server.description}</p>
                   </div>
                 )}
@@ -488,7 +479,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                 <div>
                   <div className='mb-[6.5px] flex items-center justify-between'>
                     <span className='block pl-0.5 font-medium text-[var(--text-primary)] text-sm'>
-                      MCP Client
+                      MCP 客户端
                     </span>
                   </div>
                   <ButtonGroup
@@ -507,8 +498,8 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                   <div className='rounded-lg border border-[var(--border-1)] p-4'>
                     <div className='flex flex-col gap-3'>
                       <p className='text-[var(--text-secondary)] text-small'>
-                        Add this MCP server to your workspace so you can use its tools in other
-                        workflows via the MCP block.
+                        将此 MCP 服务器添加到你的工作区，即可通过 MCP
+                        节点在其他工作流中使用它的工具。
                       </p>
                       <Button
                         variant='primary'
@@ -541,22 +532,22 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                         }}
                       >
                         {addToWorkspaceMutation.isPending ? (
-                          'Adding...'
+                          '添加中…'
                         ) : addedToWorkspace ? (
                           <>
                             <Check className='mr-1.5 size-[14px]' />
-                            Added to Workspace
+                            已添加到工作区
                           </>
                         ) : (
                           <>
                             <Server className='mr-1.5 size-[14px]' />
-                            Add to Workspace
+                            添加到工作区
                           </>
                         )}
                       </Button>
                       {addToWorkspaceMutation.isError && (
                         <p className='text-[var(--text-error)] text-xs'>
-                          {addToWorkspaceMutation.error?.message || 'Failed to add server'}
+                          {addToWorkspaceMutation.error?.message || '添加服务器失败'}
                         </p>
                       )}
                     </div>
@@ -565,7 +556,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                   <div>
                     <div className='mb-[6.5px] flex items-center justify-between'>
                       <span className='block pl-0.5 font-medium text-[var(--text-primary)] text-sm'>
-                        Configuration
+                        配置
                       </span>
                       <Button
                         variant='ghost'
@@ -593,7 +584,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                         >
                           <img
                             src='https://cursor.com/deeplink/mcp-install-dark.svg'
-                            alt='Add to Cursor'
+                            alt='添加到 Cursor'
                             className='h-[26px] rounded-md align-middle'
                           />
                         </a>
@@ -601,13 +592,13 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                     </div>
                     {!server.isPublic && (
                       <p className='mt-2 text-[var(--text-muted)] text-xs'>
-                        Replace $SIM_API_KEY with your API key, or{' '}
+                        将 $SIM_API_KEY 替换为你的 API 密钥，或{' '}
                         <button
                           type='button'
                           onClick={() => setShowCreateApiKeyModal(true)}
                           className='underline hover-hover:text-[var(--text-secondary)]'
                         >
-                          create one now
+                          立即创建
                         </button>
                       </p>
                     )}
@@ -622,18 +613,18 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
       <ChipConfirmModal
         open={!!toolToDelete}
         onOpenChange={(open) => !open && setToolToDelete(null)}
-        srTitle='Remove Workflow'
-        title='Remove Workflow'
+        srTitle='移除工作流'
+        title='移除工作流'
         text={[
-          'Are you sure you want to remove ',
-          { text: toolToDelete?.toolName ?? 'this workflow', bold: true },
-          ' from this server? The workflow will remain deployed and can be added back later.',
+          '确定要从该服务器移除 ',
+          { text: toolToDelete?.toolName ?? '此工作流', bold: true },
+          ' 吗？该工作流仍保持已发布状态，之后可以重新添加。',
         ]}
         confirm={{
-          label: 'Remove',
+          label: '移除',
           onClick: handleDeleteTool,
           pending: deleteToolMutation.isPending,
-          pendingLabel: 'Removing...',
+          pendingLabel: '移除中…',
         }}
       />
 
@@ -646,7 +637,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
             setEditingParameterDescriptions({})
           }
         }}
-        srTitle={toolToView?.toolName ?? 'Edit Tool'}
+        srTitle={toolToView?.toolName ?? '编辑工具'}
       >
         <ChipModalHeader onClose={() => setToolToView(null)}>
           {toolToView?.toolName}
@@ -654,14 +645,14 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
         <ChipModalBody>
           <ChipModalField
             type='textarea'
-            title='Description'
+            title='描述'
             value={editingDescription}
             onChange={setEditingDescription}
-            placeholder='Describe what this tool does...'
+            placeholder='描述这个工具的作用…'
             minHeight={80}
           />
 
-          <ChipModalField type='custom' title='Parameters'>
+          <ChipModalField type='custom' title='参数'>
             {(() => {
               const schema = toolToView?.parameterSchema as
                 | { properties?: Record<string, { type?: string; description?: string }> }
@@ -687,7 +678,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                       </div>
                       <div className='rounded-b-[4px] border-[var(--border-1)] border-t bg-[var(--surface-2)] px-2.5 pt-1.5 pb-2.5'>
                         <div className='flex flex-col gap-1.5'>
-                          <Label className='text-sm'>Description</Label>
+                          <Label className='text-sm'>描述</Label>
                           <ChipInput
                             value={editingParameterDescriptions[name] || ''}
                             onChange={(e) =>
@@ -696,7 +687,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                                 [name]: e.target.value,
                               }))
                             }
-                            placeholder={`Enter description for ${name}`}
+                            placeholder={`请输入 ${name} 的描述`}
                           />
                         </div>
                       </div>
@@ -704,9 +695,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                   ))}
                 </div>
               ) : (
-                <p className='text-[var(--text-muted)] text-sm'>
-                  No inputs configured for this workflow.
-                </p>
+                <p className='text-[var(--text-muted)] text-sm'>此工作流未配置输入参数。</p>
               )
             })()}
           </ChipModalField>
@@ -714,7 +703,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
         <ChipModalFooter
           onCancel={() => setToolToView(null)}
           primaryAction={{
-            label: updateToolMutation.isPending ? 'Saving...' : 'Save',
+            label: updateToolMutation.isPending ? '保存中…' : '保存',
             onClick: handleSaveToolEdit,
             disabled: isSaveToolDisabled,
           }}
@@ -729,7 +718,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
             setSelectedWorkflowId(null)
           }
         }}
-        srTitle='Add Workflow'
+        srTitle='添加工作流'
       >
         <ChipModalHeader
           onClose={() => {
@@ -737,21 +726,20 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
             setSelectedWorkflowId(null)
           }}
         >
-          Add Workflow
+          添加工作流
         </ChipModalHeader>
         <ChipModalBody>
           <p className='px-2 text-[var(--text-secondary)] text-sm'>
-            Select a deployed workflow to add to this MCP server. The workflow will be available as
-            a tool.
+            选择要添加到此 MCP 服务器的已发布工作流。该工作流将作为一个工具提供。
           </p>
-          <ChipModalField type='custom' title='Select Workflow'>
+          <ChipModalField type='custom' title='选择工作流'>
             <ChipSelect
               options={workflowOptions}
               value={selectedWorkflowId || undefined}
               onChange={(value: string) => setSelectedWorkflowId(value)}
-              placeholder='Select a workflow...'
+              placeholder='选择一个工作流…'
               searchable
-              searchPlaceholder='Search workflows...'
+              searchPlaceholder='搜索工作流…'
               disabled={addToolMutation.isPending}
               fullWidth
               dropdownWidth='trigger'
@@ -760,9 +748,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
             />
           </ChipModalField>
           <ChipModalError>
-            {addToolMutation.isError
-              ? addToolMutation.error?.message || 'Failed to add workflow'
-              : null}
+            {addToolMutation.isError ? addToolMutation.error?.message || '添加工作流失败' : null}
           </ChipModalError>
         </ChipModalBody>
         <ChipModalFooter
@@ -771,7 +757,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
             setSelectedWorkflowId(null)
           }}
           primaryAction={{
-            label: addToolMutation.isPending ? 'Adding...' : 'Add Workflow',
+            label: addToolMutation.isPending ? '添加中…' : '添加工作流',
             onClick: handleAddWorkflow,
             disabled: !selectedWorkflowId || addToolMutation.isPending,
           }}
@@ -785,39 +771,39 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
             setShowEditServer(false)
           }
         }}
-        srTitle='Edit Server'
+        srTitle='编辑服务器'
       >
-        <ChipModalHeader onClose={() => setShowEditServer(false)}>Edit Server</ChipModalHeader>
+        <ChipModalHeader onClose={() => setShowEditServer(false)}>编辑服务器</ChipModalHeader>
         <ChipModalBody>
           <ChipModalField
             type='input'
-            title='Server name'
+            title='服务器名称'
             required
             value={editServerName}
             onChange={setEditServerName}
-            placeholder='e.g., My MCP Server'
+            placeholder='例如：我的 MCP 服务器'
           />
           <ChipModalField
             type='textarea'
-            title='Description'
+            title='描述'
             value={editServerDescription}
             onChange={setEditServerDescription}
-            placeholder='Describe what this MCP server does (optional)'
+            placeholder='描述此 MCP 服务器的用途（可选）'
             minHeight={60}
           />
-          <ChipModalField type='custom' title='Access'>
+          <ChipModalField type='custom' title='访问权限'>
             <div className='flex flex-col gap-1.5'>
               <ButtonGroup
                 value={editServerIsPublic ? 'public' : 'private'}
                 onValueChange={(value) => setEditServerIsPublic(value === 'public')}
               >
-                <ButtonGroupItem value='private'>API Key</ButtonGroupItem>
-                <ButtonGroupItem value='public'>Public</ButtonGroupItem>
+                <ButtonGroupItem value='private'>API 密钥</ButtonGroupItem>
+                <ButtonGroupItem value='public'>公开</ButtonGroupItem>
               </ButtonGroup>
               <p className='text-[var(--text-muted)] text-xs'>
                 {editServerIsPublic
-                  ? 'Anyone with the URL can call this server without authentication'
-                  : 'Requests must include your Sim API key in the X-API-Key header'}
+                  ? '任何拥有该 URL 的人都可以在无需认证的情况下调用此服务器'
+                  : '请求必须在 X-API-Key 请求头中包含你的 Sim API 密钥'}
               </p>
             </div>
           </ChipModalField>
@@ -825,7 +811,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
         <ChipModalFooter
           onCancel={() => setShowEditServer(false)}
           primaryAction={{
-            label: updateServerMutation.isPending ? 'Saving...' : 'Save',
+            label: updateServerMutation.isPending ? '保存中…' : '保存',
             onClick: handleSaveServerEdit,
             disabled:
               !editServerName.trim() ||
@@ -921,7 +907,7 @@ export function WorkflowMcpServers() {
 
   const actions: SettingsAction[] = [
     {
-      text: 'Add server',
+      text: '添加服务器',
       icon: Plus,
       variant: 'primary',
       onSelect: () => setShowAddModal(true),
@@ -935,7 +921,7 @@ export function WorkflowMcpServers() {
         search={{
           value: searchTerm,
           onChange: setSearchTerm,
-          placeholder: 'Search servers...',
+          placeholder: '搜索服务器…',
         }}
         actions={actions}
       >
@@ -943,18 +929,16 @@ export function WorkflowMcpServers() {
           {error ? (
             <div className='flex h-full flex-col items-center justify-center gap-2'>
               <p className='text-[var(--text-error)] text-sm leading-tight'>
-                {getErrorMessage(error, 'Failed to load MCP servers')}
+                {getErrorMessage(error, '加载 MCP 服务器失败')}
               </p>
             </div>
           ) : isLoading ? null : !hasServers ? (
-            <SettingsEmptyState>
-              Click &quot;Add server&quot; above to get started
-            </SettingsEmptyState>
+            <SettingsEmptyState>点击上方"添加服务器"开始使用</SettingsEmptyState>
           ) : (
             <div className='flex flex-col gap-2'>
               {filteredServers.map((server) => {
                 const count = server.toolCount || 0
-                const toolsLabel = `${count} tool${count !== 1 ? 's' : ''}`
+                const toolsLabel = `${count} 个工具`
                 const isDeleting = deletingServers.has(server.id)
                 return (
                   <div key={server.id} className='flex items-center justify-between gap-3'>
@@ -965,7 +949,7 @@ export function WorkflowMcpServers() {
                         </span>
                         {server.isPublic && (
                           <Badge variant='outline' size='sm'>
-                            Public
+                            公开
                           </Badge>
                         )}
                       </div>
@@ -973,11 +957,11 @@ export function WorkflowMcpServers() {
                     </div>
                     <div className='flex flex-shrink-0 items-center gap-1'>
                       <RowActionsMenu
-                        label='Server actions'
+                        label='服务器操作'
                         actions={[
-                          { label: 'Details', onSelect: () => setSelectedServerId(server.id) },
+                          { label: '详情', onSelect: () => setSelectedServerId(server.id) },
                           {
-                            label: 'Delete',
+                            label: '删除',
                             destructive: true,
                             disabled: isDeleting,
                             onSelect: () => setServerToDelete(server),
@@ -990,7 +974,7 @@ export function WorkflowMcpServers() {
               })}
               {showNoResults && (
                 <SettingsEmptyState variant='inline'>
-                  No servers found matching "{searchTerm}"
+                  未找到与"{searchTerm}"匹配的服务器
                 </SettingsEmptyState>
               )}
             </div>
@@ -1008,14 +992,14 @@ export function WorkflowMcpServers() {
       <ChipConfirmModal
         open={!!serverToDelete}
         onOpenChange={(open) => !open && setServerToDelete(null)}
-        srTitle='Delete MCP Server'
-        title='Delete MCP Server'
+        srTitle='删除 MCP 服务器'
+        title='删除 MCP 服务器'
         text={[
-          'Are you sure you want to delete ',
-          { text: serverToDelete?.name ?? 'this server', bold: true },
-          '? This action cannot be undone.',
+          '确定要删除 ',
+          { text: serverToDelete?.name ?? '此服务器', bold: true },
+          '？此操作无法撤销。',
         ]}
-        confirm={{ label: 'Delete', onClick: handleDeleteServer }}
+        confirm={{ label: '删除', onClick: handleDeleteServer }}
       />
     </>
   )

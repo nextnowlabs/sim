@@ -18,8 +18,8 @@ import {
 const DEFAULT_APP_NAME = 'Sim Workflow Bot'
 
 const GROUP_LABELS: Record<SlackCapabilityGroup, string> = {
-  trigger: 'Triggers',
-  action: 'Actions',
+  trigger: '触发器',
+  action: '操作',
 }
 
 const GROUP_ORDER: readonly SlackCapabilityGroup[] = ['trigger', 'action'] as const
@@ -133,7 +133,7 @@ function WizardModal({ blockId, open, onOpenChange, isPreview, disabled }: Wizar
       size='lg'
       height={MODAL_HEIGHT_CLASS}
     >
-      <Wizard.Step title='Configure your bot'>
+      <Wizard.Step title='配置你的机器人'>
         <StepConfigure
           blockId={blockId}
           appName={displayAppName}
@@ -144,10 +144,10 @@ function WizardModal({ blockId, open, onOpenChange, isPreview, disabled }: Wizar
           disabled={controlsDisabled}
         />
       </Wizard.Step>
-      <Wizard.Step title='Create the app in Slack'>
+      <Wizard.Step title='在 Slack 中创建应用'>
         <StepCreate manifestJson={manifestJson} canCopy={canCopy} />
       </Wizard.Step>
-      <Wizard.Step title='Paste your Signing Secret'>
+      <Wizard.Step title='粘贴你的 Signing Secret'>
         <StepSecret
           blockId={blockId}
           value={signingSecret ?? ''}
@@ -157,7 +157,7 @@ function WizardModal({ blockId, open, onOpenChange, isPreview, disabled }: Wizar
           disabled={controlsDisabled}
         />
       </Wizard.Step>
-      <Wizard.Step title='Install and paste your Bot Token'>
+      <Wizard.Step title='安装并粘贴你的 Bot Token'>
         <StepToken
           blockId={blockId}
           value={botToken ?? ''}
@@ -167,7 +167,7 @@ function WizardModal({ blockId, open, onOpenChange, isPreview, disabled }: Wizar
           disabled={controlsDisabled}
         />
       </Wizard.Step>
-      <Wizard.Step title='All set'>
+      <Wizard.Step title='全部完成'>
         <StepDone hasSigningSecret={Boolean(signingSecret)} hasBotToken={Boolean(botToken)} />
       </Wizard.Step>
     </Wizard>
@@ -280,7 +280,7 @@ function StepCreate({ manifestJson, canCopy }: StepCreateProps) {
     <div className='space-y-4'>
       <SubStepList>
         <SubStep n={1}>
-          <div>Copy your manifest:</div>
+          <div>复制你的 manifest:</div>
           <button
             type='button'
             onClick={handleCopy}
@@ -293,7 +293,7 @@ function StepCreate({ manifestJson, canCopy }: StepCreateProps) {
             )}
           >
             <span className='font-medium text-[var(--text-secondary)] text-sm'>
-              {canCopy ? 'Click to copy manifest' : 'Deploy once to lock in the webhook URL'}
+              {canCopy ? '点击复制 manifest' : '部署一次以锁定 Webhook 地址'}
             </span>
             {canCopy &&
               (copied ? (
@@ -304,28 +304,28 @@ function StepCreate({ manifestJson, canCopy }: StepCreateProps) {
           </button>
           {copyFailed ? (
             <p className='mt-1.5 text-[var(--text-error)] text-xs'>
-              Couldn't copy manifest — copy it manually from the developer console.
+              无法复制 manifest — 请从开发者控制台手动复制。
             </p>
           ) : null}
         </SubStep>
         <SubStep n={2}>
-          Open the{' '}
+          打开{' '}
           <a
             href='https://api.slack.com/apps'
             target='_blank'
             rel='noopener noreferrer'
             className='text-[var(--brand-secondary)] underline underline-offset-2'
           >
-            Slack Apps page
+            Slack 应用页面
           </a>
-          .
+          。
         </SubStep>
         <SubStep n={3}>
-          Click <strong>Create New App</strong> → <strong>From a manifest</strong> and pick your
-          workspace.
+          点击 <strong>Create New App</strong> → <strong>From a manifest</strong>,然后选择你的
+          工作区。
         </SubStep>
         <SubStep n={4}>
-          Paste your manifest, then click <strong>Next</strong> → <strong>Create</strong>.
+          粘贴你的 manifest,然后点击 <strong>Next</strong> → <strong>Create</strong>。
         </SubStep>
       </SubStepList>
     </div>
@@ -344,12 +344,12 @@ function StepSecret({ blockId, value, onChange, disabled }: StepSecretProps) {
     <div className='space-y-4'>
       <SubStepList>
         <SubStep n={1}>
-          In your new Slack app, open <strong>Basic Information</strong>.
+          在你的新 Slack 应用中,打开 <strong>Basic Information</strong>。
         </SubStep>
         <SubStep n={2}>
-          Find <strong>Signing Secret</strong> and click <strong>Show</strong>, then copy it.
+          找到 <strong>Signing Secret</strong> 并点击 <strong>Show</strong>,然后复制它。
         </SubStep>
-        <SubStep n={3}>Paste it into the field below.</SubStep>
+        <SubStep n={3}>将它粘贴到下面的输入框中。</SubStep>
       </SubStepList>
       <SecretField
         id={`${blockId}-wizard-signing-secret`}
@@ -357,7 +357,7 @@ function StepSecret({ blockId, value, onChange, disabled }: StepSecretProps) {
         value={value}
         onChange={onChange}
         disabled={disabled}
-        placeholder='Paste your signing secret'
+        placeholder='粘贴你的 signing secret'
       />
     </div>
   )
@@ -375,13 +375,13 @@ function StepToken({ blockId, value, onChange, disabled }: StepTokenProps) {
     <div className='space-y-4'>
       <SubStepList>
         <SubStep n={1}>
-          In Slack, open <strong>Install App</strong> → <strong>Install to Workspace</strong> and
-          authorize.
+          在 Slack 中,打开 <strong>Install App</strong> → <strong>Install to Workspace</strong> 并
+          授权。
         </SubStep>
         <SubStep n={2}>
-          Copy the <strong>Bot User OAuth Token</strong> (starts with <code>xoxb-</code>).
+          复制 <strong>Bot User OAuth Token</strong>(以 <code>xoxb-</code> 开头)。
         </SubStep>
-        <SubStep n={3}>Paste it into the field below.</SubStep>
+        <SubStep n={3}>将它粘贴到下面的输入框中。</SubStep>
       </SubStepList>
       <SecretField
         id={`${blockId}-wizard-bot-token`}
@@ -437,14 +437,13 @@ function StepDone({ hasSigningSecret, hasBotToken }: StepDoneProps) {
   return (
     <div className='space-y-4'>
       <p className='text-[var(--text-secondary)] text-sm leading-relaxed'>
-        Your Slack app is set up. Save the workflow and Slack will verify the webhook URL
-        automatically.
+        你的 Slack 应用已配置完成。保存工作流后,Slack 将自动验证 Webhook 地址。
       </p>
       <div className='flex flex-col gap-2'>
         <StatusRow label='Signing Secret' ok={hasSigningSecret} />
         <StatusRow label='Bot Token' ok={hasBotToken} />
       </div>
-      <p className='text-[var(--text-secondary)] text-sm'>Click Done and save this workflow.</p>
+      <p className='text-[var(--text-secondary)] text-sm'>点击完成并保存此工作流。</p>
     </div>
   )
 }

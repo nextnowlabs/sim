@@ -7,8 +7,8 @@ export default function SettingsSectionError({ error, reset }: ErrorBoundaryProp
     <ErrorState
       error={error}
       reset={reset}
-      title='Something went wrong'
-      description='An unexpected error occurred. Please try again or refresh the page.'
+      title='出了点问题'
+      description='发生了意外错误。请重试或刷新页面。'
       loggerName='SettingsSectionError'
     />
   )

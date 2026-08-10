@@ -39,41 +39,40 @@ export function BYOKProviderKeysModal({
   const atCapacity = keys.length >= maxKeys
 
   return (
-    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Manage API Keys'>
-      <ChipModalHeader onClose={close}>{provider && `${provider.name} API Keys`}</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='管理 API 密钥'>
+      <ChipModalHeader onClose={close}>{provider && `${provider.name} API 密钥`}</ChipModalHeader>
       <ChipModalBody>
         <p className='px-2 text-[var(--text-secondary)] text-sm'>
-          Requests are distributed evenly across these keys. Your keys are encrypted and stored
-          securely.
+          请求会均匀分配到这些密钥上。你的密钥已加密并安全存储。
         </p>
         <div className='flex flex-col gap-2 px-2'>
           {keys.map((key) => (
             <div key={key.id} className='flex items-center justify-between gap-2.5'>
               <div className='flex min-w-0 flex-col justify-center gap-[1px]'>
                 <span className='truncate text-[14px] text-[var(--text-body)]'>
-                  {key.name ?? 'Unnamed key'}
+                  {key.name ?? '未命名密钥'}
                 </span>
                 <span className='truncate font-mono text-[12px] text-[var(--text-muted)]'>
                   {key.maskedKey}
                 </span>
               </div>
               <div className='flex flex-shrink-0 items-center gap-2'>
-                <Chip onClick={() => onUpdateKey(key)}>Update</Chip>
-                <Chip onClick={() => onDeleteKey(key)}>Delete</Chip>
+                <Chip onClick={() => onUpdateKey(key)}>更新</Chip>
+                <Chip onClick={() => onDeleteKey(key)}>删除</Chip>
               </div>
             </div>
           ))}
         </div>
         {atCapacity && (
           <p className='px-2 text-[12px] text-[var(--text-muted)]'>
-            Key limit reached ({maxKeys} keys per provider).
+            已达到密钥上限（每个提供方 {maxKeys} 个密钥）。
           </p>
         )}
       </ChipModalBody>
       <ChipModalFooter
         onCancel={close}
         primaryAction={{
-          label: 'Add Key',
+          label: '添加密钥',
           onClick: onAddKey,
           disabled: atCapacity,
         }}

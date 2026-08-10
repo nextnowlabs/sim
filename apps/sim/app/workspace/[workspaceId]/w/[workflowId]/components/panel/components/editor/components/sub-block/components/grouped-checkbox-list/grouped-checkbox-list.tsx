@@ -25,12 +25,12 @@ interface SelectedCountDisplayProps {
 function SelectedCountDisplay({ noneSelected, allSelected, count }: SelectedCountDisplayProps) {
   if (noneSelected) {
     return (
-      <span className='truncate font-medium text-[var(--text-muted)] text-sm'>None selected</span>
+      <span className='truncate font-medium text-[var(--text-muted)] text-sm'>未选择</span>
     )
   }
   if (allSelected) {
     return (
-      <span className='truncate font-medium text-[var(--text-primary)] text-sm'>All selected</span>
+      <span className='truncate font-medium text-[var(--text-primary)] text-sm'>已全部选择</span>
     )
   }
   return (

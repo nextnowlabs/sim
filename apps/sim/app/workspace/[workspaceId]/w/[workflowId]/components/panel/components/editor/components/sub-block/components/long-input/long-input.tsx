@@ -387,7 +387,7 @@ export function LongInput({
                         : wandHook.showPromptInline
                     }
                     disabled={wandHook.isLoading || wandHook.isStreaming || disabled}
-                    aria-label='Generate content with AI'
+                    aria-label='用 AI 生成内容'
                     className='size-8 rounded-full border border-transparent bg-muted/80 text-muted-foreground shadow-sm transition-all duration-200 hover-hover:border-primary/20 hover-hover:bg-muted hover-hover:text-foreground hover-hover:shadow'
                   >
                     <Wand2 className='size-4' />

@@ -39,7 +39,7 @@ const fetchCertificate = cache(
 
 const DATE_FORMAT: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' }
 function formatDate(date: string | Date) {
-  return new Date(date).toLocaleDateString('en-US', DATE_FORMAT)
+  return new Date(date).toLocaleDateString('zh-CN', DATE_FORMAT)
 }
 
 function MetaRow({ label, children }: { label: string; children: React.ReactNode }) {

@@ -107,13 +107,13 @@ export function ChipSelect({
   multiSelect = false,
   multiSelectValues,
   onMultiSelectChange,
-  placeholder = 'Select...',
+  placeholder = '选择…',
   displayLabel,
   disabled = false,
   searchable = false,
-  searchPlaceholder = 'Search...',
+  searchPlaceholder = '搜索…',
   showAllOption = false,
-  allOptionLabel = 'All',
+  allOptionLabel = '全部',
   align = 'end',
   fullWidth = false,
   dropdownWidth,
@@ -140,7 +140,7 @@ export function ChipSelect({
       if (selectedValues.length === 1) {
         return allOptions.find((o) => o.value === selectedValues[0])?.label ?? placeholder
       }
-      return `${selectedValues.length} selected`
+      return `已选择 ${selectedValues.length} 项`
     }
     if (value == null || value === '') return placeholder
     return allOptions.find((o) => o.value === value)?.label ?? placeholder
@@ -269,7 +269,7 @@ export function ChipSelect({
           ))
         ) : (
           <div className='px-2 py-4 text-center text-[var(--text-muted)] text-small'>
-            No results
+            无结果
           </div>
         )}
       </DropdownMenuContent>

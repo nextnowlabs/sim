@@ -17,11 +17,11 @@ export function UnsavedChangesModal({ open, onOpenChange, onDiscard }: UnsavedCh
     <ChipConfirmModal
       open={open}
       onOpenChange={onOpenChange}
-      srTitle='Unsaved Changes'
-      title='Unsaved Changes'
-      text='You have unsaved changes. Are you sure you want to discard them?'
-      dismissLabel='Keep editing'
-      confirm={{ label: 'Discard Changes', onClick: onDiscard }}
+      srTitle='未保存的更改'
+      title='未保存的更改'
+      text='你有未保存的更改。确定要放弃它们吗?'
+      dismissLabel='继续编辑'
+      confirm={{ label: '放弃更改', onClick: onDiscard }}
     />
   )
 }

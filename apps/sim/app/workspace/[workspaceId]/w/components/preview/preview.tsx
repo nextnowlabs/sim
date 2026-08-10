@@ -301,10 +301,10 @@ export function Preview({
                 className='flex h-[28px] items-center gap-[5px] rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-2.5 text-[var(--text-secondary)] shadow-sm hover-hover:bg-[var(--surface-4)] hover-hover:text-[var(--text-primary)]'
               >
                 <ArrowLeft className='size-[12px]' />
-                <span className='font-medium text-caption'>Back</span>
+                <span className='font-medium text-caption'>返回</span>
               </Button>
             </Tooltip.Trigger>
-            <Tooltip.Content side='bottom'>Go back to parent workflow</Tooltip.Content>
+            <Tooltip.Content side='bottom'>返回父工作流</Tooltip.Content>
           </Tooltip.Root>
           {currentWorkflowName && (
             <div className='flex h-[28px] max-w-[200px] items-center rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-2.5 shadow-sm'>

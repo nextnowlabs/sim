@@ -60,12 +60,11 @@ function formatTransportLabel(transport: string): string {
 
 function formatToolsLabel(tools: McpTool[], connectionStatus?: string): string {
   if (connectionStatus === 'error') {
-    return 'Unable to connect'
+    return '无法连接'
   }
   const count = tools.length
-  const plural = count !== 1 ? 's' : ''
-  const names = count > 0 ? `: ${tools.map((t) => t.name).join(', ')}` : ''
-  return `${count} tool${plural}${names}`
+  const names = count > 0 ? `：${tools.map((t) => t.name).join(', ')}` : ''
+  return `${count} 个工具${names}`
 }
 
 interface ServerListItemProps {
@@ -96,7 +95,7 @@ function ServerListItem({
       <div className='flex min-w-0 flex-col justify-center gap-[1px]'>
         <div className='flex items-center gap-1.5'>
           <span className='max-w-[200px] truncate text-[14px] text-[var(--text-body)]'>
-            {server.name || 'Unnamed Server'}
+            {server.name || '未命名服务器'}
           </span>
           <span className='text-[12px] text-[var(--text-muted)]'>({transportLabel})</span>
         </div>
@@ -106,19 +105,15 @@ function ServerListItem({
             isError ? 'text-[var(--text-error)]' : 'text-[var(--text-muted)]'
           )}
         >
-          {isRefreshing
-            ? 'Refreshing...'
-            : isLoadingTools && tools.length === 0
-              ? 'Loading...'
-              : toolsLabel}
+          {isRefreshing ? '刷新中…' : isLoadingTools && tools.length === 0 ? '加载中…' : toolsLabel}
         </p>
       </div>
       <div className='flex flex-shrink-0 items-center gap-1'>
         <RowActionsMenu
-          label='Server actions'
+          label='服务器操作'
           actions={[
-            { label: 'Details', onSelect: onViewDetails },
-            { label: 'Delete', destructive: true, disabled: isDeleting, onSelect: onRemove },
+            { label: '详情', onSelect: onViewDetails },
+            { label: '删除', destructive: true, disabled: isDeleting, onSelect: onRemove },
           ]}
         />
       </div>
@@ -376,17 +371,17 @@ export function MCP() {
 
     const refreshLabel =
       refreshingServerId === server.id
-        ? 'Refreshing...'
+        ? '刷新中…'
         : refreshedServerId === server.id
           ? refreshedWorkflowsUpdated
-            ? `Synced (${refreshedWorkflowsUpdated} workflow${refreshedWorkflowsUpdated === 1 ? '' : 's'})`
-            : 'Refreshed'
-          : 'Refresh tools'
+            ? `已同步 (${refreshedWorkflowsUpdated} 个工作流)`
+            : '已刷新'
+          : '刷新工具'
 
     return (
       <SettingsPanel
-        back={{ text: 'MCP tools', icon: ArrowLeft, onSelect: handleBackToList }}
-        title={server.name || 'Unnamed Server'}
+        back={{ text: 'MCP 工具', icon: ArrowLeft, onSelect: handleBackToList }}
+        title={server.name || '未命名服务器'}
         actions={[
           {
             text: refreshLabel,
@@ -394,22 +389,20 @@ export function MCP() {
             disabled: refreshingServerId === server.id || refreshedServerId === server.id,
           },
           {
-            text: 'Edit',
+            text: '编辑',
             onSelect: () => setEditingServerId(server.id),
           },
         ]}
       >
-        <SettingsSection label='Server'>
+        <SettingsSection label='服务器'>
           <div className='flex flex-col gap-4.5'>
             <div className='flex flex-col gap-2'>
-              <span className='text-[12px] text-[var(--text-muted)]'>Server Name</span>
-              <p className='text-[14px] text-[var(--text-body)]'>
-                {server.name || 'Unnamed Server'}
-              </p>
+              <span className='text-[12px] text-[var(--text-muted)]'>服务器名称</span>
+              <p className='text-[14px] text-[var(--text-body)]'>{server.name || '未命名服务器'}</p>
             </div>
 
             <div className='flex flex-col gap-2'>
-              <span className='text-[12px] text-[var(--text-muted)]'>Transport</span>
+              <span className='text-[12px] text-[var(--text-muted)]'>传输方式</span>
               <p className='text-[14px] text-[var(--text-body)]'>{transportLabel}</p>
             </div>
 
@@ -422,16 +415,16 @@ export function MCP() {
 
             {server.connectionStatus === 'error' && (
               <div className='flex flex-col gap-2'>
-                <span className='text-[12px] text-[var(--text-muted)]'>Status</span>
+                <span className='text-[12px] text-[var(--text-muted)]'>状态</span>
                 <p className='text-[14px] text-[var(--text-error)]'>
-                  {server.lastError || 'Unable to connect'}
+                  {server.lastError || '无法连接'}
                 </p>
               </div>
             )}
 
             {server.authType === 'oauth' && server.connectionStatus !== 'connected' && (
               <div className='flex flex-col gap-2'>
-                <span className='text-[12px] text-[var(--text-muted)]'>Authentication</span>
+                <span className='text-[12px] text-[var(--text-muted)]'>认证</span>
                 <div>
                   <Chip
                     variant='primary'
@@ -440,7 +433,7 @@ export function MCP() {
                       await startOauthForServer(server.id)
                     }}
                   >
-                    {connectingOauthServers.has(server.id) ? 'Connecting…' : 'Connect with OAuth'}
+                    {connectingOauthServers.has(server.id) ? '连接中…' : '使用 OAuth 连接'}
                   </Chip>
                 </div>
               </div>
@@ -448,9 +441,9 @@ export function MCP() {
           </div>
         </SettingsSection>
 
-        <SettingsSection label={`Tools (${tools.length})`}>
+        <SettingsSection label={`工具 (${tools.length})`}>
           {tools.length === 0 ? (
-            <p className='text-[var(--text-muted)] text-sm'>No tools available</p>
+            <p className='text-[var(--text-muted)] text-sm'>没有可用工具</p>
           ) : (
             <div className='flex flex-col gap-2'>
               {tools.map((tool) => {
@@ -492,7 +485,7 @@ export function MCP() {
                                 </div>
                               </Tooltip.Trigger>
                               <Tooltip.Content>
-                                Update in: {affectedWorkflows.join(', ')}
+                                更新于：{affectedWorkflows.join(', ')}
                               </Tooltip.Content>
                             </Tooltip.Root>
                           )}
@@ -516,7 +509,7 @@ export function MCP() {
                     {isExpanded && hasParams && (
                       <div className='border-[var(--border-1)] border-t bg-[var(--surface-2)] px-2.5 py-2'>
                         <p className='mb-1.5 font-medium text-[var(--text-muted)] text-xs uppercase tracking-wide'>
-                          Parameters
+                          参数
                         </p>
                         <div className='flex flex-col gap-1.5'>
                           {Object.entries(tool.inputSchema!.properties!).map(
@@ -545,7 +538,7 @@ export function MCP() {
                                     </Badge>
                                     {isRequired && (
                                       <Badge variant='default' size='sm'>
-                                        required
+                                        必填
                                       </Badge>
                                     )}
                                   </div>
@@ -600,11 +593,11 @@ export function MCP() {
         search={{
           value: searchTerm,
           onChange: setSearchTerm,
-          placeholder: 'Search MCPs...',
+          placeholder: '搜索 MCP…',
         }}
         actions={[
           {
-            text: 'Add server',
+            text: '添加服务器',
             icon: Plus,
             variant: 'primary',
             onSelect: () => setShowAddModal(true),
@@ -615,11 +608,11 @@ export function MCP() {
         {error ? (
           <div className='flex h-full flex-col items-center justify-center gap-2'>
             <p className='text-[var(--text-error)] text-xs leading-tight'>
-              {getErrorMessage(error, 'Failed to load MCP servers')}
+              {getErrorMessage(error, '加载 MCP 服务器失败')}
             </p>
           </div>
         ) : serversLoading ? null : !hasServers ? (
-          <SettingsEmptyState>Click &quot;Add server&quot; above to get started</SettingsEmptyState>
+          <SettingsEmptyState>点击上方"添加服务器"开始使用</SettingsEmptyState>
         ) : (
           <div className='flex flex-col gap-2'>
             {filteredServers.map((server) => {
@@ -642,7 +635,7 @@ export function MCP() {
             })}
             {showNoResults && (
               <SettingsEmptyState variant='inline'>
-                No servers found matching &quot;{searchTerm}&quot;
+                未找到与"{searchTerm}"匹配的服务器
               </SettingsEmptyState>
             )}
           </div>
@@ -672,17 +665,17 @@ export function MCP() {
         onOpenChange={(open) => {
           if (!open) setServerToDeleteId(null)
         }}
-        srTitle='Delete MCP Server'
-        title='Delete MCP Server'
+        srTitle='删除 MCP 服务器'
+        title='删除 MCP 服务器'
         text={[
-          'Are you sure you want to delete ',
+          '确定要删除 ',
           {
-            text: servers.find((s) => s.id === serverToDeleteId)?.name || 'this server',
+            text: servers.find((s) => s.id === serverToDeleteId)?.name || '此服务器',
             bold: true,
           },
-          '? This action cannot be undone.',
+          '？此操作无法撤销。',
         ]}
-        confirm={{ label: 'Delete', onClick: confirmDeleteServer }}
+        confirm={{ label: '删除', onClick: confirmDeleteServer }}
       />
     </>
   )

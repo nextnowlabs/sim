@@ -19,7 +19,7 @@ const PRO_TIER = tierByName('Pro')
 const MAX_TIER = tierByName('Max')
 
 /** Formats a credit count with thousands separators (e.g. 25000 → "25,000"). */
-const formatCredits = (credits: number): string => credits.toLocaleString('en-US')
+const formatCredits = (credits: number): string => credits.toLocaleString('zh-CN')
 
 /** Daily refresh credits for a plan: 1% of plan dollars/day, in credits. */
 const dailyRefreshCredits = (dollars: number): number =>

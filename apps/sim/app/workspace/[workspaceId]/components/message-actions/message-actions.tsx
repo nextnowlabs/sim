@@ -173,7 +173,7 @@ export const MessageActions = memo(function MessageActions({
             <Tooltip.Trigger asChild>
               <button
                 type='button'
-                aria-label='Copy message'
+                aria-label='复制消息'
                 onClick={copyToClipboard}
                 className={BUTTON_CLASS}
               >
@@ -181,7 +181,7 @@ export const MessageActions = memo(function MessageActions({
               </button>
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
-              {copied ? 'Copied message' : 'Copy message'}
+              {copied ? '已复制消息' : '复制消息'}
             </Tooltip.Content>
           </Tooltip.Root>
         )}
@@ -191,27 +191,27 @@ export const MessageActions = memo(function MessageActions({
               <Tooltip.Trigger asChild>
                 <button
                   type='button'
-                  aria-label='Like'
+                  aria-label='点赞'
                   onClick={() => handleFeedbackClick('up')}
                   className={BUTTON_CLASS}
                 >
                   <ThumbsUp className={ICON_CLASS} />
                 </button>
               </Tooltip.Trigger>
-              <Tooltip.Content side='top'>Good response</Tooltip.Content>
+              <Tooltip.Content side='top'>回答不错</Tooltip.Content>
             </Tooltip.Root>
             <Tooltip.Root>
               <Tooltip.Trigger asChild>
                 <button
                   type='button'
-                  aria-label='Dislike'
+                  aria-label='点踩'
                   onClick={() => handleFeedbackClick('down')}
                   className={BUTTON_CLASS}
                 >
                   <ThumbsDown className={ICON_CLASS} />
                 </button>
               </Tooltip.Trigger>
-              <Tooltip.Content side='top'>Bad response</Tooltip.Content>
+              <Tooltip.Content side='top'>回答不佳</Tooltip.Content>
             </Tooltip.Root>
           </>
         )}
@@ -236,20 +236,20 @@ export const MessageActions = memo(function MessageActions({
       <ChipModal
         open={pendingFeedback !== null}
         onOpenChange={handleModalClose}
-        srTitle='Give feedback'
+        srTitle='提供反馈'
       >
-        <ChipModalHeader onClose={() => handleModalClose(false)}>Give feedback</ChipModalHeader>
+        <ChipModalHeader onClose={() => handleModalClose(false)}>提供反馈</ChipModalHeader>
         <ChipModalBody>
           <div className='flex items-start justify-between gap-2 px-2'>
             <p className='font-medium text-[var(--text-secondary)] text-sm'>
-              {pendingFeedback === 'up' ? 'What did you like?' : 'What could be improved?'}
+              {pendingFeedback === 'up' ? '你喜欢什么?' : '哪些地方可以改进?'}
             </p>
             {pendingFeedback === 'down' && requestId && (
               <Tooltip.Root>
                 <Tooltip.Trigger asChild>
                   <button
                     type='button'
-                    aria-label='Copy request ID'
+                    aria-label='复制请求 ID'
                     onClick={copyRequestId}
                     className='flex size-[22px] shrink-0 items-center justify-center rounded-full text-[var(--text-icon)] transition-colors hover-hover:bg-[var(--surface-hover)] focus-visible:outline-none'
                   >
@@ -261,14 +261,14 @@ export const MessageActions = memo(function MessageActions({
                   </button>
                 </Tooltip.Trigger>
                 <Tooltip.Content side='top'>
-                  {copiedRequestId ? 'Copied request ID' : 'Copy request ID'}
+                  {copiedRequestId ? '已复制请求 ID' : '复制请求 ID'}
                 </Tooltip.Content>
               </Tooltip.Root>
             )}
           </div>
           <ChipModalField
             type='textarea'
-            title='Feedback'
+            title='反馈'
             value={feedbackText}
             onChange={setFeedbackText}
             rows={6}
@@ -276,15 +276,15 @@ export const MessageActions = memo(function MessageActions({
             resizable
             placeholder={
               pendingFeedback === 'up'
-                ? 'Tell us what was helpful...'
-                : 'Tell us what went wrong...'
+                ? '告诉我们哪些地方有帮助…'
+                : '告诉我们哪里出了问题…'
             }
           />
         </ChipModalBody>
         <ChipModalFooter
           onCancel={() => handleModalClose(false)}
           primaryAction={{
-            label: 'Submit',
+            label: '提交',
             onClick: handleSubmitFeedback,
           }}
         />

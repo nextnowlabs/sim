@@ -113,7 +113,7 @@ export function parseTime(value?: string | number | null): number {
 
 export function formatTokenCount(value: number | undefined): string | undefined {
   if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return undefined
-  return value.toLocaleString('en-US')
+  return value.toLocaleString('zh-CN')
 }
 
 export function formatTtft(ms: number | undefined): string | undefined {
@@ -129,7 +129,7 @@ export function formatTps(
   if (typeof outputTokens !== 'number' || !(outputTokens > 0)) return undefined
   if (!(durationMs > 0)) return undefined
   const tps = Math.round(outputTokens / (durationMs / 1000))
-  return tps > 0 ? `${tps.toLocaleString('en-US')} tok/s` : undefined
+  return tps > 0 ? `${tps.toLocaleString('zh-CN')} tok/s` : undefined
 }
 
 export function getDisplayName(span: TraceSpan): string {

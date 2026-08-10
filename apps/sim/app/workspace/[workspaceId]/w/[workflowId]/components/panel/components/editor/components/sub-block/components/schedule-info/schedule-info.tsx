@@ -97,7 +97,7 @@ export function ScheduleInfo({ blockId, isPreview = false }: ScheduleInfoProps) 
               {schedule?.cronExpression && <span className='mx-1'>·</span>}
               <span>
                 Next:{' '}
-                {nextRunAt.toLocaleString('en-US', {
+                {nextRunAt.toLocaleString('zh-CN', {
                   timeZone: timezone,
                   month: 'short',
                   day: 'numeric',

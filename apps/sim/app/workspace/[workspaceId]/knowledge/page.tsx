@@ -5,7 +5,7 @@ import { prefetchKnowledgeBases } from '@/app/workspace/[workspaceId]/knowledge/
 import { Knowledge } from './knowledge'
 
 export const metadata: Metadata = {
-  title: 'Knowledge Base',
+  title: '知识库',
 }
 
 export default async function KnowledgePage({

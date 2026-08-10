@@ -451,7 +451,7 @@ export function Home({ chatId, userName, userId }: HomeProps) {
         {/* Asymmetric padding biases the group up so the full cluster (heading + input + suggestions) sits at the optical center */}
         <div className='flex min-h-full flex-col items-center justify-center px-6 pt-[2vh] pb-[22vh]'>
           <h1 className='mb-7 max-w-[48rem] text-balance font-season text-[30px] text-[var(--text-primary)]'>
-            What should we get done{firstName ? `, ${firstName}` : ''}?
+            今天想完成点什么{firstName ? `, ${firstName}` : ''}?
           </h1>
           <div ref={initialViewInputRef} className='relative w-full max-w-[48rem]'>
             <ChatSurfaceProvider
@@ -515,7 +515,7 @@ export function Home({ chatId, userName, userId }: HomeProps) {
             className='absolute inset-y-0 left-[-4px] w-[8px] cursor-ew-resize'
             role='separator'
             aria-orientation='vertical'
-            aria-label='Resize resource panel'
+            aria-label='调整资源面板大小'
             onPointerDown={handleResizePointerDown}
           />
         </div>
@@ -552,7 +552,7 @@ export function Home({ chatId, userName, userId }: HomeProps) {
             type='button'
             onClick={() => setIsResourceCollapsed(false)}
             className='size-[30px] rounded-[8px] hover-hover:bg-[var(--surface-active)]'
-            aria-label='Expand resource view'
+            aria-label='展开资源视图'
           >
             <PanelLeft className='size-[16px] text-[var(--text-icon)]' />
           </Button>

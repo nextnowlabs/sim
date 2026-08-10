@@ -84,7 +84,11 @@ export function SettingsSidebar({
 
   const navigationItems = useMemo(() => {
     return allNavigationItems.filter((item) => {
-      if (item.hideWhenBillingDisabled && !isBillingEnabled && !(item.selfHostedOverride && !isHosted)) {
+      if (
+        item.hideWhenBillingDisabled &&
+        !isBillingEnabled &&
+        !(item.selfHostedOverride && !isHosted)
+      ) {
         return false
       }
 
@@ -241,12 +245,12 @@ export function SettingsSidebar({
           'flex flex-shrink-0 flex-col px-2 pb-1.5'
         )}
       >
-        <SidebarTooltip label='Back' enabled={showCollapsedTooltips}>
+        <SidebarTooltip label='返回' enabled={showCollapsedTooltips}>
           <button type='button' onClick={handleBack} className={chipVariants({ fullWidth: true })}>
             <div className='flex size-[16px] flex-shrink-0 items-center justify-center text-[var(--text-icon)]'>
               <ChevronDown className='size-[10px] rotate-90' />
             </div>
-            <span className='sidebar-collapse-hide truncate text-[var(--text-body)]'>Back</span>
+            <span className='sidebar-collapse-hide truncate text-[var(--text-body)]'>返回</span>
           </button>
         </SidebarTooltip>
       </div>
@@ -350,12 +354,12 @@ export function SettingsSidebar({
       <ChipConfirmModal
         open={showDiscardDialog}
         onOpenChange={(open) => !open && handleCancelDiscard()}
-        srTitle='Unsaved changes'
-        title='Unsaved changes'
-        text='You have unsaved changes. Are you sure you want to discard them?'
-        dismissLabel='Keep editing'
+        srTitle='未保存的更改'
+        title='未保存的更改'
+        text='你有未保存的更改。确定要放弃吗？'
+        dismissLabel='继续编辑'
         confirm={{
-          label: 'Discard changes',
+          label: '放弃更改',
           onClick: handleConfirmDiscard,
         }}
       />

@@ -10,7 +10,7 @@ export function PreviewError({ label, error }: { label: string; error: string })
   return (
     <div className='flex flex-1 flex-col items-center justify-center gap-[8px]'>
       <p className='font-medium text-[14px] text-[var(--text-primary)]'>
-        Failed to preview {label}
+        无法预览{label}
       </p>
       <p className='text-[13px] text-[var(--text-muted)]'>{error}</p>
     </div>
@@ -63,7 +63,7 @@ export class PreviewErrorBoundary extends Component<
       return (
         <PreviewError
           label={this.props.label}
-          error={this.state.error?.message ?? 'An unexpected error occurred'}
+          error={this.state.error?.message ?? '发生意外错误'}
         />
       )
     }
@@ -81,7 +81,7 @@ export function resolvePreviewError(
   // legacy file with no artifact. Give a clear, actionable message instead of a
   // generic fetch error.
   if (fetchError?.name === 'DocNotReadyError') {
-    return "Couldn't generate this document preview. Re-run the file generation to rebuild it."
+    return '无法生成此文档预览。请重新运行文件生成以重建它。'
   }
   if (fetchError) return fetchError.message
   return renderError

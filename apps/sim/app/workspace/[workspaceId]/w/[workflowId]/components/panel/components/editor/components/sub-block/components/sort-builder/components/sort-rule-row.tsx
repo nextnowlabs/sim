@@ -98,7 +98,7 @@ export function SortRuleRow({
       >
         <Button variant='ghost' onClick={onAdd} disabled={isReadOnly} className='h-auto p-0'>
           <Plus className='size-[14px]' />
-          <span className='sr-only'>Add Sort</span>
+          <span className='sr-only'>添加排序</span>
         </Button>
         <Button
           variant='ghost'
@@ -107,7 +107,7 @@ export function SortRuleRow({
           className='h-auto p-0 text-[var(--text-error)] hover-hover:text-[var(--text-error)]'
         >
           <Trash className='size-[14px]' />
-          <span className='sr-only'>Delete Sort</span>
+          <span className='sr-only'>删除排序</span>
         </Button>
       </div>
     </div>
@@ -122,7 +122,7 @@ export function SortRuleRow({
           value={rule.column}
           onChange={(v) => onUpdate(rule.id, 'column', v)}
           disabled={isReadOnly}
-          placeholder='Select column'
+          placeholder='选择列'
           overlayContent={
             getLabelHighlight('column', getColumnLabel(rule.column)) ? (
               <span className='truncate text-[var(--text-primary)]'>
@@ -142,7 +142,7 @@ export function SortRuleRow({
           value={rule.direction}
           onChange={(v) => onUpdate(rule.id, 'direction', v as 'asc' | 'desc')}
           disabled={isReadOnly}
-          placeholder='Select direction'
+          placeholder='选择方向'
           overlayContent={
             getLabelHighlight('direction', getDirectionLabel(rule.direction)) ? (
               <span className='truncate text-[var(--text-primary)]'>

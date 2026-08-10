@@ -99,19 +99,19 @@ export function SkillModal({
     const newErrors: FieldErrors = {}
 
     if (!name.trim()) {
-      newErrors.name = 'Name is required'
+      newErrors.name = '名称为必填项'
     } else if (name.length > 64) {
-      newErrors.name = 'Name must be 64 characters or less'
+      newErrors.name = '名称不能超过 64 个字符'
     } else if (!KEBAB_CASE_REGEX.test(name)) {
-      newErrors.name = 'Name must be kebab-case (e.g. my-skill)'
+      newErrors.name = '名称必须为 kebab-case(例如 my-skill)'
     }
 
     if (!description.trim()) {
-      newErrors.description = 'Description is required'
+      newErrors.description = '描述为必填项'
     }
 
     if (!content.trim()) {
-      newErrors.content = 'Content is required'
+      newErrors.content = '内容为必填项'
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -139,7 +139,7 @@ export function SkillModal({
       const message =
         error instanceof Error && error.message.includes('already exists')
           ? error.message
-          : 'Failed to save skill. Please try again.'
+          : '保存技能失败,请重试。'
       setErrors({ general: message })
     } finally {
       setSaving(false)
@@ -179,19 +179,19 @@ export function SkillModal({
     <ChipModal
       open={open}
       onOpenChange={onOpenChange}
-      srTitle={isEditing ? 'Edit Skill' : 'Add Skill'}
+      srTitle={isEditing ? '编辑技能' : '添加技能'}
       size='lg'
     >
       <ChipModalHeader onClose={() => onOpenChange(false)}>
-        {isEditing ? 'Edit Skill' : 'Add Skill'}
+        {isEditing ? '编辑技能' : '添加技能'}
       </ChipModalHeader>
 
       <ChipModalBody>
         {!isEditing && (
           <ChipModalTabs
             tabs={[
-              { value: 'create', label: 'Create' },
-              { value: 'import', label: 'Import' },
+              { value: 'create', label: '创建' },
+              { value: 'import', label: '导入' },
             ]}
             value={activeTab}
             onChange={(value) => setActiveTab(value as TabValue)}
@@ -202,7 +202,7 @@ export function SkillModal({
           <>
             <ChipModalField
               type='input'
-              title='Name'
+              title='名称'
               value={name}
               onChange={(value) => {
                 setName(value)
@@ -212,25 +212,25 @@ export function SkillModal({
               placeholder='my-skill-name'
               required
               error={errors.name}
-              hint='Lowercase letters, numbers, and hyphens (e.g. my-skill)'
+              hint='小写字母、数字和连字符(例如 my-skill)'
             />
 
             <ChipModalField
               type='input'
-              title='Description'
+              title='描述'
               value={description}
               onChange={(value) => {
                 setDescription(value)
                 if (errors.description || errors.general)
                   setErrors((prev) => ({ ...prev, description: undefined, general: undefined }))
               }}
-              placeholder='What this skill does and when to use it...'
+              placeholder='这个技能的用途及适用场景…'
               maxLength={1024}
               required
               error={errors.description}
             />
 
-            <ChipModalField type='custom' title='Content' required error={errors.content}>
+            <ChipModalField type='custom' title='内容' required error={errors.content}>
               <RichMarkdownField
                 key={`${initialValues?.id ?? 'new'}:${contentSeed}`}
                 value={content}
@@ -239,7 +239,7 @@ export function SkillModal({
                   if (errors.content || errors.general)
                     setErrors((prev) => ({ ...prev, content: undefined, general: undefined }))
                 }}
-                placeholder='Skill instructions in markdown...'
+                placeholder='用 Markdown 编写的技能指令…'
                 minHeight={200}
                 disabled={readOnly || saving}
                 error={!!errors.content}
@@ -263,7 +263,7 @@ export function SkillModal({
             isEditing && onDelete
               ? [
                   {
-                    label: 'Delete',
+                    label: '删除',
                     onClick: () => onDelete(initialValues.id),
                     variant: 'destructive',
                     disabled: readOnly,
@@ -272,7 +272,7 @@ export function SkillModal({
               : undefined
           }
           primaryAction={{
-            label: saving ? 'Saving...' : isEditing ? 'Update' : 'Create',
+            label: saving ? '保存中…' : isEditing ? '更新' : '创建',
             onClick: handleSave,
             disabled: readOnly || saving || !hasChanges,
           }}

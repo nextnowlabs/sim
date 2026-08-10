@@ -176,7 +176,7 @@ function GoogleServiceAccountModal({
 
   const readJsonFile = (file: File) => {
     if (!file.name.endsWith('.json')) {
-      setError('Only .json files are supported')
+      setError('仅支持 .json 文件')
       return
     }
     const reader = new FileReader()
@@ -200,12 +200,12 @@ function GoogleServiceAccountModal({
     setError(null)
     const trimmed = jsonInput.trim()
     if (!trimmed) {
-      setError('Paste the service account JSON key.')
+      setError('请粘贴服务账号 JSON 密钥。')
       return
     }
     const validation = serviceAccountJsonSchema.safeParse(trimmed)
     if (!validation.success) {
-      setError(validation.error.issues[0]?.message ?? 'Invalid JSON')
+      setError(validation.error.issues[0]?.message ?? '无效的 JSON')
       return
     }
     try {
@@ -218,7 +218,7 @@ function GoogleServiceAccountModal({
       })
       onOpenChange(false)
     } catch (err: unknown) {
-      const message = getErrorMessage(err, 'Failed to add service account')
+      const message = getErrorMessage(err, '添加服务账号失败')
       setError(message)
       logger.error('Failed to add Google service account credential', err)
     }
@@ -231,15 +231,15 @@ function GoogleServiceAccountModal({
     <ChipModal
       open={open}
       onOpenChange={onOpenChange}
-      srTitle={`Add ${serviceName} service account`}
+      srTitle={`添加${serviceName}服务账号`}
     >
       <ChipModalHeader icon={ServiceIcon} onClose={() => onOpenChange(false)}>
-        Add {serviceName} service account
+        添加{serviceName}服务账号
       </ChipModalHeader>
       <ChipModalBody>
         <ChipModalField
           type='textarea'
-          title='JSON key'
+          title='JSON 密钥'
           value={jsonInput}
           onChange={(value) => {
             setJsonInput(value)
@@ -247,38 +247,38 @@ function GoogleServiceAccountModal({
             if (error) setError(null)
             maybeFillDisplayNameFromJson(value)
           }}
-          placeholder='Paste your service account JSON key here'
+          placeholder='在此粘贴服务账号 JSON 密钥'
           minHeight={120}
           required
         />
 
         <ChipModalField
           type='file'
-          title='Or upload a file'
+          title='或上传文件'
           accept='.json'
           label={
             uploadedFileName
-              ? `Uploaded ${uploadedFileName} — click or drop to replace`
-              : 'Drag & drop a .json file, or click to browse'
+              ? `已上传 ${uploadedFileName} — 点击或拖放以替换`
+              : '拖放 .json 文件,或点击浏览'
           }
           onChange={handleFileUpload}
         />
 
         <ChipModalField
           type='input'
-          title='Display name'
+          title='显示名称'
           value={displayName}
           onChange={setDisplayName}
-          placeholder='Auto-populated from client_email'
+          placeholder='自动从 client_email 填充'
           autoComplete='off'
         />
 
         <ChipModalField
           type='textarea'
-          title='Description'
+          title='描述'
           value={description}
           onChange={setDescription}
-          placeholder='Optional description'
+          placeholder='可选描述'
           maxLength={500}
           minHeight={80}
         />
@@ -289,12 +289,12 @@ function GoogleServiceAccountModal({
         onCancel={() => onOpenChange(false)}
         secondaryActions={[
           {
-            label: 'Setup guide',
+            label: '设置指南',
             onClick: () => openDocs(GOOGLE_SERVICE_ACCOUNT_DOCS_URL),
           },
         ]}
         primaryAction={{
-          label: isPending ? 'Adding...' : 'Add service account',
+          label: isPending ? '添加中…' : '添加服务账号',
           onClick: handleSubmit,
           disabled: isDisabled,
         }}
@@ -365,20 +365,20 @@ function AtlassianServiceAccountModal({
     <ChipModal
       open={open}
       onOpenChange={onOpenChange}
-      srTitle={`Add ${serviceName} service account`}
+      srTitle={`添加${serviceName}服务账号`}
     >
       <ChipModalHeader icon={ServiceIcon} onClose={() => onOpenChange(false)}>
-        Add {serviceName} service account
+        添加{serviceName}服务账号
       </ChipModalHeader>
       <ChipModalBody>
-        <ChipModalField type='custom' title='API token' required>
+        <ChipModalField type='custom' title='API 令牌' required>
           <SecretInput
             value={apiToken}
             onChange={(value) => {
               setApiToken(value)
               if (error) setError(null)
             }}
-            placeholder='Paste API token'
+            placeholder='粘贴 API 令牌'
             name='atlassian_service_account_api_token'
             autoComplete='new-password'
             autoCorrect='off'
@@ -390,7 +390,7 @@ function AtlassianServiceAccountModal({
 
         <ChipModalField
           type='input'
-          title='Site domain'
+          title='站点域名'
           value={domain}
           onChange={(value) => {
             setDomain(value)
@@ -401,26 +401,26 @@ function AtlassianServiceAccountModal({
           required
           error={
             showDomainHint
-              ? 'Atlassian sites usually look like your-team.atlassian.net.'
+              ? 'Atlassian 站点通常形如 your-team.atlassian.net。'
               : undefined
           }
         />
 
         <ChipModalField
           type='input'
-          title='Display name'
+          title='显示名称'
           value={displayName}
           onChange={setDisplayName}
-          placeholder="Defaults to the account's Atlassian display name"
+          placeholder='默认使用账号的 Atlassian 显示名称'
           autoComplete='off'
         />
 
         <ChipModalField
           type='textarea'
-          title='Description'
+          title='描述'
           value={description}
           onChange={setDescription}
-          placeholder='Optional description'
+          placeholder='可选描述'
           maxLength={500}
           minHeight={80}
         />
@@ -431,12 +431,12 @@ function AtlassianServiceAccountModal({
         onCancel={() => onOpenChange(false)}
         secondaryActions={[
           {
-            label: 'Setup guide',
+            label: '设置指南',
             onClick: () => openDocs(ATLASSIAN_SERVICE_ACCOUNT_DOCS_URL),
           },
         ]}
         primaryAction={{
-          label: isPending ? 'Adding...' : 'Add service account',
+          label: isPending ? '添加中…' : '添加服务账号',
           onClick: handleSubmit,
           disabled: isDisabled,
         }}

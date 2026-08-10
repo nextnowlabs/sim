@@ -109,8 +109,8 @@ export function forkRequiredPending(
 export function forkRequiredKindsLabel(kinds: ReadonlySet<string>): string {
   const credentials = kinds.has('credential')
   const secrets = kinds.has('env-var')
-  if (credentials && secrets) return 'credentials and secrets'
-  if (credentials) return 'credentials'
-  if (secrets) return 'secrets'
-  return 'references'
+  if (credentials && secrets) return '凭据和密钥'
+  if (credentials) return '凭据'
+  if (secrets) return '密钥'
+  return '引用'
 }

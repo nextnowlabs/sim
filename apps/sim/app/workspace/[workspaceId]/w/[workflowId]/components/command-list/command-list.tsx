@@ -29,17 +29,17 @@ interface CommandItem {
  */
 const commands: CommandItem[] = [
   {
-    label: 'New Agent',
+    label: '新建智能体',
     icon: AgentIcon,
     shortcut: ['⇧', 'A'],
   },
   {
-    label: 'Logs',
+    label: '日志',
     icon: Library,
     shortcut: 'L',
   },
   {
-    label: 'Search Blocks',
+    label: '搜索节点',
     icon: Search,
     shortcut: 'K',
   },
@@ -71,14 +71,14 @@ export function CommandList() {
     (label: string) => {
       try {
         switch (label) {
-          case 'New Agent': {
+          case '新建智能体': {
             const event = new CustomEvent('add-block-from-toolbar', {
               detail: { type: 'agent', enableTriggerMode: false },
             })
             window.dispatchEvent(event)
             return
           }
-          case 'Logs': {
+          case '日志': {
             if (!workspaceId) {
               logger.warn('No workspace ID found, cannot navigate to logs from command list')
               return
@@ -86,7 +86,7 @@ export function CommandList() {
             router.push(`/workspace/${workspaceId}/logs`)
             return
           }
-          case 'Search Blocks': {
+          case '搜索节点': {
             openSearchModal()
             return
           }

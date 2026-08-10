@@ -92,7 +92,7 @@ export function ResourceReconfigure({
   // mothership-view's resource-content.
   return (
     <div className='mt-4 flex flex-col gap-2'>
-      <span className='text-[var(--text-muted)] text-caption'>Workflows</span>
+      <span className='text-[var(--text-muted)] text-caption'>工作流</span>
       <div className='flex flex-col gap-1.5'>
         {workflowBlocks.map((workflow) => (
           <ReconfigWorkflowRow
@@ -162,7 +162,7 @@ function ReconfigWorkflowRow({
       ) : (
         <div
           className='truncate text-[var(--text-muted)] text-sm'
-          title='Used here, but nothing to configure for this resource'
+          title='在此处使用,但此资源无需配置'
         >
           {workflowName}
         </div>

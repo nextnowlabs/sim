@@ -4,7 +4,7 @@ import LogsLoading from '@/app/workspace/[workspaceId]/logs/loading'
 import Logs from '@/app/workspace/[workspaceId]/logs/logs'
 
 export const metadata: Metadata = {
-  title: 'Logs',
+  title: '日志',
 }
 
 /**

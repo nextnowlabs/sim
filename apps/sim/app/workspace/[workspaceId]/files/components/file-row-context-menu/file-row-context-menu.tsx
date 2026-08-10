@@ -69,13 +69,13 @@ export const FileRowContextMenu = memo(function FileRowContextMenu({
         {!isMultiSelect && (
           <DropdownMenuItem onSelect={onOpen}>
             <Eye />
-            Open
+            打开
           </DropdownMenuItem>
         )}
         {onDownload && (
           <DropdownMenuItem onSelect={onDownload}>
             <Download />
-            {isMultiSelect ? `Download ${selectedCount} items` : 'Download'}
+            {isMultiSelect ? `下载 ${selectedCount} 个项目` : '下载'}
           </DropdownMenuItem>
         )}
         {canEdit && (
@@ -84,20 +84,20 @@ export const FileRowContextMenu = memo(function FileRowContextMenu({
             {!isMultiSelect && (
               <DropdownMenuItem onSelect={onRename}>
                 <Pencil />
-                Rename
+                重命名
               </DropdownMenuItem>
             )}
             {!isMultiSelect && onShare && (
               <DropdownMenuItem onSelect={onShare}>
                 <Link />
-                Share
+                共享
               </DropdownMenuItem>
             )}
             {onMove && moveOptions && moveOptions.length > 0 && (
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
                   <FolderInput />
-                  {isMultiSelect ? `Move ${selectedCount} items` : 'Move to'}
+                  {isMultiSelect ? `移动 ${selectedCount} 个项目` : '移动到'}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem onSelect={() => onMove(moveOptions[0].value)}>
@@ -111,7 +111,7 @@ export const FileRowContextMenu = memo(function FileRowContextMenu({
             )}
             <DropdownMenuItem onSelect={onDelete}>
               <Trash />
-              {isMultiSelect ? `Delete ${selectedCount} items` : 'Delete'}
+              {isMultiSelect ? `删除 ${selectedCount} 个项目` : '删除'}
             </DropdownMenuItem>
           </>
         )}

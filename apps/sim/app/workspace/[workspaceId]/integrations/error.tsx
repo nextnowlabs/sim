@@ -7,8 +7,8 @@ export default function IntegrationsError({ error, reset }: ErrorBoundaryProps) 
     <ErrorState
       error={error}
       reset={reset}
-      title='Failed to load integrations'
-      description='Something went wrong while loading your integrations. Please try again.'
+      title='无法加载集成'
+      description='加载集成时出错,请重试。'
       loggerName='IntegrationsError'
     />
   )

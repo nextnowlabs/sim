@@ -37,7 +37,7 @@ export interface ChipCopyInputProps
 
 /** Forwards its ref to the inner `<input>`, exactly like {@link ChipInput}. */
 export const ChipCopyInput = React.forwardRef<HTMLInputElement, ChipCopyInputProps>(
-  ({ value, copyLabel = 'Copy', inputClassName, ...props }, ref) => {
+  ({ value, copyLabel = '复制', inputClassName, ...props }, ref) => {
     const { copied, copy } = useCopyToClipboard()
 
     return (
@@ -59,7 +59,7 @@ export const ChipCopyInput = React.forwardRef<HTMLInputElement, ChipCopyInputPro
                 {copied ? <Check className='size-[13px]' /> : <Duplicate className='size-[13px]' />}
               </Button>
             </Tooltip.Trigger>
-            <Tooltip.Content>{copied ? 'Copied!' : copyLabel}</Tooltip.Content>
+            <Tooltip.Content>{copied ? '已复制!' : copyLabel}</Tooltip.Content>
           </Tooltip.Root>
         }
         {...props}

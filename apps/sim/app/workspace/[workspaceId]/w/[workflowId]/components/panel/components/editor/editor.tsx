@@ -95,7 +95,7 @@ export function Editor() {
   const currentWorkflow = useCurrentWorkflow()
   const currentBlock = currentBlockId ? currentWorkflow.getBlockById(currentBlockId) : null
   const blockConfig = currentBlock ? getBlock(currentBlock.type) : null
-  const title = currentBlock?.name || 'Editor'
+  const title = currentBlock?.name || '编辑器'
   const isBlockNameSearchHighlighted =
     activeSearchTarget?.targetKind === 'block-name' && activeSearchTarget.blockId === currentBlockId
   const blockNameSearchHighlight =
@@ -426,7 +426,7 @@ export function Editor() {
                       variant='ghost'
                       className='p-0'
                       onClick={() => collaborativeBatchToggleLocked([currentBlockId!])}
-                      aria-label='Unlock block'
+                      aria-label='解锁节点'
                     >
                       <Unlock className='size-[14px] text-[var(--text-secondary)]' />
                     </Button>
@@ -439,10 +439,10 @@ export function Editor() {
                 <Tooltip.Content side='top'>
                   <p>
                     {isAncestorLocked
-                      ? 'Ancestor container is locked'
+                      ? '祖先容器已锁定'
                       : userPermissions.canAdmin && currentBlock.locked
-                        ? 'Unlock block'
-                        : 'Block is locked'}
+                        ? '解锁节点'
+                        : '节点已锁定'}
                   </p>
                 </Tooltip.Content>
               </Tooltip.Root>
@@ -456,7 +456,7 @@ export function Editor() {
                     className='p-0'
                     onClick={isRenaming ? handleSaveRename : handleStartRename}
                     disabled={!canEditBlock}
-                    aria-label={isRenaming ? 'Save name' : 'Rename block'}
+                    aria-label={isRenaming ? '保存名称' : '重命名节点'}
                   >
                     {isRenaming ? (
                       <Check className='size-[14px]' />
@@ -466,7 +466,7 @@ export function Editor() {
                   </Button>
                 </Tooltip.Trigger>
                 <Tooltip.Content side='top'>
-                  <p>{isRenaming ? 'Save name' : 'Rename block'}</p>
+                  <p>{isRenaming ? '保存名称' : '重命名节点'}</p>
                 </Tooltip.Content>
               </Tooltip.Root>
             )}
@@ -494,13 +494,13 @@ export function Editor() {
                   variant='ghost'
                   className='p-0'
                   onClick={handleOpenDocs}
-                  aria-label='Open documentation'
+                  aria-label='打开文档'
                 >
                   <BookOpen className='size-[14px]' />
                 </Button>
               </Tooltip.Trigger>
               <Tooltip.Content side='top'>
-                <p>Open docs</p>
+                <p>打开文档</p>
               </Tooltip.Content>
             </Tooltip.Root>
           </div>
@@ -508,7 +508,7 @@ export function Editor() {
 
         {!currentBlockId || !currentBlock ? (
           <div className='flex flex-1 items-center justify-center text-[var(--text-placeholder)] text-small'>
-            Select a block to edit
+            选择一个节点进行编辑
           </div>
         ) : isSubflow ? (
           <SubflowEditor
@@ -569,7 +569,7 @@ export function Editor() {
                                   <ExternalLink className='size-[12px]' />
                                 </Button>
                               </Tooltip.Trigger>
-                              <Tooltip.Content side='top'>Open workflow</Tooltip.Content>
+                              <Tooltip.Content side='top'>打开工作流</Tooltip.Content>
                             </Tooltip.Root>
                           </>
                         ) : (
@@ -662,8 +662,8 @@ export function Editor() {
                           className='flex items-center gap-1.5 whitespace-nowrap font-medium text-[var(--text-secondary)] text-small hover-hover:text-[var(--text-primary)]'
                         >
                           {displayAdvancedOptions
-                            ? 'Hide additional fields'
-                            : 'Show additional fields'}
+                            ? '隐藏附加字段'
+                            : '显示附加字段'}
                           <ChevronDown
                             className={`size-[14px] transition-transform duration-200 ${displayAdvancedOptions ? 'rotate-180' : ''}`}
                           />
@@ -675,7 +675,7 @@ export function Editor() {
                       <div className='flex items-center gap-2.5 px-0.5 pt-3.5 pb-3'>
                         <DashedDividerLine className='flex-1' />
                         <span className='whitespace-nowrap font-medium text-[var(--text-secondary)] text-small'>
-                          Additional fields
+                          附加字段
                         </span>
                         <DashedDividerLine className='flex-1' />
                       </div>
@@ -747,7 +747,7 @@ export function Editor() {
                   role='button'
                   tabIndex={0}
                   aria-label={
-                    isConnectionsAtMinHeight ? 'Expand connections' : 'Collapse connections'
+                    isConnectionsAtMinHeight ? '展开连接' : '折叠连接'
                   }
                 >
                   <ChevronUp

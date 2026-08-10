@@ -81,7 +81,7 @@ export function ErrorState({
     <ErrorShell title={title} description={description} icon={icon}>
       {children}
       <Button variant='primary' size='md' onClick={reset}>
-        Refresh
+        重试
       </Button>
     </ErrorShell>
   )

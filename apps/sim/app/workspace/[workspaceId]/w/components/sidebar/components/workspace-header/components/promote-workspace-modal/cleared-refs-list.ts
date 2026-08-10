@@ -60,12 +60,12 @@ export function splitForkClearedRefs(visibleRefs: ForkClearedRef[]): {
 
 /** Human label per blocker kind for the resolution copy (singular, lowercase mid-sentence). */
 const BLOCKER_KIND_LABEL: Record<string, string> = {
-  table: 'table',
-  'knowledge-base': 'knowledge base',
-  file: 'file',
-  'custom-tool': 'custom tool',
-  skill: 'skill',
-  'mcp-server': 'MCP server',
+  table: '表格',
+  'knowledge-base': '知识库',
+  file: '文件',
+  'custom-tool': '自定义工具',
+  skill: '技能',
+  'mcp-server': 'MCP 服务器',
 }
 
 /**
@@ -77,12 +77,12 @@ export function forkBlockerResolution(ref: ForkClearedRef): string | null {
   if (!reason) return null
   switch (reason) {
     case 'unmapped-copyable':
-      return 'map it to a target or select it for copy'
+      return '请映射到目标或选择复制'
     case 'unmapped-mcp-server':
-      return 'map it to an MCP server in the target workspace'
+      return '请映射到目标工作区中的 MCP 服务器'
     case 'source-deleted':
-      return `deleted in the source — map it to an existing ${BLOCKER_KIND_LABEL[ref.kind] ?? 'resource'} in the target`
+      return `已在源中删除 — 请映射到目标中的现有${BLOCKER_KIND_LABEL[ref.kind] ?? '资源'}`
     case 'workflow-missing':
-      return `deploy "${ref.sourceLabel}" in the source or remove the reference`
+      return `请在源中发布 "${ref.sourceLabel}" 或移除该引用`
   }
 }

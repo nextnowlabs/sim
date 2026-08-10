@@ -7,8 +7,8 @@ export default function ScheduledTasksError({ error, reset }: ErrorBoundaryProps
     <ErrorState
       error={error}
       reset={reset}
-      title='Failed to load scheduled tasks'
-      description='Something went wrong while loading your scheduled tasks. Please try again.'
+      title='无法加载定时任务'
+      description='加载定时任务时出错,请重试。'
       loggerName='ScheduledTasksError'
     />
   )

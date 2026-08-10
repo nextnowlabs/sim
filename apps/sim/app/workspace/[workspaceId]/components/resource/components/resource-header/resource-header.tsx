@@ -442,7 +442,7 @@ function BreadcrumbLocationPopover({
         <PopoverAnchor asChild>
           <button
             type='button'
-            aria-label={rootBreadcrumb?.label ?? 'Path'}
+            aria-label={rootBreadcrumb?.label ?? '路径'}
             onClick={() => navigateAndClose(rootBreadcrumb?.onClick)}
             onFocus={openPopover}
             onBlur={scheduleClose}
@@ -486,7 +486,7 @@ function BreadcrumbLocationPopover({
         >
           <PopoverSection className='px-1.5 py-0.5 text-[var(--text-muted)] text-xs'>
             <span className='inline-flex items-center gap-1'>
-              <span>Path</span>
+              <span>路径</span>
               <span className='opacity-70'>/</span>
             </span>
           </PopoverSection>

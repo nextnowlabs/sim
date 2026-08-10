@@ -124,23 +124,24 @@ export function VersionDescriptionModal({
       <ChipModal
         open={open}
         onOpenChange={(openState) => !openState && handleCloseAttempt()}
-        srTitle='Version Description'
+        srTitle='版本描述'
       >
-        <ChipModalHeader onClose={() => handleCloseAttempt()}>Version Description</ChipModalHeader>
+        <ChipModalHeader onClose={() => handleCloseAttempt()}>版本描述</ChipModalHeader>
         <ChipModalBody>
           <ChipModalField
             type='custom'
             title={
               <span>
-                {currentDescription ? 'Edit the' : 'Add a'} description for{' '}
+                {currentDescription ? '编辑' : '添加'}
                 <span className='font-medium text-[var(--text-primary)]'>{versionName}</span>
+                的描述
               </span>
             }
           >
             <RichMarkdownField
               value={description}
               onChange={setDescription}
-              placeholder='Describe the changes in this deployment version...'
+              placeholder='描述此部署版本的更改…'
               minHeight={240}
               maxHeight={420}
               disabled={isGenerating}
@@ -159,13 +160,13 @@ export function VersionDescriptionModal({
           cancelDisabled={updateMutation.isPending || isGenerating}
           secondaryActions={[
             {
-              label: isGenerating ? 'Generating...' : 'Generate',
+              label: isGenerating ? '生成中…' : '生成',
               onClick: handleGenerateDescription,
               disabled: isGenerating || updateMutation.isPending,
             },
           ]}
           primaryAction={{
-            label: updateMutation.isPending ? 'Saving...' : 'Save',
+            label: updateMutation.isPending ? '保存中…' : '保存',
             onClick: handleSave,
             disabled: updateMutation.isPending || isGenerating || !hasChanges || isTooLong,
           }}
@@ -175,12 +176,12 @@ export function VersionDescriptionModal({
       <ChipConfirmModal
         open={showUnsavedChangesAlert}
         onOpenChange={setShowUnsavedChangesAlert}
-        srTitle='Unsaved Changes'
-        title='Unsaved Changes'
-        text='You have unsaved changes. Are you sure you want to discard them?'
-        dismissLabel='Keep editing'
+        srTitle='未保存的更改'
+        title='未保存的更改'
+        text='你有未保存的更改。确定要放弃它们吗?'
+        dismissLabel='继续编辑'
         confirm={{
-          label: 'Discard Changes',
+          label: '放弃更改',
           onClick: handleDiscardChanges,
         }}
       />

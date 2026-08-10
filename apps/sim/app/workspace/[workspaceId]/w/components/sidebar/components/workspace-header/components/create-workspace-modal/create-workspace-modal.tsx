@@ -48,15 +48,15 @@ export function CreateWorkspaceModal({
   }
 
   return (
-    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Create workspace'>
-      <ChipModalHeader onClose={() => onOpenChange(false)}>Create workspace</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='创建工作区'>
+      <ChipModalHeader onClose={() => onOpenChange(false)}>创建工作区</ChipModalHeader>
       <ChipModalBody onKeyDown={handleKeyDown}>
         <ChipModalField
           type='input'
-          title='Name'
+          title='名称'
           value={name}
           onChange={setName}
-          placeholder='Workspace name'
+          placeholder='工作区名称'
           maxLength={100}
           autoComplete='off'
           disabled={isCreating}
@@ -68,7 +68,7 @@ export function CreateWorkspaceModal({
         onCancel={() => onOpenChange(false)}
         cancelDisabled={isCreating}
         primaryAction={{
-          label: isCreating ? 'Creating...' : 'Create',
+          label: isCreating ? '创建中...' : '创建',
           onClick: () => void handleSubmit(),
           disabled: !name.trim() || isCreating,
         }}

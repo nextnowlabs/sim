@@ -123,7 +123,7 @@ export function zonedClockDate(instant: Date, timeZone: string): Date {
 
 /** The UTC offset (ms, east-positive) of `timeZone` at a given instant. */
 function timezoneOffsetMs(instant: Date, timeZone: string): number {
-  const parts = new Intl.DateTimeFormat('en-US', {
+  const parts = new Intl.DateTimeFormat('zh-CN', {
     timeZone,
     hourCycle: 'h23',
     year: 'numeric',

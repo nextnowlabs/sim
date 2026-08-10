@@ -66,17 +66,17 @@ export const EditKnowledgeBaseModal = memo(function EditKnowledgeBaseModal({
     let firstError: string | null = null
 
     if (!name.trim()) {
-      setNameError('Name is required')
-      firstError ??= 'Name is required'
+      setNameError('名称不能为空')
+      firstError ??= '名称不能为空'
     } else if (name.trim().length > 100) {
-      setNameError('Name must be less than 100 characters')
-      firstError ??= 'Name must be less than 100 characters'
+      setNameError('名称不能超过 100 个字符')
+      firstError ??= '名称不能超过 100 个字符'
     } else {
       setNameError(null)
     }
 
     if (description.length > KNOWLEDGE_BASE_DESCRIPTION_MAX_LENGTH) {
-      const message = `Description must be ${KNOWLEDGE_BASE_DESCRIPTION_MAX_LENGTH} characters or less`
+      const message = `描述不能超过 ${KNOWLEDGE_BASE_DESCRIPTION_MAX_LENGTH} 个字符`
       setDescriptionError(message)
       firstError ??= message
     } else {
@@ -101,7 +101,7 @@ export const EditKnowledgeBaseModal = memo(function EditKnowledgeBaseModal({
       onOpenChange(false)
     } catch (err) {
       logger.error('Error updating knowledge base:', err)
-      setError(getErrorMessage(err, 'Failed to update knowledge base'))
+      setError(getErrorMessage(err, '更新知识库失败'))
     } finally {
       setIsSubmitting(false)
     }
@@ -111,33 +111,33 @@ export const EditKnowledgeBaseModal = memo(function EditKnowledgeBaseModal({
   const isDirty = name !== initialName || description !== initialDescription
 
   return (
-    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Edit Knowledge Base'>
-      <ChipModalHeader onClose={() => onOpenChange(false)}>Edit Knowledge Base</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='编辑知识库'>
+      <ChipModalHeader onClose={() => onOpenChange(false)}>编辑知识库</ChipModalHeader>
       <ChipModalBody>
         <ChipModalField
           type='input'
-          title='Name'
+          title='名称'
           value={name}
           onChange={setName}
-          placeholder='Enter knowledge base name'
+          placeholder='输入知识库名称'
           required
           error={nameError ?? undefined}
           autoComplete='off'
         />
         <ChipModalField
           type='textarea'
-          title='Description'
+          title='描述'
           value={description}
           onChange={setDescription}
-          placeholder='Describe this knowledge base (optional)'
+          placeholder='描述此知识库(可选)'
           rows={4}
           error={descriptionError ?? undefined}
         />
         {chunkingConfig && (
-          <ChipModalField type='custom' title='Chunking Configuration'>
+          <ChipModalField type='custom' title='分块配置'>
             <div className='grid grid-cols-3 gap-2'>
               <div className='rounded-sm border border-[var(--border-1)] bg-[var(--surface-2)] px-2.5 py-2'>
-                <p className='text-[11px] text-[var(--text-tertiary)] leading-tight'>Max Size</p>
+                <p className='text-[11px] text-[var(--text-tertiary)] leading-tight'>最大大小</p>
                 <p className='font-medium text-[var(--text-primary)] text-sm'>
                   {chunkingConfig.maxSize.toLocaleString()}
                   <span className='ml-0.5 font-normal text-[11px] text-[var(--text-tertiary)]'>
@@ -146,16 +146,16 @@ export const EditKnowledgeBaseModal = memo(function EditKnowledgeBaseModal({
                 </p>
               </div>
               <div className='rounded-sm border border-[var(--border-1)] bg-[var(--surface-2)] px-2.5 py-2'>
-                <p className='text-[11px] text-[var(--text-tertiary)] leading-tight'>Min Size</p>
+                <p className='text-[11px] text-[var(--text-tertiary)] leading-tight'>最小大小</p>
                 <p className='font-medium text-[var(--text-primary)] text-sm'>
                   {chunkingConfig.minSize.toLocaleString()}
                   <span className='ml-0.5 font-normal text-[11px] text-[var(--text-tertiary)]'>
-                    chars
+                    字符
                   </span>
                 </p>
               </div>
               <div className='rounded-sm border border-[var(--border-1)] bg-[var(--surface-2)] px-2.5 py-2'>
-                <p className='text-[11px] text-[var(--text-tertiary)] leading-tight'>Overlap</p>
+                <p className='text-[11px] text-[var(--text-tertiary)] leading-tight'>重叠</p>
                 <p className='font-medium text-[var(--text-primary)] text-sm'>
                   {chunkingConfig.overlap.toLocaleString()}
                   <span className='ml-0.5 font-normal text-[11px] text-[var(--text-tertiary)]'>
@@ -172,7 +172,7 @@ export const EditKnowledgeBaseModal = memo(function EditKnowledgeBaseModal({
         onCancel={() => onOpenChange(false)}
         cancelDisabled={isSubmitting}
         primaryAction={{
-          label: isSubmitting ? 'Saving...' : 'Save',
+          label: isSubmitting ? '保存中…' : '保存',
           onClick: handleSubmit,
           disabled: !isValid || !isDirty || isSubmitting,
         }}

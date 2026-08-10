@@ -167,7 +167,7 @@ export function SelectorCombobox({
                   setSearchTerm(newValue)
                 }
               }}
-              placeholder={placeholder || subBlock.placeholder || 'Select an option'}
+              placeholder={placeholder || subBlock.placeholder || '选择一个选项'}
               disabled={disabled || readOnly}
               editable={allowSearch}
               filterOptions={allowSearch}

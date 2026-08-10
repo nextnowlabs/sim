@@ -49,9 +49,9 @@ export const SlashCommandList = forwardRef<SlashCommandListHandle, SlashCommandL
         activeIndex={activeIndex}
         setActiveIndex={setActiveIndex}
         command={command}
-        ariaLabel='Commands'
+        ariaLabel='命令'
         idPrefix='slash-command'
-        emptyLabel='No results'
+        emptyLabel='无结果'
         itemKey={(item) => item.title}
         renderItem={(item) => {
           const Icon = item.icon

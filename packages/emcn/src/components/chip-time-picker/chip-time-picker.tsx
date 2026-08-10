@@ -70,7 +70,7 @@ export interface ChipTimePickerProps {
  */
 const ChipTimePicker = React.forwardRef<HTMLInputElement, ChipTimePickerProps>(
   function ChipTimePicker(
-    { value, onChange, placeholder = '10:00 AM', disabled, fullWidth, flush, className },
+    { value, onChange, placeholder = '10:00', disabled, fullWidth, flush, className },
     ref
   ) {
     const [text, setText] = React.useState(() => formatTimeLabel(value))
@@ -121,7 +121,7 @@ const ChipTimePicker = React.forwardRef<HTMLInputElement, ChipTimePickerProps>(
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
-        aria-label='Time'
+        aria-label='时间'
         autoComplete='off'
         spellCheck={false}
         className={cn(fullWidth ? 'w-full' : 'w-[88px]', flush ? 'mx-0' : 'mx-0.5', className)}

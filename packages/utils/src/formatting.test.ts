@@ -38,7 +38,7 @@ describe('formatDateTime', () => {
   it('formats a date with time', () => {
     const date = new Date('2023-05-15T14:30:00')
     const result = formatDateTime(date)
-    expect(result).toMatch(/May 15, 2023/)
+    expect(result).toMatch(/2023年5月15日/)
   })
 
   it('appends timezone abbreviation when timezone is provided', () => {
@@ -52,7 +52,7 @@ describe('formatDate', () => {
   it('formats a date without time', () => {
     const date = new Date('2023-05-15T14:30:00')
     const result = formatDate(date)
-    expect(result).toMatch(/May 15, 2023/)
+    expect(result).toMatch(/2023年5月15日/)
     expect(result).not.toMatch(/14:30/)
   })
 })
@@ -60,8 +60,8 @@ describe('formatDate', () => {
 describe('formatAbsoluteDate', () => {
   it('formats an ISO date string', () => {
     const result = formatAbsoluteDate('2023-05-15T14:30:00Z')
-    expect(result).toMatch(/May/)
-    expect(result).toMatch(/2023/)
+    expect(result).toMatch(/2023年/)
+    expect(result).toMatch(/5月/)
   })
 })
 
@@ -69,7 +69,7 @@ describe('formatTime', () => {
   it('formats time only', () => {
     const date = new Date('2023-05-15T14:30:00')
     const result = formatTime(date)
-    expect(result).toMatch(/2:30 PM|14:30/)
+    expect(result).toMatch(/下午2:30/)
   })
 })
 
@@ -77,7 +77,7 @@ describe('formatTimeWithSeconds', () => {
   it('formats time with seconds and timezone', () => {
     const date = new Date('2023-05-15T14:30:45')
     const result = formatTimeWithSeconds(date)
-    expect(result).toMatch(/2:30:45 PM|14:30:45/)
+    expect(result).toMatch(/下午2:30:45/)
   })
 
   it('omits timezone when includeTimezone is false', () => {
@@ -157,23 +157,23 @@ describe('formatDuration', () => {
 })
 
 describe('formatRelativeTime', () => {
-  it('returns "just now" for recent dates', () => {
+  it('returns "刚刚" for recent dates', () => {
     const now = new Date()
-    expect(formatRelativeTime(now.toISOString())).toBe('just now')
+    expect(formatRelativeTime(now.toISOString())).toBe('刚刚')
   })
 
   it('returns minutes ago', () => {
     const date = new Date(Date.now() - 5 * 60 * 1000)
-    expect(formatRelativeTime(date.toISOString())).toBe('5m ago')
+    expect(formatRelativeTime(date.toISOString())).toBe('5 分钟前')
   })
 
   it('returns hours ago', () => {
     const date = new Date(Date.now() - 3 * 60 * 60 * 1000)
-    expect(formatRelativeTime(date.toISOString())).toBe('3h ago')
+    expect(formatRelativeTime(date.toISOString())).toBe('3 小时前')
   })
 
   it('returns days ago', () => {
     const date = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
-    expect(formatRelativeTime(date.toISOString())).toBe('2d ago')
+    expect(formatRelativeTime(date.toISOString())).toBe('2 天前')
   })
 })

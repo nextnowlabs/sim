@@ -14,9 +14,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import type { CalendarScope } from '@/app/workspace/[workspaceId]/scheduled-tasks/utils/calendar-grid'
 
 const SCOPE_OPTIONS: { value: CalendarScope; label: string }[] = [
-  { value: 'day', label: 'Day' },
-  { value: 'week', label: 'Week' },
-  { value: 'month', label: 'Month' },
+  { value: 'day', label: '日' },
+  { value: 'week', label: '周' },
+  { value: 'month', label: '月' },
 ]
 
 interface CalendarToolbarProps {
@@ -47,12 +47,12 @@ export function CalendarToolbar({
   onSelectDate,
   onScopeChange,
 }: CalendarToolbarProps) {
-  const scopeLabel = SCOPE_OPTIONS.find((option) => option.value === scope)?.label ?? 'Week'
+  const scopeLabel = SCOPE_OPTIONS.find((option) => option.value === scope)?.label ?? '周'
 
   return (
     <div className='flex items-center justify-between border-[var(--border)] border-b px-4 py-2.5'>
       <div className='flex items-center'>
-        <Chip onClick={onToday}>Today</Chip>
+        <Chip onClick={onToday}>今天</Chip>
         <ChipDatePicker
           variant='ghost'
           label={label}
@@ -61,8 +61,8 @@ export function CalendarToolbar({
         />
       </div>
       <div className='flex items-center'>
-        <Chip leftIcon={ChevronLeft} aria-label='Previous' onClick={onPrev} />
-        <Chip leftIcon={ChevronRight} aria-label='Next' onClick={onNext} />
+        <Chip leftIcon={ChevronLeft} aria-label='上一个' onClick={onPrev} />
+        <Chip leftIcon={ChevronRight} aria-label='下一个' onClick={onNext} />
         <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
             <Chip>{scopeLabel}</Chip>

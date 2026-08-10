@@ -132,14 +132,14 @@ export function SubflowEditor({
             className='rounded-md'
           >
             <Label className='mb-[6.5px] block pl-0.5 font-medium text-[var(--text-primary)] text-small'>
-              {currentBlock.type === 'loop' ? 'Loop Type' : 'Parallel Type'}
+              {currentBlock.type === 'loop' ? '循环类型' : '并行类型'}
             </Label>
             <Combobox
               options={typeOptions}
               value={currentType || ''}
               onChange={handleSubflowTypeChange}
               disabled={!userCanEdit}
-              placeholder='Select type...'
+              placeholder='选择类型…'
             />
           </div>
 
@@ -152,10 +152,10 @@ export function SubflowEditor({
           >
             <Label className='mb-[6.5px] block pl-0.5 font-medium text-[var(--text-primary)] text-small'>
               {isCountMode
-                ? `${currentBlock.type === 'loop' ? 'Loop' : 'Parallel'} Iterations`
+                ? `${currentBlock.type === 'loop' ? '循环' : '并行'}次数`
                 : isConditionMode
-                  ? 'While Condition'
-                  : `${currentBlock.type === 'loop' ? 'Collection' : 'Parallel'} Items`}
+                  ? '循环条件'
+                  : `${currentBlock.type === 'loop' ? '集合' : '并行'}条目`}
             </Label>
 
             {isCountMode ? (
@@ -174,7 +174,7 @@ export function SubflowEditor({
                   })}
                 </div>
                 <div className='text-[var(--text-muted)] text-micro'>
-                  Enter a whole number greater than 0.
+                  请输入大于 0 的整数。
                 </div>
               </div>
             ) : (
@@ -275,7 +275,7 @@ export function SubflowEditor({
             }}
             role='button'
             tabIndex={0}
-            aria-label={isConnectionsAtMinHeight ? 'Expand connections' : 'Collapse connections'}
+            aria-label={isConnectionsAtMinHeight ? '展开连接' : '折叠连接'}
           >
             <ChevronUp
               className={

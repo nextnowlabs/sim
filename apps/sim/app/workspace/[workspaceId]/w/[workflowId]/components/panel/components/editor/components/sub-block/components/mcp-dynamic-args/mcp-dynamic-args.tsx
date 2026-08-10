@@ -316,7 +316,7 @@ export function McpDynamicArgs({
   ) {
     return (
       <div className='rounded-lg border p-8 text-center'>
-        <p className='text-muted-foreground text-sm'>Loading tool schema…</p>
+        <p className='text-muted-foreground text-sm'>正在加载工具 schema…</p>
       </div>
     )
   }

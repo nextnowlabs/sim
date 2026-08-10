@@ -41,7 +41,7 @@ export function Info({ children, className, side = 'top', align = 'start' }: Inf
       <Tooltip.Trigger asChild>
         <button
           type='button'
-          aria-label='More information'
+          aria-label='更多信息'
           className={cn(
             'inline-flex size-[14px] items-center justify-center text-[var(--text-icon)] focus-visible:outline-none',
             className

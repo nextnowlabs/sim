@@ -19,26 +19,26 @@ const SETTINGS_REDIRECTS: Record<string, (workspaceId: string) => string> = {
 }
 
 const SECTION_TITLES: Record<string, string> = {
-  general: 'General',
-  secrets: 'Secrets',
-  'access-control': 'Access Control',
-  'audit-logs': 'Audit Logs',
-  apikeys: 'Sim API Keys',
+  general: '常规',
+  secrets: '密钥',
+  'access-control': '访问控制',
+  'audit-logs': '审计日志',
+  apikeys: 'Sim API 密钥',
   byok: 'BYOK',
-  subscription: 'Subscription',
-  billing: 'Billing',
-  teammates: 'Teammates',
-  team: 'Team',
-  sso: 'Single Sign-On',
-  whitelabeling: 'Whitelabeling',
-  copilot: 'Chat Keys',
-  mcp: 'MCP Tools',
-  'custom-tools': 'Custom Tools',
-  'workflow-mcp-servers': 'MCP Servers',
-  'credential-sets': 'Email Polling',
-  'data-retention': 'Data Retention',
-  'recently-deleted': 'Recently Deleted',
-  debug: 'Debug',
+  subscription: '订阅',
+  billing: '账单',
+  teammates: '团队成员',
+  team: '团队',
+  sso: '单点登录',
+  whitelabeling: '品牌定制',
+  copilot: '对话密钥',
+  mcp: 'MCP 工具',
+  'custom-tools': '自定义工具',
+  'workflow-mcp-servers': 'MCP 服务器',
+  'credential-sets': '邮件轮询',
+  'data-retention': '数据保留',
+  'recently-deleted': '最近删除',
+  debug: '调试',
 } as const
 
 export async function generateMetadata({
@@ -47,7 +47,7 @@ export async function generateMetadata({
   params: Promise<{ section: string }>
 }): Promise<Metadata> {
   const { section } = await params
-  return { title: SECTION_TITLES[section] ?? 'Settings' }
+  return { title: SECTION_TITLES[section] ?? '设置' }
 }
 
 export default async function SettingsSectionPage({

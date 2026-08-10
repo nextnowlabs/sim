@@ -144,7 +144,7 @@ export function LinkHoverCard({ editor }: LinkHoverCardProps) {
         pointerEvents: position ? undefined : 'none',
       }}
       role='dialog'
-      aria-label='Link'
+      aria-label='链接'
       onMouseEnter={cancelHide}
       onMouseLeave={scheduleHide}
       className='z-[var(--z-popover)] flex items-center gap-0.5 rounded-lg border border-[var(--border)] bg-[var(--bg)] p-1 shadow-sm transition-opacity duration-150 ease-out'
@@ -158,7 +158,7 @@ export function LinkHoverCard({ editor }: LinkHoverCardProps) {
             onCommit={commitEdit}
             onCancel={() => setDraftHref(null)}
           />
-          <ToolbarButton icon={Check} label='Apply link' onClick={commitEdit} />
+          <ToolbarButton icon={Check} label='应用链接' onClick={commitEdit} />
         </>
       ) : (
         <>
@@ -179,13 +179,13 @@ export function LinkHoverCard({ editor }: LinkHoverCardProps) {
           )}
           <ToolbarButton
             icon={copied ? Check : Copy}
-            label={copied ? 'Copied' : 'Copy link'}
+            label={copied ? '已复制' : '复制链接'}
             onClick={() => {
               void copy(rawHref)
             }}
           />
-          {canEdit && <ToolbarButton icon={Pencil} label='Edit link' onClick={startEdit} />}
-          {canEdit && <ToolbarButton icon={Unlink} label='Remove link' onClick={removeLink} />}
+          {canEdit && <ToolbarButton icon={Pencil} label='编辑链接' onClick={startEdit} />}
+          {canEdit && <ToolbarButton icon={Unlink} label='移除链接' onClick={removeLink} />}
         </>
       )}
     </div>,

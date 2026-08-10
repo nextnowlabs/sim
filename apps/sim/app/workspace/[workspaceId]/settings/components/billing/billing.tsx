@@ -70,15 +70,15 @@ const logger = createLogger('Billing')
 type InvoiceStatusBadge = { variant: 'green' | 'amber' | 'red' | 'gray'; label: string }
 
 const INVOICE_STATUS_BADGES: Record<string, InvoiceStatusBadge> = {
-  paid: { variant: 'green', label: 'Paid' },
-  open: { variant: 'amber', label: 'Open' },
-  uncollectible: { variant: 'red', label: 'Uncollectible' },
-  void: { variant: 'gray', label: 'Void' },
+  paid: { variant: 'green', label: '已支付' },
+  open: { variant: 'amber', label: '待支付' },
+  uncollectible: { variant: 'red', label: '无法收回' },
+  void: { variant: 'gray', label: '已作废' },
 }
 
 /** Resolve a Stripe invoice status to its badge presentation. */
 function getInvoiceStatusBadge(status: string | null): InvoiceStatusBadge {
-  return INVOICE_STATUS_BADGES[status ?? ''] ?? { variant: 'gray', label: status ?? 'Unknown' }
+  return INVOICE_STATUS_BADGES[status ?? ''] ?? { variant: 'gray', label: status ?? '未知' }
 }
 
 /** Format a Unix-seconds timestamp as a short human-readable date. */
@@ -275,17 +275,15 @@ export function Billing() {
 
   const handleToggleOnDemand = async () => {
     if (!permissions.canEditUsageLimit) {
-      toast.error("Can't change on-demand usage", {
-        description: 'Only organization admins can change on-demand usage.',
+      toast.error('无法更改按需用量', {
+        description: '只有组织管理员才能更改按需用量。',
       })
       return
     }
 
     try {
       if (shouldUseOrganizationBillingContext && !billingOrganizationId) {
-        throw new Error(
-          'Organization billing context is unavailable. Please refresh and try again.'
-        )
+        throw new Error('组织账单上下文不可用,请刷新后重试。')
       }
 
       const nextLimit = isOnDemandActive
@@ -302,16 +300,16 @@ export function Billing() {
       }
     } catch (error) {
       logger.error('Failed to toggle on-demand billing', { error })
-      toast.error("Couldn't update on-demand usage", {
-        description: getErrorMessage(error, 'Please try again in a moment.'),
+      toast.error('更新按需用量失败', {
+        description: getErrorMessage(error, '请稍后重试。'),
       })
     }
   }
 
   const handleOpenBillingPortal = () => {
     if (!permissions.canEditUsageLimit) {
-      toast.error("Can't manage payment method", {
-        description: 'Only organization admins can manage billing.',
+      toast.error('无法管理支付方式', {
+        description: '只有组织管理员才能管理账单。',
       })
       return
     }
@@ -319,8 +317,8 @@ export function Billing() {
     const context = subscription.isOrgScoped ? 'organization' : 'user'
     if (context === 'organization' && !billingOrganizationId) {
       portalWindow?.close()
-      toast.error('Billing unavailable', {
-        description: 'Organization billing context is unavailable. Please refresh and try again.',
+      toast.error('账单服务不可用', {
+        description: '组织账单上下文不可用,请刷新后重试。',
       })
       return
     }
@@ -338,8 +336,8 @@ export function Billing() {
         onError: (error) => {
           portalWindow?.close()
           logger.error('Failed to open billing portal', { error })
-          toast.error("Couldn't open billing portal", {
-            description: getErrorMessage(error, 'Please try again in a moment.'),
+          toast.error('无法打开账单门户', {
+            description: getErrorMessage(error, '请稍后重试。'),
           })
         },
       }
@@ -348,50 +346,46 @@ export function Billing() {
 
   const handleCancelSubscription = async () => {
     if (!permissions.canEditUsageLimit) {
-      toast.error("Can't cancel subscription", {
-        description: 'Only organization admins can cancel the subscription.',
+      toast.error('无法取消订阅', {
+        description: '只有组织管理员才能取消订阅。',
       })
       return
     }
     if (!betterAuthSubscription.cancel) return
     try {
       if (subscription.isOrgScoped && !billingOrganizationId) {
-        throw new Error(
-          'Organization billing context is unavailable. Please refresh and try again.'
-        )
+        throw new Error('组织账单上下文不可用,请刷新后重试。')
       }
       const referenceId = subscription.isOrgScoped ? billingOrganizationId : session?.user?.id
       const returnUrl = getBaseUrl() + window.location.pathname
       await betterAuthSubscription.cancel({ returnUrl, referenceId: referenceId || '' })
     } catch (error) {
       logger.error('Failed to cancel subscription', { error })
-      toast.error("Couldn't cancel subscription", {
-        description: getErrorMessage(error, 'Please try again in a moment.'),
+      toast.error('取消订阅失败', {
+        description: getErrorMessage(error, '请稍后重试。'),
       })
     }
   }
 
   const handleRestoreSubscription = async () => {
     if (!permissions.canEditUsageLimit) {
-      toast.error("Can't restore subscription", {
-        description: 'Only organization admins can restore the subscription.',
+      toast.error('无法恢复订阅', {
+        description: '只有组织管理员才能恢复订阅。',
       })
       return
     }
     if (!betterAuthSubscription.restore) return
     try {
       if (subscription.isOrgScoped && !billingOrganizationId) {
-        throw new Error(
-          'Organization billing context is unavailable. Please refresh and try again.'
-        )
+        throw new Error('组织账单上下文不可用,请刷新后重试。')
       }
       const referenceId = subscription.isOrgScoped ? billingOrganizationId : session?.user?.id
       await betterAuthSubscription.restore({ referenceId: referenceId || '' })
       await refetchSubscription()
     } catch (error) {
       logger.error('Failed to restore subscription', { error })
-      toast.error("Couldn't restore subscription", {
-        description: getErrorMessage(error, 'Please try again in a moment.'),
+      toast.error('恢复订阅失败', {
+        description: getErrorMessage(error, '请稍后重试。'),
       })
     }
   }
@@ -401,11 +395,10 @@ export function Billing() {
 
   const plan = subscription.plan
   const planName = getDisplayPlanName(plan)
-  const billingPeriod =
-    subscriptionData.data.billingInterval === 'year' ? 'billed annually' : 'billed monthly'
+  const billingPeriod = subscriptionData.data.billingInterval === 'year' ? '按年计费' : '按月计费'
   const priceText = subscription.isEnterprise
-    ? 'Custom pricing'
-    : `$${getPlanTierDollars(plan)} per user/month, ${billingPeriod}`
+    ? '自定义定价'
+    : `$${getPlanTierDollars(plan)} 每用户/月,${billingPeriod}`
 
   const periodEnd = subscriptionData.data.periodEnd ?? null
   const isCancelledAtPeriodEnd = subscriptionData.data.cancelAtPeriodEnd === true
@@ -442,7 +435,7 @@ export function Billing() {
             </div>
           </div>
           <div className='flex min-w-0 flex-col'>
-            <span className='truncate text-[14px] text-[var(--text-body)]'>{planName} plan</span>
+            <span className='truncate text-[14px] text-[var(--text-body)]'>{planName} 套餐</span>
             <span className='truncate text-[12px] text-[var(--text-muted)]'>{priceText}</span>
           </div>
         </div>
@@ -455,11 +448,11 @@ export function Billing() {
               onMouseEnter={prefetchUpgrade}
               onFocus={prefetchUpgrade}
             >
-              Explore plans
+              查看套餐
             </ChipLink>
           ) : (
             <Chip variant='border-shadow' flush disabled>
-              Explore plans
+              查看套餐
             </Chip>
           ))}
       </div>
@@ -477,11 +470,9 @@ export function Billing() {
       )}
 
       {showOnDemand && (
-        <SettingsSection label='Enable on-demand usage'>
+        <SettingsSection label='启用按需用量'>
           <div className='flex items-center justify-between'>
-            <span className='text-[var(--text-body)] text-small'>
-              Allow usage to go past included usage
-            </span>
+            <span className='text-[var(--text-body)] text-small'>允许用量超过包含的额度</span>
             {onDemandLockedOn ? (
               <Tooltip.Root>
                 <Tooltip.Trigger asChild>
@@ -492,7 +483,7 @@ export function Billing() {
                 <Tooltip.Content className='max-w-[260px]'>
                   <p>
                     {
-                      "Your usage is above your plan's included amount, so on-demand can't be turned off yet. It turns off once usage drops below it — at the latest when your billing period resets."
+                      '你的用量已超过套餐包含额度,暂时无法关闭按需用量。当用量降至该额度以下时会自动关闭——最迟在计费周期重置时。'
                     }
                   </p>
                 </Tooltip.Content>
@@ -509,10 +500,10 @@ export function Billing() {
       )}
 
       {!subscription.isFree && !subscription.isEnterprise && (
-        <SettingsSection label='Usage notifications'>
+        <SettingsSection label='用量通知'>
           <div className='flex items-center justify-between'>
             <span className='text-[var(--text-body)] text-small'>
-              Email me when I reach 80% usage
+              当用量达到 80% 时向我发送邮件
             </span>
             <Switch
               checked={!!billingUsageNotificationsEnabled}
@@ -531,12 +522,12 @@ export function Billing() {
       )}
 
       {(subscription.isPaid || subscription.isEnterprise) && (
-        <SettingsSection label='Subscription'>
+        <SettingsSection label='订阅'>
           <div className='flex flex-col gap-4'>
             {periodEnd && (
               <div className='flex items-center justify-between'>
                 <span className='text-[var(--text-body)] text-small'>
-                  {isCancelledAtPeriodEnd ? 'Access until' : 'Next billing date'}
+                  {isCancelledAtPeriodEnd ? '访问有效期至' : '下次计费日期'}
                 </span>
                 <span className='text-[var(--text-muted)] text-small'>
                   {new Date(periodEnd).toLocaleDateString()}
@@ -545,20 +536,20 @@ export function Billing() {
             )}
 
             <div className='flex items-center justify-between'>
-              <span className='text-[var(--text-body)] text-small'>Payment method</span>
+              <span className='text-[var(--text-body)] text-small'>支付方式</span>
               <Chip
                 flush
                 disabled={!canManageBilling || openBillingPortal.isPending}
                 onClick={handleOpenBillingPortal}
               >
-                Manage in Stripe
+                在 Stripe 中管理
               </Chip>
             </div>
 
             {!subscription.isEnterprise && (
               <div className='flex items-center justify-between'>
                 <span className='text-[var(--text-body)] text-small'>
-                  {isCancelledAtPeriodEnd ? 'Subscription canceled' : 'Cancel subscription'}
+                  {isCancelledAtPeriodEnd ? '订阅已取消' : '取消订阅'}
                 </span>
                 {isCancelledAtPeriodEnd ? (
                   <Chip
@@ -567,7 +558,7 @@ export function Billing() {
                     disabled={!canManageBilling}
                     onClick={handleRestoreSubscription}
                   >
-                    Restore
+                    恢复
                   </Chip>
                 ) : (
                   <Chip
@@ -576,7 +567,7 @@ export function Billing() {
                     disabled={!canManageBilling}
                     onClick={handleCancelSubscription}
                   >
-                    Cancel
+                    取消
                   </Chip>
                 )}
               </div>
@@ -586,7 +577,7 @@ export function Billing() {
       )}
 
       {!subscription.isFree && invoices.length > 0 && (
-        <SettingsSection label='Invoices'>
+        <SettingsSection label='发票'>
           <div className='-mx-2 flex flex-col gap-y-0.5'>
             {invoices.map((invoice) => {
               const rowClassName =
@@ -628,13 +619,13 @@ export function Billing() {
                 type='button'
                 onClick={handleOpenBillingPortal}
                 disabled={openBillingPortal.isPending || !canManageBilling}
-                aria-label='View all invoices'
+                aria-label='查看全部发票'
                 className={cn(
                   chipVariants({ fullWidth: true }),
                   'text-[var(--text-muted)] text-small'
                 )}
               >
-                View all
+                查看全部
               </button>
             )}
           </div>

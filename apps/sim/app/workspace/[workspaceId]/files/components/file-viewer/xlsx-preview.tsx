@@ -55,7 +55,7 @@ export const XlsxPreview = memo(function XlsxPreview({
         }
       } catch (err) {
         if (!cancelled) {
-          const msg = toError(err).message || 'Failed to parse spreadsheet'
+          const msg = toError(err).message || '无法解析电子表格'
           logger.error('XLSX parse failed', { error: msg })
           setRenderError(msg)
         }
@@ -93,7 +93,7 @@ export const XlsxPreview = memo(function XlsxPreview({
         }
       } catch (err) {
         if (!cancelled) {
-          const msg = toError(err).message || 'Failed to parse sheet'
+          const msg = toError(err).message || '无法解析工作表'
           logger.error('XLSX sheet parse failed', { error: msg })
           setRenderError(msg)
         }
@@ -107,7 +107,7 @@ export const XlsxPreview = memo(function XlsxPreview({
   }, [sheetNames, activeSheet])
 
   const error = resolvePreviewError(preview.error, renderError)
-  if (error) return <PreviewError label='spreadsheet' error={error} />
+  if (error) return <PreviewError label='电子表格' error={error} />
   if (!fileData || currentSheet === null) {
     return <PreviewLoadingFrame className='flex flex-1 flex-col overflow-hidden' />
   }
@@ -132,7 +132,7 @@ export const XlsxPreview = memo(function XlsxPreview({
         <DataTable headers={currentSheet.headers} rows={currentSheet.rows} />
         {currentSheet.truncated && (
           <p className='mt-3 text-center text-[12px] text-[var(--text-muted)]'>
-            Showing first {XLSX_MAX_ROWS.toLocaleString()} rows. Download the file to view all data.
+            仅显示前 {XLSX_MAX_ROWS.toLocaleString()} 行。下载文件以查看全部数据。
           </p>
         )}
       </div>

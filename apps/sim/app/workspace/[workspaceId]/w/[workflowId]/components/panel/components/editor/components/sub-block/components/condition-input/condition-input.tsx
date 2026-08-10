@@ -968,10 +968,10 @@ export function ConditionInput({
                       className='h-auto p-0'
                     >
                       <Plus className='size-[14px]' />
-                      <span className='sr-only'>Add Block</span>
+                      <span className='sr-only'>添加节点</span>
                     </Button>
                   </Tooltip.Trigger>
-                  <Tooltip.Content>Add Block</Tooltip.Content>
+                  <Tooltip.Content>添加节点</Tooltip.Content>
                 </Tooltip.Root>
 
                 <Tooltip.Root>

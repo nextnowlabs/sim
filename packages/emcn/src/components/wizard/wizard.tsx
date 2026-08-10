@@ -124,9 +124,9 @@ const WizardRoot: React.FC<WizardProps> = ({
   height,
   onComplete,
   children,
-  backLabel = 'Back',
-  nextLabel = 'Next',
-  doneLabel = 'Done',
+  backLabel = '返回',
+  nextLabel = '下一步',
+  doneLabel = '完成',
   description,
 }) => {
   const steps = React.Children.toArray(children).filter(isStepElement)
@@ -175,7 +175,7 @@ const WizardRoot: React.FC<WizardProps> = ({
 
         <ModalBody>
           <ModalDescription className='sr-only'>
-            {description ?? 'Multi-step wizard'}
+            {description ?? '多步骤向导'}
           </ModalDescription>
           {activeStep}
         </ModalBody>

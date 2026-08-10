@@ -176,7 +176,7 @@ const TagInputTag = React.memo(function TagInputTag({
       className='min-w-0 max-w-full bg-[var(--surface-6)] shadow-none dark:bg-[var(--surface-3)]'
       rightIcon={disabled ? undefined : X}
       onRightIconClick={disabled ? undefined : handleRemove}
-      rightIconLabel={`Remove ${item.value}`}
+      rightIconLabel={`移除 ${item.value}`}
     >
       <span className='min-w-0 flex-1 translate-y-[0.5px] truncate font-medium font-sans text-sm leading-5'>
         {item.value}
@@ -212,8 +212,8 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
       onAdd,
       onRemove,
       onInputChange,
-      placeholder = 'Enter values',
-      placeholderWithTags = 'Add another',
+      placeholder = '输入值',
+      placeholderWithTags = '再添加一个',
       disabled = false,
       className,
       inputClassName,
@@ -366,7 +366,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
     return (
       <div
         role='group'
-        aria-label='Tag input'
+        aria-label='标签输入'
         className={cn(
           tagInputVariants({ variant }),
           effectiveMaxHeight,
@@ -395,7 +395,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
         )}
         {isDragging && (
           <div className='absolute inset-0 flex items-center justify-center rounded-sm bg-[color-mix(in_srgb,var(--surface-5)_90%,transparent)]'>
-            <span className='text-[var(--text-tertiary)] text-small'>Drop file here</span>
+            <span className='text-[var(--text-tertiary)] text-small'>将文件拖放到此处</span>
           </div>
         )}
         {items.map((item, index) => (
@@ -472,7 +472,7 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
               }}
               className='relative flex flex-shrink-0 items-center opacity-80 transition-opacity before:absolute before:inset-[-10px] before:content-[""] hover-hover:opacity-100 focus:outline-none'
               disabled={disabled}
-              aria-label='Add tag'
+              aria-label='添加标签'
             >
               <Plus className='size-[14px]' />
             </button>
@@ -488,13 +488,13 @@ const TagInput = React.forwardRef<HTMLInputElement, TagInputProps>(
                   fileInputRef.current?.click()
                 }}
                 className='-m-1.5 absolute right-2 bottom-[9px] p-1.5 text-[var(--text-tertiary)] transition-colors hover-hover:text-[var(--text-secondary)]'
-                aria-label={fileInputOptions?.tooltip ?? 'Upload file'}
+                aria-label={fileInputOptions?.tooltip ?? '上传文件'}
               >
                 <FileIcon className='size-3.5' strokeWidth={2} />
               </button>
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
-              {fileInputOptions?.tooltip ?? 'Upload file'}
+              {fileInputOptions?.tooltip ?? '上传文件'}
             </Tooltip.Content>
           </Tooltip.Root>
         )}

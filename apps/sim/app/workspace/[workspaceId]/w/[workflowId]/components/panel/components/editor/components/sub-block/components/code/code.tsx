@@ -830,7 +830,7 @@ export const Code = memo(function Code({
             'hover-hover:scale-105 hover-hover:bg-muted/50 hover-hover:text-foreground',
             'active:scale-95'
           )}
-          aria-label='Copy code'
+          aria-label='复制代码'
         >
           {copied ? <Check className='h-3.5 w-3.5' /> : <Duplicate className='h-3.5 w-3.5' />}
         </Button>
@@ -860,7 +860,7 @@ export const Code = memo(function Code({
                 size='icon'
                 onClick={isPromptVisible ? hidePromptInline : showPromptInline}
                 disabled={isAiLoading || isAiStreaming}
-                aria-label='Generate code with AI'
+                aria-label='用 AI 生成代码'
                 className='size-8 rounded-full border border-transparent bg-muted/80 text-muted-foreground shadow-sm transition-all duration-200 hover-hover:border-primary/20 hover-hover:bg-muted hover-hover:text-foreground hover-hover:shadow'
               >
                 <Wand2 className='size-4' />

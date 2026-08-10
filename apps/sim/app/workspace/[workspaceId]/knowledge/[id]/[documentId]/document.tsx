@@ -67,11 +67,11 @@ function UnsavedChangesModal({ open, onOpenChange, onDiscard }: UnsavedChangesMo
     <ChipConfirmModal
       open={open}
       onOpenChange={onOpenChange}
-      srTitle='Unsaved Changes'
-      title='Unsaved Changes'
-      text='You have unsaved changes. Are you sure you want to discard them?'
-      dismissLabel='Keep editing'
-      confirm={{ label: 'Discard Changes', onClick: onDiscard }}
+      srTitle='未保存的更改'
+      title='未保存的更改'
+      text='你有未保存的更改。确定要放弃它们吗?'
+      dismissLabel='继续编辑'
+      confirm={{ label: '放弃更改', onClick: onDiscard }}
     />
   )
 }
@@ -112,10 +112,10 @@ function truncateContent(content: string, maxLength = 150, searchQuery = ''): st
 }
 
 const CHUNK_COLUMNS: ResourceColumn[] = [
-  { id: 'content', header: 'Content' },
-  { id: 'index', header: 'Index', widthMultiplier: 0.6 },
+  { id: 'content', header: '内容' },
+  { id: 'index', header: '索引', widthMultiplier: 0.6 },
   { id: 'tokens', header: 'Tokens', widthMultiplier: 0.6 },
-  { id: 'status', header: 'Status', widthMultiplier: 0.75 },
+  { id: 'status', header: '状态', widthMultiplier: 0.75 },
 ]
 
 export function Document({
@@ -283,7 +283,7 @@ export function Document({
   const combinedError = documentError || searchError || initialError
 
   const isConnectorDocument = Boolean(documentData?.connectorId)
-  const effectiveDocumentName = documentData?.filename || documentName || 'Document'
+  const effectiveDocumentName = documentData?.filename || documentName || '文档'
   /**
    * Breadcrumb labels. Fall back to the canonical '…' placeholder while names
    * load (mirroring loading.tsx) instead of the generic "Knowledge Base" /
@@ -473,16 +473,16 @@ export function Document({
     () =>
       combinedError
         ? [
-            { label: 'Knowledge Base', icon: Database, onClick: handleNavToKB },
+            { label: '知识库', icon: Database, onClick: handleNavToKB },
             {
               label: knowledgeBaseCrumbLabel,
               icon: Database,
               onClick: handleNavToKBDetail,
             },
-            { label: 'Error' },
+            { label: '错误' },
           ]
         : [
-            { label: 'Knowledge Base', icon: Database, onClick: handleNavToKB },
+            { label: '知识库', icon: Database, onClick: handleNavToKB },
             {
               label: knowledgeBaseCrumbLabel,
               icon: Database,
@@ -504,9 +504,9 @@ export function Document({
               dropdownItems: [
                 ...(userPermissions.canEdit
                   ? [
-                      { label: 'Rename', icon: Pencil, onClick: handleStartDocRename },
-                      { label: 'Tags', icon: Tag, onClick: handleShowTags },
-                      { label: 'Delete', icon: Trash, onClick: handleShowDeleteDoc },
+                      { label: '重命名', icon: Pencil, onClick: handleStartDocRename },
+                      { label: '标签', icon: Tag, onClick: handleShowTags },
+                      { label: '删除', icon: Trash, onClick: handleShowDeleteDoc },
                     ]
                   : []),
               ],
@@ -577,7 +577,7 @@ export function Document({
 
   const createAction = useMemo(
     () => ({
-      label: 'New chunk',
+      label: '新建分块',
       onClick: handleNewChunk,
       disabled:
         documentData?.processingStatus === 'failed' ||
@@ -591,25 +591,25 @@ export function Document({
     ? {
         value: searchQuery,
         onChange: (value: string) => setSearchQuery(value),
-        placeholder: 'Search chunks...',
+        placeholder: '搜索分块…',
       }
     : undefined
 
   const enabledDisplayLabel = useMemo(() => {
-    if (enabledFilter.length === 0) return 'All'
-    if (enabledFilter.length === 1) return enabledFilter[0] === 'enabled' ? 'Enabled' : 'Disabled'
-    return `${enabledFilter.length} selected`
+    if (enabledFilter.length === 0) return '全部'
+    if (enabledFilter.length === 1) return enabledFilter[0] === 'enabled' ? '已启用' : '已禁用'
+    return `已选 ${enabledFilter.length} 项`
   }, [enabledFilter])
 
   const filterContent = useMemo(
     () => (
       <div className='flex w-[240px] flex-col gap-3 p-3'>
         <div className='flex flex-col gap-1.5'>
-          <span className='font-medium text-[var(--text-secondary)] text-caption'>Status</span>
+          <span className='font-medium text-[var(--text-secondary)] text-caption'>状态</span>
           <ChipCombobox
             options={[
-              { value: 'enabled', label: 'Enabled' },
-              { value: 'disabled', label: 'Disabled' },
+              { value: 'enabled', label: '已启用' },
+              { value: 'disabled', label: '已禁用' },
             ]}
             multiSelect
             multiSelectValues={enabledFilter}
@@ -622,7 +622,7 @@ export function Document({
               <span className='truncate text-[var(--text-primary)]'>{enabledDisplayLabel}</span>
             }
             showAllOption
-            allOptionLabel='All'
+            allOptionLabel='全部'
             className='w-full'
           />
         </div>
@@ -636,7 +636,7 @@ export function Document({
             }}
             className='flex h-[32px] w-full items-center justify-center rounded-md text-[var(--text-secondary)] text-caption transition-colors hover-hover:bg-[var(--surface-active)]'
           >
-            Clear all filters
+            清除全部筛选
           </button>
         )}
       </div>
@@ -647,7 +647,7 @@ export function Document({
   const filterTags: FilterTag[] = useMemo(
     () =>
       enabledFilter.map((value) => ({
-        label: `Status: ${value === 'enabled' ? 'Enabled' : 'Disabled'}`,
+        label: `状态: ${value === 'enabled' ? '已启用' : '已禁用'}`,
         onRemove: () => {
           setEnabledFilter((prev) => prev.filter((v) => v !== value))
           setSelectedChunks(new Set())
@@ -855,9 +855,9 @@ export function Document({
   const sortConfig: SortConfig = useMemo(
     () => ({
       options: [
-        { id: 'index', label: 'Index' },
+        { id: 'index', label: '索引' },
         { id: 'tokens', label: 'Tokens' },
-        { id: 'status', label: 'Status' },
+        { id: 'status', label: '状态' },
       ],
       active: activeSort,
       onSort: (column, direction) => {
@@ -884,11 +884,11 @@ export function Document({
                   <FileText className='size-5 flex-shrink-0 text-[var(--text-muted)]' />
                   <span className='text-[var(--text-muted)] text-sm italic'>
                     {documentData?.processingStatus === 'pending' &&
-                      'Document processing pending...'}
+                      '文档处理等待中…'}
                     {documentData?.processingStatus === 'processing' &&
-                      'Document processing in progress...'}
-                    {documentData?.processingStatus === 'failed' && 'Document processing failed'}
-                    {!documentData?.processingStatus && 'Document not ready'}
+                      '文档处理进行中…'}
+                    {documentData?.processingStatus === 'failed' && '文档处理失败'}
+                    {!documentData?.processingStatus && '文档尚未就绪'}
                   </span>
                 </div>
               ),
@@ -931,7 +931,7 @@ export function Document({
           status: {
             content: (
               <Badge variant={chunk.enabled ? 'green' : 'gray'} size='sm'>
-                {chunk.enabled ? 'Enabled' : 'Disabled'}
+                {chunk.enabled ? '已启用' : '已禁用'}
               </Badge>
             ),
           },
@@ -943,23 +943,23 @@ export function Document({
   const saveLabel =
     saveStatus === 'saving'
       ? isCreatingNewChunk
-        ? 'Creating...'
-        : 'Saving...'
+        ? '创建中…'
+        : '保存中…'
       : saveStatus === 'saved'
         ? isCreatingNewChunk
-          ? 'Created'
-          : 'Saved'
+          ? '已创建'
+          : '已保存'
         : saveStatus === 'error'
           ? isCreatingNewChunk
-            ? 'Create failed'
-            : 'Save failed'
+            ? '创建失败'
+            : '保存失败'
           : isCreatingNewChunk
-            ? 'Create Chunk'
-            : 'Save'
+            ? '创建分块'
+            : '保存'
 
   const editorBreadcrumbBase = useMemo<BreadcrumbItem[]>(
     () => [
-      { label: 'Knowledge Base', icon: Database, onClick: handleNavToKB },
+      { label: '知识库', icon: Database, onClick: handleNavToKB },
       {
         label: knowledgeBaseCrumbLabel,
         icon: Database,
@@ -978,21 +978,21 @@ export function Document({
   )
 
   const newChunkBreadcrumbs = useMemo<BreadcrumbItem[]>(
-    () => [...editorBreadcrumbBase, { label: 'New Chunk', terminal: true }],
+    () => [...editorBreadcrumbBase, { label: '新建分块', terminal: true }],
     [editorBreadcrumbBase]
   )
 
   const editChunkBreadcrumbs = useMemo<BreadcrumbItem[]>(
     () => [
       ...editorBreadcrumbBase,
-      { label: selectedChunk ? `Chunk #${selectedChunk.chunkIndex}` : '', terminal: true },
+      { label: selectedChunk ? `分块 #${selectedChunk.chunkIndex}` : '', terminal: true },
     ],
     [editorBreadcrumbBase, selectedChunk]
   )
 
   const loadingBreadcrumbs = useMemo<BreadcrumbItem[]>(
     () => [
-      { label: 'Knowledge Base', icon: Database, onClick: handleNavToKB },
+      { label: '知识库', icon: Database, onClick: handleNavToKB },
       {
         label: knowledgeBaseCrumbLabel,
         icon: Database,
@@ -1036,13 +1036,13 @@ export function Document({
   const editorActions = useMemo<ResourceAction[]>(() => {
     const actions: ResourceAction[] = [
       {
-        text: 'Previous chunk',
+        text: '上一个分块',
         icon: ChevronUp,
         onSelect: handleNavigatePrev,
         disabled: !canNavigatePrev,
       },
       {
-        text: 'Next chunk',
+        text: '下一个分块',
         icon: ChevronDown,
         onSelect: handleNavigateNextChunk,
         disabled: !canNavigateNext,
@@ -1107,7 +1107,7 @@ export function Document({
         <Resource>
           <Resource.Header icon={FileText} breadcrumbs={loadingBreadcrumbs} />
           <div className='flex flex-1 items-center justify-center'>
-            <span className='text-[var(--text-muted)] text-sm'>Loading chunk…</span>
+            <span className='text-[var(--text-muted)] text-sm'>加载分块中…</span>
           </div>
         </Resource>
       )
@@ -1206,29 +1206,29 @@ export function Document({
       <ChipConfirmModal
         open={showDeleteDocumentDialog}
         onOpenChange={setShowDeleteDocumentDialog}
-        srTitle='Delete Document'
-        title='Delete Document'
+        srTitle='删除文档'
+        title='删除文档'
         text={[
-          'Are you sure you want to delete ',
+          '确定要删除 ',
           { text: effectiveDocumentName, bold: true },
-          '? ',
+          ' 吗?',
           {
-            text: `This will permanently delete the document and all ${documentData?.chunkCount ?? 0} chunk${documentData?.chunkCount === 1 ? '' : 's'} within it.`,
+            text: `这将永久删除该文档及其中的 ${documentData?.chunkCount ?? 0} 个分块。`,
             error: true,
           },
           ' ',
           documentData?.connectorId
             ? {
-                text: 'This document is synced from a connector. Deleting it will permanently exclude it from future syncs. To temporarily hide it from search, disable it instead.',
+                text: '此文档来自连接器同步。删除后它将永久从未来的同步中排除。若只是暂时隐藏搜索结果,请改为禁用。',
                 error: true,
               }
-            : 'This action cannot be undone.',
+            : '此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Delete Document',
+          label: '删除文档',
           onClick: handleDeleteDocument,
           pending: isDeletingDocument,
-          pendingLabel: 'Deleting...',
+          pendingLabel: '删除中…',
         }}
       />
 

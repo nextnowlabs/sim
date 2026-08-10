@@ -51,7 +51,7 @@ export function FilesActionBar({
           >
             <div className='flex items-center gap-2 rounded-[10px] border border-[var(--border)] bg-[var(--surface-2)] px-2 py-1.5'>
               <span className='px-1 text-[var(--text-secondary)] text-small'>
-                {selectedCount} selected
+                已选择 {selectedCount} 项
               </span>
               <div className='flex items-center gap-[5px]'>
                 {onDownload && (
@@ -66,7 +66,7 @@ export function FilesActionBar({
                         <Download className='size-[12px]' />
                       </Button>
                     </Tooltip.Trigger>
-                    <Tooltip.Content side='top'>Download</Tooltip.Content>
+                    <Tooltip.Content side='top'>下载</Tooltip.Content>
                   </Tooltip.Root>
                 )}
                 {onMove && moveOptions && (
@@ -83,7 +83,7 @@ export function FilesActionBar({
                           </Button>
                         </DropdownMenuTrigger>
                       </Tooltip.Trigger>
-                      <Tooltip.Content side='top'>Move</Tooltip.Content>
+                      <Tooltip.Content side='top'>移动</Tooltip.Content>
                     </Tooltip.Root>
                     <DropdownMenuContent
                       side='top'
@@ -113,7 +113,7 @@ export function FilesActionBar({
                         <Trash className='size-[12px]' />
                       </Button>
                     </Tooltip.Trigger>
-                    <Tooltip.Content side='top'>Delete</Tooltip.Content>
+                    <Tooltip.Content side='top'>删除</Tooltip.Content>
                   </Tooltip.Root>
                 )}
               </div>

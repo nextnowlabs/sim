@@ -78,7 +78,7 @@ async function resolveResource(
       return { error: `Log not found in the current workspace.` }
     resourceId = logRecord.id
     const workflowName = logRecord.workflowName ?? 'Unknown Workflow'
-    const timestamp = logRecord.startedAt.toLocaleString('en-US', {
+    const timestamp = logRecord.startedAt.toLocaleString('zh-CN', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',

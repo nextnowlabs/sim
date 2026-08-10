@@ -40,7 +40,7 @@ const COL_SPAN_ALL = 'col-span-4'
 /** Copies a secret's name and confirms with a toast. */
 function copyName(key: string) {
   void navigator.clipboard.writeText(key)
-  toast.success('Copied name to clipboard')
+  toast.success('已复制名称到剪贴板')
 }
 
 interface SecretRowMenuProps {
@@ -59,12 +59,12 @@ interface SecretRowMenuProps {
 function SecretRowMenu({ onCopyName, onViewDetails, onDelete }: SecretRowMenuProps) {
   return (
     <RowActionsMenu
-      label='Secret actions'
+      label='密钥操作'
       triggerClassName='ml-2'
       actions={[
-        ...(onViewDetails ? [{ label: 'View details', onSelect: onViewDetails }] : []),
-        { label: 'Copy name', onSelect: onCopyName },
-        ...(onDelete ? [{ label: 'Delete', destructive: true, onSelect: onDelete }] : []),
+        ...(onViewDetails ? [{ label: '查看详情', onSelect: onViewDetails }] : []),
+        { label: '复制名称', onSelect: onCopyName },
+        ...(onDelete ? [{ label: '删除', destructive: true, onSelect: onDelete }] : []),
       ]}
     />
   )
@@ -120,8 +120,8 @@ function updateEnvVarArray(
  */
 function validateEnvVarKey(key: string): string | undefined {
   if (!key) return undefined
-  if (key.includes(' ')) return 'Spaces are not allowed'
-  if (!isValidEnvVarName(key)) return 'Only letters, numbers, and underscores allowed'
+  if (key.includes(' ')) return '不允许包含空格'
+  if (!isValidEnvVarName(key)) return '仅允许字母、数字和下划线'
   return undefined
 }
 
@@ -288,7 +288,7 @@ function NewWorkspaceVariableRow({
         value={envVar.value}
         onChange={(next) => onUpdate(index, 'value', next)}
         onPaste={onPaste ? (e) => onPaste(e, index) : undefined}
-        placeholder='Enter value'
+        placeholder='输入值'
         name={`new_workspace_value_${envVar.id || index}_${generateShortId()}`}
         className='ml-0'
       />
@@ -820,13 +820,13 @@ export function SecretsManager() {
       setWorkspaceVars(mergedWorkspaceVars)
       setNewWorkspaceRows([createEmptyEnvVar()])
       if (mutations.length > 0) {
-        toast.success('Secrets saved')
+        toast.success('密钥已保存')
       }
     } catch (error) {
       hasSavedPersonalRef.current = false
       hasSavedWorkspaceRef.current = false
       logger.error('Failed to save environment variables:', error)
-      toast.error('Failed to save secrets')
+      toast.error('保存密钥失败')
     } finally {
       if (mutations.length > 0) {
         queryClient.invalidateQueries({ queryKey: workspaceCredentialKeys.lists() })
@@ -876,7 +876,7 @@ export function SecretsManager() {
           onPaste={(e) => handlePaste(e, originalIndex)}
           unmasked={isConflicted}
           readOnly={isConflicted}
-          placeholder={isConflicted ? 'Workspace override active' : 'Enter value'}
+          placeholder={isConflicted ? '工作区覆盖生效中' : '输入值'}
           name={`env_variable_value_${envVar.id || originalIndex}_${generateShortId()}`}
           className={cn(isConflicted && 'cursor-not-allowed opacity-50')}
         />
@@ -905,8 +905,7 @@ export function SecretsManager() {
               'mt-[-4px] text-[var(--text-error)] text-caption leading-tight'
             )}
           >
-            Workspace variable with the same name overrides this. Rename your personal key to use
-            it.
+            同名工作区变量会覆盖此值。请重命名你的个人密钥以使用它。
           </div>
         )}
       </div>
@@ -949,26 +948,26 @@ export function SecretsManager() {
         search={{
           value: searchTerm,
           onChange: setSearchTerm,
-          placeholder: 'Search secrets...',
+          placeholder: '搜索密钥…',
         }}
         actions={[
           ...(hasChanges
             ? [
                 {
-                  text: 'Discard',
+                  text: '放弃',
                   onSelect: handleCancel,
                   disabled: isListSaving,
                 } satisfies SettingsAction,
               ]
             : []),
           {
-            text: isListSaving ? 'Saving...' : 'Save',
+            text: isListSaving ? '保存中…' : '保存',
             onSelect: handleSave,
             disabled: hasConflicts || hasInvalidKeys || isLoading || !hasChanges || isListSaving,
             tooltip: hasConflicts
-              ? 'Resolve all conflicts before saving'
+              ? '保存前请先解决所有冲突'
               : hasInvalidKeys
-                ? 'Fix invalid variable names before saving'
+                ? '保存前请先修正无效的变量名称'
                 : undefined,
           },
         ]}
@@ -979,7 +978,7 @@ export function SecretsManager() {
               filteredWorkspaceEntries.length > 0 ||
               filteredNewWorkspaceRows.length > 0) && (
               <section className='flex flex-col'>
-                <span className='pl-0.5 text-[var(--text-muted)] text-small'>Workspace</span>
+                <span className='pl-0.5 text-[var(--text-muted)] text-small'>工作区</span>
                 <div className='mt-[9px] mb-3 h-px bg-[var(--border)]' />
                 <div className={`${GRID_COLS} gap-y-2`}>
                   {(searchTerm.trim()
@@ -1026,7 +1025,7 @@ export function SecretsManager() {
 
             {(!searchTerm.trim() || filteredEnvVars.length > 0) && (
               <section className='flex flex-col'>
-                <span className='pl-0.5 text-[var(--text-muted)] text-small'>Personal</span>
+                <span className='pl-0.5 text-[var(--text-muted)] text-small'>个人</span>
                 <div className='mt-[9px] mb-3 h-px bg-[var(--border)]' />
                 <div className={`${GRID_COLS} gap-y-2`}>
                   {filteredEnvVars.map(({ envVar, originalIndex }) => (
@@ -1045,7 +1044,7 @@ export function SecretsManager() {
                 Object.keys(workspaceVars).length > 0 ||
                 newWorkspaceRows.length > 0) && (
                 <SettingsEmptyState variant='inline'>
-                  No secrets found matching &ldquo;{searchTerm}&rdquo;
+                  未找到与"{searchTerm}"匹配的密钥
                 </SettingsEmptyState>
               )}
           </div>

@@ -23,8 +23,8 @@ interface ErrorUIProps {
 }
 
 export function ErrorUI({
-  title = 'Something went wrong',
-  message = 'An unexpected error occurred. Please try again or refresh the page.',
+  title = '出错了',
+  message = '发生了意外错误。请重试或刷新页面。',
   onReset,
   fullScreen = false,
 }: ErrorUIProps) {
@@ -40,7 +40,7 @@ export function ErrorUI({
           </div>
           <Button variant='default' size='sm' onClick={onReset ?? (() => window.location.reload())}>
             <RefreshCw className='mr-1.5 size-[14px]' />
-            Try again
+            重试
           </Button>
         </div>
       </div>
@@ -134,11 +134,11 @@ export function NextGlobalError({
   }, [error])
 
   return (
-    <html lang='en'>
+    <html lang='zh-CN'>
       <body>
         <ErrorUI
-          title='Application Error'
-          message='Something went wrong with the application. Please try again later.'
+          title='应用程序错误'
+          message='应用程序出错了,请稍后重试。'
           onReset={reset}
           fullScreen={true}
         />

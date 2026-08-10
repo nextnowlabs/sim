@@ -234,7 +234,7 @@ export function CollapsedChatFlyoutItem({
     return (
       <div className={EDIT_ROW_CLASS}>
         <input
-          aria-label={`Rename chat ${chat.name}`}
+          aria-label={`重命名对话 ${chat.name}`}
           ref={inputRef}
           value={editValue ?? chat.name}
           onChange={(e) => onEditValueChange?.(e.target.value)}
@@ -263,7 +263,7 @@ export function CollapsedChatFlyoutItem({
       action={
         showActions ? (
           <DropdownMenuItemAction
-            aria-label='Chat options'
+            aria-label='对话选项'
             onPointerDown={onMorePointerDown}
             onClick={(e) => onMoreClick?.(e, chat.id)}
             className={cn(isMenuOpen && 'opacity-100')}
@@ -311,7 +311,7 @@ export function CollapsedWorkflowFlyoutItem({
     return (
       <div className={EDIT_ROW_CLASS}>
         <input
-          aria-label={`Rename workflow ${workflow.name}`}
+          aria-label={`重命名工作流 ${workflow.name}`}
           ref={inputRef}
           value={editValue ?? workflow.name}
           onChange={(e) => onEditValueChange?.(e.target.value)}
@@ -347,7 +347,7 @@ export function CollapsedWorkflowFlyoutItem({
           >
             <DropdownMenuSubTrigger asChild>
               <DropdownMenuItemAction
-                aria-label='Workflow options'
+                aria-label='工作流选项'
                 onClick={() => setActionsOpen((prev) => !prev)}
                 className={cn(actionsOpen && 'opacity-100')}
               >
@@ -358,7 +358,7 @@ export function CollapsedWorkflowFlyoutItem({
               {onOpenInNewTab && (
                 <DropdownMenuItem onSelect={onOpenInNewTab}>
                   <SquareArrowUpRight className='size-[14px]' />
-                  Open in new tab
+                  在新标签页中打开
                 </DropdownMenuItem>
               )}
               {onRename && (
@@ -371,7 +371,7 @@ export function CollapsedWorkflowFlyoutItem({
                   }}
                 >
                   <Pencil className='size-[14px]' />
-                  Rename
+                  重命名
                 </DropdownMenuItem>
               )}
             </DropdownMenuSubContent>

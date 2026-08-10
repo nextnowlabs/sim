@@ -20,10 +20,10 @@ export function IntegrationTabsHeader({
   return (
     <div className='flex flex-shrink-0 items-center bg-[var(--bg)] px-[16px] pt-[8.5px] pb-[8.5px]'>
       <ChipLink href={`/workspace/${workspaceId}/integrations`} active={active === 'integrations'}>
-        Integrations
+        集成
       </ChipLink>
       <ChipLink href={`/workspace/${workspaceId}/skills`} active={active === 'skills'}>
-        Skills
+        技能
       </ChipLink>
       {rightSlot && <div className='ml-auto flex items-center'>{rightSlot}</div>}
     </div>

@@ -15,7 +15,7 @@ export const MicButton = React.memo(function MicButton({ isListening, onToggle }
         <button
           type='button'
           onClick={onToggle}
-          aria-label={isListening ? 'Stop listening' : 'Voice input'}
+          aria-label={isListening ? '停止收听' : '语音输入'}
           className={cn(
             'flex h-[28px] w-[28px] items-center justify-center rounded-full transition-colors',
             isListening
@@ -26,7 +26,7 @@ export const MicButton = React.memo(function MicButton({ isListening, onToggle }
           <Mic className='h-[16px] w-[16px]' />
         </button>
       </Tooltip.Trigger>
-      <Tooltip.Content side='top'>{isListening ? 'Stop listening' : 'Voice input'}</Tooltip.Content>
+      <Tooltip.Content side='top'>{isListening ? '停止收听' : '语音输入'}</Tooltip.Content>
     </Tooltip.Root>
   )
 })

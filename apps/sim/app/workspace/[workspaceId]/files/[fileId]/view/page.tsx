@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { FileViewer } from './file-viewer'
 
 export const metadata: Metadata = {
-  title: 'File',
+  title: '文件',
   robots: { index: false },
 }
 

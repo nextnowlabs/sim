@@ -209,7 +209,7 @@ export function GeneralDeploy({
                   setShowActiveDespiteSelection((val as PreviewMode) === 'active')
                 }
               >
-                <ButtonGroupItem value='active'>Live</ButtonGroupItem>
+                <ButtonGroupItem value='active'>在线</ButtonGroupItem>
                 <ButtonGroupItem value='selected' className='truncate'>
                   {selectedVersionInfo
                     ? formatVersionLabel(selectedVersionInfo.version, selectedVersionInfo.name)
@@ -249,12 +249,12 @@ export function GeneralDeploy({
                       <Expand className='size-[14px]' />
                     </Button>
                   </Tooltip.Trigger>
-                  <Tooltip.Content side='top'>See preview</Tooltip.Content>
+                  <Tooltip.Content side='top'>查看预览</Tooltip.Content>
                 </Tooltip.Root>
               </>
             ) : (
               <div className='flex h-full items-center justify-center text-[var(--text-placeholder)] text-small'>
-                Deploy your workflow to see a preview
+                部署工作流后即可查看预览
               </div>
             )}
           </div>
@@ -262,7 +262,7 @@ export function GeneralDeploy({
 
         <div>
           <Label className='mb-[6.5px] block pl-0.5 font-medium text-[var(--text-primary)] text-small'>
-            Versions
+            版本
           </Label>
           <Versions
             workflowId={workflowId}
@@ -280,24 +280,24 @@ export function GeneralDeploy({
       <ChipConfirmModal
         open={showLoadDialog}
         onOpenChange={setShowLoadDialog}
-        srTitle='Load Deployment'
-        title='Load Deployment'
+        srTitle='加载部署'
+        title='加载部署'
         text={[
-          'Are you sure you want to load ',
+          '确定要加载 ',
           {
             text: versionToLoadInfo
               ? formatVersionLabel(versionToLoadInfo.version, versionToLoadInfo.name)
               : `v${versionToLoad?.version}`,
             bold: true,
           },
-          '? ',
+          ' 吗?',
           {
-            text: 'This will replace your current workflow with the deployed version.',
+            text: '这将用已部署的版本替换你当前的工作流。',
             error: true,
           },
         ]}
         confirm={{
-          label: 'Load deployment',
+          label: '加载部署',
           onClick: confirmLoadDeployment,
           pending: revertMutation.isPending,
         }}
@@ -306,20 +306,20 @@ export function GeneralDeploy({
       <ChipConfirmModal
         open={showPromoteDialog}
         onOpenChange={setShowPromoteDialog}
-        srTitle='Promote to live'
-        title='Promote to live'
+        srTitle='发布到线上'
+        title='发布到线上'
         text={[
-          'Are you sure you want to promote ',
+          '确定要将 ',
           {
             text: versionToPromoteInfo
               ? formatVersionLabel(versionToPromoteInfo.version, versionToPromoteInfo.name)
               : `v${versionToPromote?.version}`,
             bold: true,
           },
-          ' to live? This version will become the active deployment and serve all API requests.',
+          ' 发布到线上吗?该版本将成为活跃部署并服务所有 API 请求。',
         ]}
         confirm={{
-          label: 'Promote to live',
+          label: '发布到线上',
           onClick: confirmPromoteToLive,
           variant: 'primary',
           pending: isPromotingVersion,
@@ -332,11 +332,11 @@ export function GeneralDeploy({
             <ModalHeader>
               {previewMode === 'selected' && selectedVersionInfo
                 ? formatVersionLabel(selectedVersionInfo.version, selectedVersionInfo.name)
-                : 'Live Workflow'}
+                : '在线工作流'}
             </ModalHeader>
             <ModalBody className='!p-0 min-h-0 flex-1 overflow-hidden'>
               <ModalDescription className='sr-only'>
-                Visual preview of the selected workflow version.
+                所选工作流版本的可视化预览。
               </ModalDescription>
               <Preview workflowState={workflowToShow} autoSelectLeftmost />
             </ModalBody>

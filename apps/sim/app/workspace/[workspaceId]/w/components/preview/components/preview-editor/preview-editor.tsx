@@ -654,7 +654,7 @@ function SubflowConfigDisplay({ block, loop, parallel }: SubflowConfigDisplayPro
           value={currentType}
           onChange={() => {}}
           disabled
-          placeholder='Select type...'
+          placeholder='选择类型…'
         />
       </div>
 
@@ -1252,7 +1252,7 @@ function PreviewEditorContent({
             {/* Input Section - Collapsible */}
             {executionData?.input !== undefined && (
               <CollapsibleSection
-                title='Input'
+                title='输入'
                 defaultExpanded={false}
                 isEmpty={
                   formatValueAsJson(executionData.input) === '—' ||
@@ -1313,7 +1313,7 @@ function PreviewEditorContent({
                             <Search className='size-[10px]' />
                           </Button>
                         </Tooltip.Trigger>
-                        <Tooltip.Content side='top'>Search</Tooltip.Content>
+                        <Tooltip.Content side='top'>搜索</Tooltip.Content>
                       </Tooltip.Root>
                     </div>
                   )}
@@ -1385,7 +1385,7 @@ function PreviewEditorContent({
                             <Search className='size-[10px]' />
                           </Button>
                         </Tooltip.Trigger>
-                        <Tooltip.Content side='top'>Search</Tooltip.Content>
+                        <Tooltip.Content side='top'>搜索</Tooltip.Content>
                       </Tooltip.Root>
                     </div>
                   )}
@@ -1527,7 +1527,7 @@ function PreviewEditorContent({
             type='text'
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder='Search...'
+            placeholder='搜索…'
             className='mr-0.5 h-[23px] w-[94px] text-caption'
           />
           <span
@@ -1543,7 +1543,7 @@ function PreviewEditorContent({
             className='!p-1'
             onClick={goToPreviousMatch}
             disabled={matchCount === 0}
-            aria-label='Previous match'
+            aria-label='上一个匹配'
           >
             <ArrowUp className='size-[12px]' />
           </Button>
@@ -1552,7 +1552,7 @@ function PreviewEditorContent({
             className='!p-1'
             onClick={goToNextMatch}
             disabled={matchCount === 0}
-            aria-label='Next match'
+            aria-label='下一个匹配'
           >
             <ArrowDown className='size-[12px]' />
           </Button>

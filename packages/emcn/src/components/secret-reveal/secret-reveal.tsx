@@ -66,7 +66,7 @@ export function SecretReveal({ value, className, redacted = false }: SecretRevea
           onClick={handleCopy}
         >
           {copied ? <Check className='size-[14px]' /> : <Duplicate className='size-[14px]' />}
-          <span className='sr-only'>Copy to clipboard</span>
+          <span className='sr-only'>复制到剪贴板</span>
         </Button>
       )}
     </div>

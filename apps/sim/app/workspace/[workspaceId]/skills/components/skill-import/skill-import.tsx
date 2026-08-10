@@ -40,7 +40,7 @@ export function SkillImport({ onImport }: SkillImportProps) {
   const handleGithubImport = useCallback(async () => {
     const trimmed = githubUrl.trim()
     if (!trimmed) {
-      setGithubError('Please enter a GitHub URL')
+      setGithubError('请输入 GitHub URL')
       setGithubState('error')
       return
     }
@@ -54,7 +54,7 @@ export function SkillImport({ onImport }: SkillImportProps) {
       setGithubState('idle')
       onImport(parsed)
     } catch (err) {
-      const message = getErrorMessage(err, 'Failed to import from GitHub')
+      const message = getErrorMessage(err, '从 GitHub 导入失败')
       setGithubError(message)
       setGithubState('error')
     }
@@ -63,7 +63,7 @@ export function SkillImport({ onImport }: SkillImportProps) {
   const processFile = useCallback(
     async (file: File) => {
       if (!isAcceptedFile(file)) {
-        setFileError('Unsupported file type. Use .md or .zip files.')
+        setFileError('不支持的文件类型。请使用 .md 或 .zip 文件。')
         setFileState('error')
         return
       }
@@ -76,7 +76,7 @@ export function SkillImport({ onImport }: SkillImportProps) {
 
         if (file.name.toLowerCase().endsWith('.zip')) {
           if (file.size > 5 * 1024 * 1024) {
-            setFileError('ZIP file is too large (max 5 MB)')
+            setFileError('ZIP 文件过大(最大 5 MB)')
             setFileState('error')
             return
           }
@@ -89,7 +89,7 @@ export function SkillImport({ onImport }: SkillImportProps) {
         setFileState('idle')
         onImport(parsed)
       } catch (err) {
-        const message = getErrorMessage(err, 'Failed to process file')
+        const message = getErrorMessage(err, '处理文件失败')
         setFileError(message)
         setFileState('error')
       }
@@ -107,7 +107,7 @@ export function SkillImport({ onImport }: SkillImportProps) {
 
   return (
     <div className='flex flex-col gap-4'>
-      <ChipModalField type='custom' title='Import from GitHub' error={githubError || undefined}>
+      <ChipModalField type='custom' title='从 GitHub 导入' error={githubError || undefined}>
         <div className='flex gap-2'>
           <ChipInput
             placeholder='https://github.com/owner/repo/blob/main/SKILL.md'
@@ -124,7 +124,7 @@ export function SkillImport({ onImport }: SkillImportProps) {
             onClick={handleGithubImport}
             disabled={githubState === 'loading' || !githubUrl.trim()}
           >
-            {githubState === 'loading' ? <Loader className='size-[14px]' animate /> : 'Fetch'}
+            {githubState === 'loading' ? <Loader className='size-[14px]' animate /> : '获取'}
           </Chip>
         </div>
       </ChipModalField>
@@ -133,12 +133,12 @@ export function SkillImport({ onImport }: SkillImportProps) {
 
       <ChipModalField
         type='file'
-        title='Upload File'
+        title='上传文件'
         accept='.md,.zip'
         onChange={handleFiles}
         loading={fileState === 'loading'}
-        label={fileState === 'loading' ? 'Importing…' : undefined}
-        description='.md file with YAML frontmatter, or .zip containing a SKILL.md'
+        label={fileState === 'loading' ? '导入中…' : undefined}
+        description='带 YAML frontmatter 的 .md 文件,或包含 SKILL.md 的 .zip 文件'
         error={fileError || undefined}
       />
     </div>
@@ -149,7 +149,7 @@ function ImportDivider() {
   return (
     <div className='flex items-center gap-3 px-2'>
       <div className='h-px flex-1 bg-[var(--border)]' />
-      <span className='text-[11px] text-[var(--text-muted)]'>or</span>
+      <span className='text-[11px] text-[var(--text-muted)]'>或</span>
       <div className='h-px flex-1 bg-[var(--border)]' />
     </div>
   )

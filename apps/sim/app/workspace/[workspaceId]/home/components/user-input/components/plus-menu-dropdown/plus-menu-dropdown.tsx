@@ -278,7 +278,7 @@ export const PlusMenuDropdown = React.memo(
           {!isMention && (
             <DropdownMenuSearchInput
               ref={searchRef}
-              placeholder='Search resources...'
+              placeholder='搜索资源…'
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value)
@@ -295,7 +295,7 @@ export const PlusMenuDropdown = React.memo(
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Workflow className='size-[14px]' />
-                    <span>Workflows</span>
+                    <span>工作流</span>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent className='max-w-[min(300px,calc(100vw-32px))]'>
                     <WorkflowFolderTreeItems nodes={workflowTree} onSelect={handleSelect} />
@@ -309,7 +309,7 @@ export const PlusMenuDropdown = React.memo(
                       const Icon = getResourceConfig('file').icon
                       return <Icon className='size-[14px]' />
                     })()}
-                    <span>Files</span>
+                    <span>文件</span>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent className='max-w-[min(300px,calc(100vw-32px))]'>
                     <FileFolderTreeItems nodes={fileFolderTree} onSelect={handleSelect} />
@@ -378,7 +378,7 @@ export const PlusMenuDropdown = React.memo(
                 })
               ) : (
                 <div className='px-2 py-1.5 text-center font-medium text-[var(--text-tertiary)] text-caption'>
-                  No results
+                  无结果
                 </div>
               ))}
           </div>

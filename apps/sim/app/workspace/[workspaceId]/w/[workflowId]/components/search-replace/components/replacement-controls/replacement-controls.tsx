@@ -40,16 +40,16 @@ export function ReplacementControls({
           }))}
           value={replacement}
           onChange={onReplacementChange}
-          placeholder='Choose replacement...'
+          placeholder='选择替换资源…'
           searchable
-          searchPlaceholder='Search resources...'
-          emptyMessage='No valid replacements available'
+          searchPlaceholder='搜索资源…'
+          emptyMessage='没有可用的有效替换项'
           disabled={disabled || compatibleResourceOptions.length === 0}
         />
       ) : (
         <Input
           value={replacement}
-          placeholder='Replace'
+          placeholder='替换为'
           disabled={disabled}
           onChange={(event) => onReplacementChange(event.target.value)}
         />
@@ -57,7 +57,7 @@ export function ReplacementControls({
 
       <div className='flex items-center justify-between gap-2'>
         <span className='text-[var(--text-muted)] text-xs'>
-          {eligibleCount} replaceable match{eligibleCount === 1 ? '' : 'es'}
+          {eligibleCount} 处可替换匹配
         </span>
         <div className='flex gap-1.5'>
           <Button
@@ -66,7 +66,7 @@ export function ReplacementControls({
             disabled={disabled || isApplying || !canReplaceActive}
             onClick={onReplaceActive}
           >
-            Replace
+            替换
           </Button>
           <Button
             className='h-8 px-2 text-xs'
@@ -74,7 +74,7 @@ export function ReplacementControls({
             disabled={disabled || isApplying || !canReplaceAll}
             onClick={onReplaceAll}
           >
-            {isApplying ? 'Replacing...' : 'Replace All'}
+            {isApplying ? '替换中…' : '全部替换'}
           </Button>
         </div>
       </div>

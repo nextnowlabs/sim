@@ -33,7 +33,7 @@ export function renderMoveOption(
         {option.label}
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
-        <DropdownMenuItem onSelect={() => onMove(option.value)}>Move here</DropdownMenuItem>
+        <DropdownMenuItem onSelect={() => onMove(option.value)}>移动到此</DropdownMenuItem>
         <DropdownMenuSeparator />
         {option.children.map((child) => renderMoveOption(child, onMove))}
       </DropdownMenuSubContent>

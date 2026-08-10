@@ -52,9 +52,9 @@ describe('LogsError boundary', () => {
       root.render(<LogsError error={error} reset={vi.fn()} />)
     })
 
-    expect(container.textContent).toContain('Failed to load logs')
+    expect(container.textContent).toContain('无法加载日志')
     expect(container.textContent).toContain(
-      'Something went wrong while loading the logs. Please try again.'
+      '加载日志时出错,请重试。'
     )
   })
 
@@ -67,7 +67,7 @@ describe('LogsError boundary', () => {
     })
 
     act(() => {
-      findButtonByText('Refresh').click()
+      findButtonByText('重试').click()
     })
 
     expect(reset).toHaveBeenCalledTimes(1)

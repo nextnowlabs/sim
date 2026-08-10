@@ -164,14 +164,14 @@ export function useAvailableResources(
           .filter((s) => s.sourceType === 'job')
           .map((s) => ({
             id: s.id,
-            name: s.jobTitle || truncate(s.prompt ?? '', 40) || 'Scheduled Task',
+            name: s.jobTitle || truncate(s.prompt ?? '', 40) || '定时任务',
             isOpen: existingKeys.has(`scheduledtask:${s.id}`),
           })),
       },
       {
         type: 'log' as const,
         items: logs.map((log) => {
-          const workflowName = log.workflow?.name ?? log.workflowId ?? 'Unknown'
+          const workflowName = log.workflow?.name ?? log.workflowId ?? '未知'
           const time = formatDate(log.createdAt).compact
           return {
             id: log.id,
@@ -459,14 +459,14 @@ export function AddResourceDropdown({
             <Button
               variant='subtle'
               className={RESOURCE_TAB_ICON_BUTTON_CLASS}
-              aria-label='Add resource tab'
+              aria-label='添加资源标签页'
             >
               <Plus className={RESOURCE_TAB_ICON_CLASS} />
             </Button>
           </DropdownMenuTrigger>
         </Tooltip.Trigger>
         <Tooltip.Content side='bottom'>
-          <p>Add resource</p>
+          <p>添加资源</p>
         </Tooltip.Content>
       </Tooltip.Root>
       <DropdownMenuContent
@@ -476,7 +476,7 @@ export function AddResourceDropdown({
         onCloseAutoFocus={(e) => e.preventDefault()}
       >
         <DropdownMenuSearchInput
-          placeholder='Search resources...'
+          placeholder='搜索资源…'
           value={search}
           onChange={(e) => {
             setSearch(e.target.value)
@@ -511,7 +511,7 @@ export function AddResourceDropdown({
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Workflow className='size-[14px]' />
-                    <span>Workflows</span>
+                    <span>工作流</span>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
                     <WorkflowFolderTreeItems nodes={workflowTree} onSelect={select} />
@@ -525,7 +525,7 @@ export function AddResourceDropdown({
                       const Icon = getResourceConfig('file').icon
                       return <Icon className='size-[14px]' />
                     })()}
-                    <span>Files</span>
+                    <span>文件</span>
                   </DropdownMenuSubTrigger>
                   <DropdownMenuSubContent>
                     <FileFolderTreeItems nodes={fileFolderTree} onSelect={select} />

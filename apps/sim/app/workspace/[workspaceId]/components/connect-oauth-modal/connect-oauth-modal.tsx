@@ -373,10 +373,10 @@ export function ConnectOAuthModal(props: ConnectOAuthModalProps) {
   const displayNameError =
     validationError ??
     (existingCredential
-      ? `An integration named "${existingCredential.displayName}" already exists.`
+      ? `已存在名为"${existingCredential.displayName}"的集成。`
       : undefined)
 
-  const title = `Connect ${providerName}`
+  const title = `连接 ${providerName}`
 
   return (
     <ChipModal open={open} onOpenChange={onOpenChange} srTitle={title}>
@@ -386,20 +386,20 @@ export function ConnectOAuthModal(props: ConnectOAuthModalProps) {
       <ChipModalBody onKeyDown={handleBodyKeyDown}>
         {!isConnect && (
           <p className='text-[var(--text-tertiary)] text-caption'>
-            The "{props.toolName}" tool requires access to your account.
+            "{props.toolName}" 工具需要访问你的账号。
           </p>
         )}
 
         {isConnect && (
           <ChipModalField
             type='input'
-            title='Display name'
+            title='显示名称'
             value={displayName}
             onChange={(value) => {
               setDisplayName(value)
               if (validationError) setValidationError(null)
             }}
-            placeholder='Integration name'
+            placeholder='集成名称'
             autoComplete='off'
             required
             error={displayNameError}
@@ -409,17 +409,17 @@ export function ConnectOAuthModal(props: ConnectOAuthModalProps) {
         {isConnect && (
           <ChipModalField
             type='textarea'
-            title='Description'
+            title='描述'
             value={description}
             onChange={setDescription}
-            placeholder='Optional description'
+            placeholder='可选描述'
             maxLength={500}
             minHeight={80}
           />
         )}
 
         {displayScopes.length > 0 && (
-          <ChipModalField type='custom' title='Permissions requested'>
+          <ChipModalField type='custom' title='请求的权限'>
             <InfoCard>
               <InfoCardList>
                 {displayScopes.map((scope) => (
@@ -428,7 +428,7 @@ export function ConnectOAuthModal(props: ConnectOAuthModalProps) {
                       {getScopeDescription(scope)}
                       {!isConnect && newScopesSet.has(scope) && (
                         <Badge variant='amber' size='sm'>
-                          New
+                          新增
                         </Badge>
                       )}
                     </span>
@@ -445,7 +445,7 @@ export function ConnectOAuthModal(props: ConnectOAuthModalProps) {
         onCancel={handleClose}
         cancelDisabled={isPending}
         primaryAction={{
-          label: isPending ? 'Connecting...' : 'Connect',
+          label: isPending ? '连接中…' : '连接',
           onClick: handleConnect,
           disabled: isDisabled,
         }}

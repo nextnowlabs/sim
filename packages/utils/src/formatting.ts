@@ -23,12 +23,12 @@ export function getTimezoneAbbreviation(timezone: string, date: Date = new Date(
     const januaryDate = new Date(date.getFullYear(), 0, 1)
     const julyDate = new Date(date.getFullYear(), 6, 1)
 
-    const januaryFormatter = new Intl.DateTimeFormat('en-US', {
+    const januaryFormatter = new Intl.DateTimeFormat('zh-CN', {
       timeZone: timezone,
       timeZoneName: 'short',
     })
 
-    const julyFormatter = new Intl.DateTimeFormat('en-US', {
+    const julyFormatter = new Intl.DateTimeFormat('zh-CN', {
       timeZone: timezone,
       timeZoneName: 'short',
     })
@@ -36,7 +36,7 @@ export function getTimezoneAbbreviation(timezone: string, date: Date = new Date(
     const isDSTObserved = januaryFormatter.format(januaryDate) !== julyFormatter.format(julyDate)
 
     if (isDSTObserved) {
-      const currentFormatter = new Intl.DateTimeFormat('en-US', {
+      const currentFormatter = new Intl.DateTimeFormat('zh-CN', {
         timeZone: timezone,
         timeZoneName: 'short',
       })
@@ -55,10 +55,10 @@ export function getTimezoneAbbreviation(timezone: string, date: Date = new Date(
  * Format a date into a human-readable format
  * @param date - The date to format
  * @param timezone - Optional IANA timezone string (e.g., 'America/Los_Angeles', 'UTC')
- * @returns A formatted date string in the format "MMM D, YYYY h:mm A"
+ * @returns A formatted date string in the format "YYYY年M月D日 h:mm"
  */
 export function formatDateTime(date: Date, timezone?: string): string {
-  const formattedDate = date.toLocaleString('en-US', {
+  const formattedDate = date.toLocaleString('zh-CN', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -79,10 +79,10 @@ export function formatDateTime(date: Date, timezone?: string): string {
 /**
  * Format a date into a short format
  * @param date - The date to format
- * @returns A formatted date string in the format "MMM D, YYYY"
+ * @returns A formatted date string in the format "YYYY年M月D日"
  */
 export function formatDate(date: Date): string {
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -92,11 +92,11 @@ export function formatDate(date: Date): string {
 /**
  * Formats a date string to absolute format for tooltip display
  * @param dateString - ISO date string to format
- * @returns A formatted date string (e.g., "Jan 22, 2026, 01:30 PM")
+ * @returns A formatted date string (e.g., "2026年1月22日 13:30")
  */
 export function formatAbsoluteDate(dateString: string): string {
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -108,10 +108,10 @@ export function formatAbsoluteDate(dateString: string): string {
 /**
  * Format a time into a short format
  * @param date - The date to format
- * @returns A formatted time string in the format "h:mm A"
+ * @returns A formatted time string in the format "h:mm"
  */
 export function formatTime(date: Date): string {
-  return date.toLocaleString('en-US', {
+  return date.toLocaleString('zh-CN', {
     hour: 'numeric',
     minute: '2-digit',
     hour12: true,
@@ -122,10 +122,10 @@ export function formatTime(date: Date): string {
  * Format a time with seconds and timezone
  * @param date - The date to format
  * @param includeTimezone - Whether to include the timezone abbreviation
- * @returns A formatted time string in the format "h:mm:ss AM/PM TZ"
+ * @returns A formatted time string in the format "h:mm:ss 上午/下午 TZ"
  */
 export function formatTimeWithSeconds(date: Date, includeTimezone = true): string {
-  return date.toLocaleTimeString('en-US', {
+  return date.toLocaleTimeString('zh-CN', {
     hour: 'numeric',
     minute: '2-digit',
     second: '2-digit',
@@ -219,7 +219,7 @@ export function formatDuration(
 }
 
 /**
- * Formats a date string to relative time (e.g., "2h ago", "3d ago")
+ * Formats a date string to relative time (e.g., "2小时前", "3天前")
  * @param dateString - ISO date string to format
  * @returns A human-readable relative time string
  */
@@ -229,28 +229,28 @@ export function formatRelativeTime(dateString: string): string {
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
 
   if (diffInSeconds < 60) {
-    return 'just now'
+    return '刚刚'
   }
   if (diffInSeconds < 3600) {
     const minutes = Math.floor(diffInSeconds / 60)
-    return `${minutes}m ago`
+    return `${minutes} 分钟前`
   }
   if (diffInSeconds < 86400) {
     const hours = Math.floor(diffInSeconds / 3600)
-    return `${hours}h ago`
+    return `${hours} 小时前`
   }
   if (diffInSeconds < 604800) {
     const days = Math.floor(diffInSeconds / 86400)
-    return `${days}d ago`
+    return `${days} 天前`
   }
   if (diffInSeconds < 2592000) {
     const weeks = Math.floor(diffInSeconds / 604800)
-    return `${weeks}w ago`
+    return `${weeks} 周前`
   }
   if (diffInSeconds < 31536000) {
     const months = Math.floor(diffInSeconds / 2592000)
-    return `${months}mo ago`
+    return `${months} 个月前`
   }
   const years = Math.floor(diffInSeconds / 31536000)
-  return `${years}y ago`
+  return `${years} 年前`
 }

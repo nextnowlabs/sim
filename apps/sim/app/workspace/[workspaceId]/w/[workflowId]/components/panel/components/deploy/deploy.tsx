@@ -83,40 +83,40 @@ export function Deploy({
 
   const getTooltipText = () => {
     if (isEmpty) {
-      return 'Cannot deploy an empty workflow'
+      return '无法部署空工作流'
     }
     if (!canDeploy) {
-      return 'Admin permissions required'
+      return '需要管理员权限'
     }
     if (disabled) {
-      return 'Workflow is locked'
+      return '工作流已锁定'
     }
     if (isDeploying) {
-      return 'Deploying...'
+      return '部署中…'
     }
     if (isChangeDetectionSettling) {
-      return 'Syncing deployment state...'
+      return '同步部署状态中…'
     }
     if (deployReadiness.isBlocked && !isDeployed) {
       return deployReadiness.tooltip
     }
     if (changeDetected) {
-      return 'Update deployment'
+      return '更新部署'
     }
     if (isDeployed) {
-      return 'Active deployment'
+      return '已部署'
     }
-    return 'Deploy workflow'
+    return '部署工作流'
   }
 
   const getButtonLabel = () => {
     if (changeDetected) {
-      return 'Update'
+      return '更新'
     }
     if (isDeployed) {
-      return 'Live'
+      return '在线'
     }
-    return 'Deploy'
+    return '部署'
   }
 
   return (

@@ -44,7 +44,7 @@ export function ScheduleListContextMenu({
         {onCreateSchedule && (
           <DropdownMenuItem disabled={disableCreate} onSelect={onCreateSchedule}>
             <Plus />
-            New scheduled task
+            新建定时任务
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

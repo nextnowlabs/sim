@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import { Files } from '../files'
 
 export const metadata: Metadata = {
-  title: 'Files',
+  title: '文件',
   robots: { index: false },
 }
 

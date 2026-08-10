@@ -210,7 +210,7 @@ function LineChartComponent({
     } catch (e) {
       const d = new Date(timestamp)
       if (Number.isNaN(d.getTime())) return ''
-      return d.toLocaleString('en-US', {
+      return d.toLocaleString('zh-CN', {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
@@ -539,16 +539,16 @@ function LineChartComponent({
 
             const formatTick = (d: Date) => {
               if (spanMs <= 36 * 60 * 60 * 1000) {
-                return d.toLocaleTimeString('en-US', {
+                return d.toLocaleTimeString('zh-CN', {
                   hour: '2-digit',
                   minute: '2-digit',
                   hour12: false,
                 })
               }
               if (spanMs <= 90 * 24 * 60 * 60 * 1000) {
-                return d.toLocaleString('en-US', { month: 'short', day: 'numeric' })
+                return d.toLocaleString('zh-CN', { month: 'short', day: 'numeric' })
               }
-              return d.toLocaleString('en-US', { month: 'short', year: 'numeric' })
+              return d.toLocaleString('zh-CN', { month: 'short', year: 'numeric' })
             }
 
             return idx.map((i) => {

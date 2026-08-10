@@ -69,12 +69,12 @@ interface FieldFormatProps {
  * Type options for field type selection
  */
 const TYPE_OPTIONS: ComboboxOption[] = [
-  { label: 'String', value: 'string' },
-  { label: 'Number', value: 'number' },
-  { label: 'Boolean', value: 'boolean' },
-  { label: 'Object', value: 'object' },
-  { label: 'Array', value: 'array' },
-  { label: 'Files', value: 'file[]' },
+  { label: '字符串', value: 'string' },
+  { label: '数字', value: 'number' },
+  { label: '布尔', value: 'boolean' },
+  { label: '对象', value: 'object' },
+  { label: '数组', value: 'array' },
+  { label: '文件', value: 'file[]' },
 ]
 
 /**
@@ -98,13 +98,13 @@ export function FieldFormat({
   isPreview = false,
   previewValue,
   disabled = false,
-  title = 'Field',
+  title = '字段',
   placeholder = 'fieldName',
   showType = true,
   showValue = false,
   showDescription = false,
-  valuePlaceholder = 'Enter default value',
-  descriptionPlaceholder = 'Describe this field',
+  valuePlaceholder = '输入默认值',
+  descriptionPlaceholder = '描述此字段',
 }: FieldFormatProps) {
   const activeSearchTarget = useActiveSearchTarget()
   const [storeValue, setStoreValue] = useSubBlockValue<Field[]>(blockId, subBlockId)
@@ -164,7 +164,7 @@ export function FieldFormat({
   const renderFileModeToggle = (field: Field) => {
     const { mode, canUseUploader } = getFileFieldMode(field)
     if (!canUseUploader) return null
-    const label = mode === 'upload' ? 'Switch to JSON' : 'Switch to file uploader'
+    const label = mode === 'upload' ? '切换到 JSON' : '切换到文件上传器'
     return (
       <Tooltip.Root>
         <Tooltip.Trigger asChild>
@@ -435,7 +435,7 @@ export function FieldFormat({
           options={BOOLEAN_OPTIONS}
           value={field.value ?? ''}
           onChange={(v) => !isReadOnly && updateField(field.id, 'value', v)}
-          placeholder='Select value'
+          placeholder='选择值'
           disabled={isReadOnly}
         />
       )
@@ -672,13 +672,13 @@ export function FieldFormat({
             <ExpandableContent>
               <div className='flex flex-col gap-2 rounded-b-[4px] border-[var(--border-1)] border-t bg-[var(--surface-2)] px-2.5 pt-1.5 pb-2.5'>
                 <div className='flex flex-col gap-1.5'>
-                  {renderFieldLabel('Name')}
+                  {renderFieldLabel('名称')}
                   <div className='relative'>{renderNameInput(field)}</div>
                 </div>
 
                 {showType && (
                   <div className='flex flex-col gap-1.5'>
-                    {renderFieldLabel('Type')}
+                    {renderFieldLabel('类型')}
                     <Combobox
                       options={TYPE_OPTIONS}
                       value={field.type}
@@ -690,7 +690,7 @@ export function FieldFormat({
 
                 {showDescription && (
                   <div className='flex flex-col gap-1.5'>
-                    {renderFieldLabel('Description')}
+                    {renderFieldLabel('描述')}
                     <div className='relative'>
                       <Input
                         value={field.description ?? ''}

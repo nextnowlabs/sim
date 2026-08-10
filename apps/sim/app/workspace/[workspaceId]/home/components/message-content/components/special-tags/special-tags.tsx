@@ -444,7 +444,7 @@ export function PendingTagIndicator() {
           />
         ))}
       </div>
-      <span className='text-[var(--text-body)] text-sm'>Thinking…</span>
+      <span className='text-[var(--text-body)] text-sm'>思考中…</span>
     </div>
   )
 }
@@ -472,7 +472,7 @@ function OptionsDisplay({ data, onSelect }: OptionsDisplayProps) {
           aria-expanded={expanded}
           className='flex items-center gap-2'
         >
-          <span className='text-[var(--text-body)] text-sm'>Suggested follow-ups</span>
+          <span className='text-[var(--text-body)] text-sm'>推荐后续操作</span>
           <ChevronDown
             className={cn(
               'h-[7px] w-[9px] text-[var(--text-icon)] transition-transform duration-150',
@@ -481,7 +481,7 @@ function OptionsDisplay({ data, onSelect }: OptionsDisplayProps) {
           />
         </button>
       ) : (
-        <span className='text-[var(--text-body)] text-sm'>Suggested follow-ups</span>
+        <span className='text-[var(--text-body)] text-sm'>推荐后续操作</span>
       )}
       <Expandable expanded={expanded}>
         <ExpandableContent className='mt-1.5'>
@@ -519,11 +519,11 @@ function OptionsDisplay({ data, onSelect }: OptionsDisplayProps) {
 function fallbackWorkspaceResourceTitle(type: WorkspaceResourceTagType): string {
   switch (type) {
     case 'workflow':
-      return 'Workflow'
+      return '工作流'
     case 'table':
-      return 'Table'
+      return '表格'
     case 'file':
-      return 'File'
+      return '文件'
   }
 }
 
@@ -700,9 +700,9 @@ function SecretInputDisplay({ data }: { data: CredentialTagData }) {
       }
       setValue('')
       setSaved(true)
-      toast.success(`Saved ${secretName}`)
+      toast.success(`已保存 ${secretName}`)
     } catch {
-      toast.error(`Couldn't save ${secretName}. Please try again.`)
+      toast.error(`无法保存 ${secretName},请重试。`)
     }
   }
 
@@ -716,7 +716,7 @@ function SecretInputDisplay({ data }: { data: CredentialTagData }) {
     <SecretInput
       value={value}
       onChange={setValue}
-      placeholder={`Paste ${secretName}`}
+      placeholder={`粘贴 ${secretName}`}
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
           e.preventDefault()
@@ -732,12 +732,12 @@ function SecretInputDisplay({ data }: { data: CredentialTagData }) {
               className='size-[18px] rounded-sm p-0'
               onClick={() => void handleSave()}
               disabled={!canSave}
-              aria-label='Save'
+              aria-label='保存'
             >
               <ArrowRight className='size-[13px]' />
             </Button>
           </Tooltip.Trigger>
-          <Tooltip.Content>{isSaving ? 'Saving…' : 'Save'}</Tooltip.Content>
+          <Tooltip.Content>{isSaving ? '保存中…' : '保存'}</Tooltip.Content>
         </Tooltip.Root>
       }
     />
@@ -763,7 +763,7 @@ function CredentialDisplay({ data }: { data: CredentialTagData }) {
         className='flex items-center gap-2 rounded-lg border border-[var(--divider)] px-3 py-2.5 transition-colors hover-hover:bg-[var(--surface-5)]'
       >
         {createElement(Icon, { className: 'size-[16px] shrink-0' })}
-        <span className='flex-1 text-[var(--text-body)] text-sm'>Connect {data.provider}</span>
+        <span className='flex-1 text-[var(--text-body)] text-sm'>连接 {data.provider}</span>
         <ArrowRight className='size-[16px] shrink-0 text-[var(--text-icon)]' />
       </a>
     )
@@ -785,7 +785,7 @@ function MothershipErrorDisplay({ data }: { data: MothershipErrorTagData }) {
 function UsageUpgradeDisplay({ data }: { data: UsageUpgradeTagData }) {
   const { workspaceId } = useParams<{ workspaceId: string }>()
   const settingsPath = `/workspace/${workspaceId}/settings/billing`
-  const buttonLabel = data.action === 'upgrade_plan' ? 'Upgrade Plan' : 'Increase Limit'
+  const buttonLabel = data.action === 'upgrade_plan' ? '升级套餐' : '提升限额'
 
   return (
     <div className='rounded-xl border border-amber-300/40 bg-amber-50/50 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-950/20'>
@@ -806,7 +806,7 @@ function UsageUpgradeDisplay({ data }: { data: UsageUpgradeTagData }) {
           <circle cx='8' cy='11.5' r='0.75' fill='currentColor' />
         </svg>
         <span className='font-[500] text-amber-800 text-sm leading-5 dark:text-amber-300'>
-          Usage Limit Reached
+          已达用量上限
         </span>
       </div>
       <p className='mt-1.5 text-amber-700/90 text-small leading-[20px] dark:text-amber-400/80'>

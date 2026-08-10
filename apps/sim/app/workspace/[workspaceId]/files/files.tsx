@@ -115,12 +115,12 @@ const SUPPORTED_EXTENSIONS = [
 const ACCEPT_ATTR = SUPPORTED_EXTENSIONS.map((ext) => `.${ext}`).join(',')
 
 const COLUMNS: ResourceColumn[] = [
-  { id: 'name', header: 'Name', widthMultiplier: 1.15 },
-  { id: 'size', header: 'Size', widthMultiplier: 0.85 },
-  { id: 'type', header: 'Type', widthMultiplier: 1.0 },
-  { id: 'created', header: 'Created' },
-  { id: 'owner', header: 'Owner' },
-  { id: 'updated', header: 'Last Updated' },
+  { id: 'name', header: '名称', widthMultiplier: 1.15 },
+  { id: 'size', header: '大小', widthMultiplier: 0.85 },
+  { id: 'type', header: '类型', widthMultiplier: 1.0 },
+  { id: 'created', header: '创建时间' },
+  { id: 'owner', header: '所有者' },
+  { id: 'updated', header: '最近更新' },
 ]
 
 const MIME_TYPE_LABELS: Record<string, string> = {
@@ -134,7 +134,7 @@ const MIME_TYPE_LABELS: Record<string, string> = {
   'application/json': 'JSON',
   'application/x-yaml': 'YAML',
   'text/csv': 'CSV',
-  'text/plain': 'Text',
+  'text/plain': '文本',
   'text/html': 'HTML',
   'text/markdown': 'Markdown',
 }
@@ -158,14 +158,14 @@ function formatFileType(mimeType: string | null, filename: string): string {
     return MIME_TYPE_LABELS[mimeType]
   }
 
-  if (mimeType?.startsWith('audio/')) return 'Audio'
-  if (mimeType?.startsWith('video/')) return 'Video'
-  if (mimeType?.startsWith('image/')) return 'Image'
+  if (mimeType?.startsWith('audio/')) return '音频'
+  if (mimeType?.startsWith('video/')) return '视频'
+  if (mimeType?.startsWith('image/')) return '图片'
 
   const ext = getFileExtension(filename)
   if (ext) return ext.toUpperCase()
 
-  return mimeType ?? 'File'
+  return mimeType ?? '文件'
 }
 
 export function Files() {
@@ -455,7 +455,7 @@ export function Files() {
         },
         type: {
           icon: <Folder className='size-[14px]' />,
-          label: 'Folder',
+          label: '文件夹',
         },
         created: timeCell(folder.createdAt),
         owner: ownerCell(folder.userId, membersById),
@@ -660,8 +660,8 @@ export function Files() {
       if (oversized.length > 0) {
         toast.error(
           oversized.length === 1
-            ? `${oversized[0]} exceeds the 5 GiB upload limit`
-            : `${oversized.length} files exceed the 5 GiB upload limit`
+            ? `"${oversized[0]}" 超过 5 GiB 上传限制`
+            : `${oversized.length} 个文件超过 5 GiB 上传限制`
         )
       }
 
@@ -704,7 +704,7 @@ export function Files() {
             if (/storage limit/i.test(message)) {
               notifyLimit('storage', message)
             } else {
-              toast.error(`Failed to upload "${allowedFiles[i].name}"`)
+              toast.error(`上传 "${allowedFiles[i].name}" 失败`)
             }
           }
         }
@@ -755,7 +755,7 @@ export function Files() {
             ? filesRef.current.find((f) => f.id === firstParsed.id)?.name
             : foldersRef.current.find((f) => f.id === firstParsed.id)?.name
         const ghostLabel =
-          count > 1 ? `${firstName ?? 'Items'} +${count - 1} more` : (firstName ?? 'Item')
+          count > 1 ? `${firstName ?? '项目'} +${count - 1} 个` : (firstName ?? '项目')
         const ghost = document.createElement('div')
         ghost.style.cssText =
           'position:fixed;top:-500px;left:0;display:inline-flex;align-items:center;padding:4px 10px;background:var(--surface-active);border:1px solid var(--border);border-radius:8px;font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:var(--text-body);white-space:nowrap;pointer-events:none;box-shadow:var(--shadow-medium);z-index:var(--z-toast)'
@@ -1016,8 +1016,8 @@ export function Files() {
         selectedFileIds.length + selectedFolderIds.length === 1
           ? (files.find((file) => file.id === selectedFileIds[0])?.name ??
             folders.find((folder) => folder.id === selectedFolderIds[0])?.name ??
-            'selected item')
-          : `${selectedFileIds.length + selectedFolderIds.length} selected items`,
+            '已选择的项目')
+          : `已选择 ${selectedFileIds.length + selectedFolderIds.length} 个项目`,
     })
     setShowDeleteConfirm(true)
   }, [selectedFileIds, selectedFolderIds, files, folders])
@@ -1064,7 +1064,7 @@ export function Files() {
 
     return [
       {
-        label: 'Files',
+        label: '文件',
         onClick: () => handleNavigateFromFileDetail(`/workspace/${workspaceId}/files`),
       },
       ...folderBreadcrumbs,
@@ -1080,12 +1080,12 @@ export function Files() {
             }
           : undefined,
         dropdownItems: [
-          { label: 'Download', icon: Download, onClick: handleDownloadSelected },
+          { label: '下载', icon: Download, onClick: handleDownloadSelected },
           ...(canEdit
             ? [
-                { label: 'Rename', icon: Pencil, onClick: handleStartHeaderRename },
-                { label: 'Share', icon: Send, onClick: handleShareSelected },
-                { label: 'Delete', icon: Trash, onClick: handleDeleteSelected },
+                { label: '重命名', icon: Pencil, onClick: handleStartHeaderRename },
+                { label: '共享', icon: Send, onClick: handleShareSelected },
+                { label: '删除', icon: Trash, onClick: handleDeleteSelected },
               ]
             : []),
         ],
@@ -1131,10 +1131,10 @@ export function Files() {
       const existingNames = new Set(
         filesRef.current.filter((f) => (f.folderId ?? null) === currentFolderId).map((f) => f.name)
       )
-      let name = 'untitled.md'
+      let name = '未命名.md'
       let counter = 1
       while (existingNames.has(name)) {
-        name = `untitled (${counter}).md`
+        name = `未命名 (${counter}).md`
         counter++
       }
 
@@ -1168,10 +1168,10 @@ export function Files() {
         .filter((folder) => (folder.parentId ?? null) === currentFolderId)
         .map((folder) => folder.name)
     )
-    let name = 'New folder'
+    let name = '新建文件夹'
     let counter = 1
     while (existingNames.has(name)) {
-      name = `New folder (${counter})`
+      name = `新建文件夹 (${counter})`
       counter++
     }
 
@@ -1440,15 +1440,15 @@ export function Files() {
 
     const saveLabel =
       saveStatus === 'saving'
-        ? 'Saving...'
+        ? '保存中…'
         : saveStatus === 'saved'
-          ? 'Saved'
+          ? '已保存'
           : saveStatus === 'error'
-            ? 'Save failed'
-            : 'Save'
+            ? '保存失败'
+            : '保存'
 
     const nextModeLabel =
-      previewMode === 'editor' ? 'Split' : previewMode === 'split' ? 'Preview' : 'Edit'
+      previewMode === 'editor' ? '分屏' : previewMode === 'split' ? '预览' : '编辑'
     const nextModeIcon =
       previewMode === 'editor' ? Columns2 : previewMode === 'split' ? Eye : Pencil
 
@@ -1476,26 +1476,26 @@ export function Files() {
         : showPreviewToggle
           ? [
               {
-                text: previewMode === 'preview' ? 'Edit' : 'Preview',
+                text: previewMode === 'preview' ? '编辑' : '预览',
                 icon: previewMode === 'preview' ? Pencil : Eye,
                 onSelect: handleTogglePreview,
               },
             ]
           : []),
       {
-        text: 'Download',
+        text: '下载',
         icon: Download,
         onSelect: handleDownloadSelected,
       },
       ...(canEdit
         ? [
             {
-              text: 'Share',
+              text: '共享',
               icon: Send,
               onSelect: handleShareSelected,
             },
             {
-              text: 'Delete',
+              text: '删除',
               icon: Trash,
               onSelect: handleDeleteSelected,
             },
@@ -1548,7 +1548,7 @@ export function Files() {
     value: inputValue,
     onChange: setInputValue,
     onClearAll: () => setInputValue(''),
-    placeholder: 'Search files...',
+    placeholder: '搜索文件…',
   }
 
   const uploadButtonLabel =
@@ -1557,8 +1557,8 @@ export function Files() {
         ? `${uploadProgress.completed}/${uploadProgress.total} · ${uploadProgress.currentPercent}%`
         : `${uploadProgress.completed}/${uploadProgress.total}`
       : uploading
-        ? 'Uploading...'
-        : 'Upload'
+        ? '上传中…'
+        : '上传'
 
   const headerActionsConfig = useMemo<ResourceAction[]>(
     () => [
@@ -1569,13 +1569,13 @@ export function Files() {
         disabled: uploading || !canEdit,
       },
       {
-        text: 'New folder',
+        text: '新建文件夹',
         icon: FolderPlus,
         onSelect: handleCreateFolder,
         disabled: createFolder.isPending || !canEdit,
       },
       {
-        text: 'New file',
+        text: '新建文件',
         icon: Plus,
         onSelect: handleCreateFile,
         disabled: uploading || creatingFile || !canEdit,
@@ -1600,7 +1600,7 @@ export function Files() {
 
   const loadingBreadcrumbs = useMemo(
     (): BreadcrumbItem[] => [
-      { label: 'Files', onClick: handleNavigateToFiles },
+      { label: '文件', onClick: handleNavigateToFiles },
       { label: '…', terminal: true },
     ],
     [handleNavigateToFiles]
@@ -1610,7 +1610,7 @@ export function Files() {
   breadcrumbRenameRef.current = breadcrumbRename
 
   const listBreadcrumbs = useMemo(() => {
-    const breadcrumbs: BreadcrumbItem[] = [{ label: 'Files', onClick: handleNavigateToFiles }]
+    const breadcrumbs: BreadcrumbItem[] = [{ label: '文件', onClick: handleNavigateToFiles }]
     if (!currentFolderPath) return breadcrumbs
 
     const segments = currentFolderPath.split('/')
@@ -1641,7 +1641,7 @@ export function Files() {
           isCurrentFolder && (canEdit || userPermissions.isLoading)
             ? [
                 {
-                  label: 'Rename',
+                  label: '重命名',
                   disabled: !canEdit,
                   onClick: () => breadcrumbRenameRef.current.startRename(folder.id, folder.name),
                 },
@@ -1697,18 +1697,18 @@ export function Files() {
         .sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name))
         .map((f) => ({ value: f.id, label: f.name, children: buildSubtree(f.id) }))
 
-    return [{ value: '__root__', label: 'Files', children: [] }, ...buildSubtree(null)]
+    return [{ value: '__root__', label: '文件', children: [] }, ...buildSubtree(null)]
   }, [folders, selectedFolderIds, descendantFolderIdsByFolderId])
 
   const sortConfig: SortConfig = useMemo(
     () => ({
       options: [
-        { id: 'name', label: 'Name' },
-        { id: 'size', label: 'Size' },
-        { id: 'type', label: 'Type' },
-        { id: 'created', label: 'Created' },
-        { id: 'updated', label: 'Last Updated' },
-        { id: 'owner', label: 'Owner' },
+        { id: 'name', label: '名称' },
+        { id: 'size', label: '大小' },
+        { id: 'type', label: '类型' },
+        { id: 'created', label: '创建时间' },
+        { id: 'updated', label: '最近更新' },
+        { id: 'owner', label: '所有者' },
       ],
       active: activeSort,
       onSort: (column, direction) => setActiveSort({ column, direction }),
@@ -1723,44 +1723,44 @@ export function Files() {
   const filterContent = useMemo(() => {
     const typeDisplayLabel =
       typeFilter.length === 0
-        ? 'All'
+        ? '全部'
         : typeFilter.length === 1
           ? ((
               {
-                document: 'Documents',
-                image: 'Images',
-                audio: 'Audio',
-                video: 'Video',
+                document: '文档',
+                image: '图片',
+                audio: '音频',
+                video: '视频',
               } as Record<string, string>
             )[typeFilter[0]] ?? typeFilter[0])
-          : `${typeFilter.length} selected`
+          : `已选择 ${typeFilter.length} 项`
 
     const sizeDisplayLabel =
       sizeFilter.length === 0
-        ? 'All'
+        ? '全部'
         : sizeFilter.length === 1
-          ? (({ small: 'Small', medium: 'Medium', large: 'Large' } as Record<string, string>)[
+          ? (({ small: '小', medium: '中', large: '大' } as Record<string, string>)[
               sizeFilter[0]
             ] ?? sizeFilter[0])
-          : `${sizeFilter.length} selected`
+          : `已选择 ${sizeFilter.length} 项`
 
     const uploadedByDisplayLabel =
       uploadedByFilter.length === 0
-        ? 'All'
+        ? '全部'
         : uploadedByFilter.length === 1
-          ? (membersById.get(uploadedByFilter[0])?.name ?? '1 member')
-          : `${uploadedByFilter.length} members`
+          ? (membersById.get(uploadedByFilter[0])?.name ?? '1 名成员')
+          : `${uploadedByFilter.length} 名成员`
 
     return (
       <div className='flex w-[240px] flex-col gap-3 p-3'>
         <div className='flex flex-col gap-1.5'>
-          <span className='font-medium text-[var(--text-secondary)] text-caption'>File Type</span>
+          <span className='font-medium text-[var(--text-secondary)] text-caption'>文件类型</span>
           <ChipCombobox
             options={[
-              { value: 'document', label: 'Documents' },
-              { value: 'image', label: 'Images' },
-              { value: 'audio', label: 'Audio' },
-              { value: 'video', label: 'Video' },
+              { value: 'document', label: '文档' },
+              { value: 'image', label: '图片' },
+              { value: 'audio', label: '音频' },
+              { value: 'video', label: '视频' },
             ]}
             multiSelect
             multiSelectValues={typeFilter}
@@ -1769,17 +1769,17 @@ export function Files() {
               <span className='truncate text-[var(--text-primary)]'>{typeDisplayLabel}</span>
             }
             showAllOption
-            allOptionLabel='All'
+            allOptionLabel='全部'
             className='w-full'
           />
         </div>
         <div className='flex flex-col gap-1.5'>
-          <span className='font-medium text-[var(--text-secondary)] text-caption'>Size</span>
+          <span className='font-medium text-[var(--text-secondary)] text-caption'>大小</span>
           <ChipCombobox
             options={[
-              { value: 'small', label: 'Small (< 1 MB)' },
-              { value: 'medium', label: 'Medium (1–10 MB)' },
-              { value: 'large', label: 'Large (> 10 MB)' },
+              { value: 'small', label: '小(< 1 MB)' },
+              { value: 'medium', label: '中(1–10 MB)' },
+              { value: 'large', label: '大(> 10 MB)' },
             ]}
             multiSelect
             multiSelectValues={sizeFilter}
@@ -1788,14 +1788,14 @@ export function Files() {
               <span className='truncate text-[var(--text-primary)]'>{sizeDisplayLabel}</span>
             }
             showAllOption
-            allOptionLabel='All'
+            allOptionLabel='全部'
             className='w-full'
           />
         </div>
         {memberOptions.length > 0 && (
           <div className='flex flex-col gap-1.5'>
             <span className='font-medium text-[var(--text-secondary)] text-caption'>
-              Uploaded By
+              上传者
             </span>
             <ChipCombobox
               options={memberOptions}
@@ -1808,9 +1808,9 @@ export function Files() {
                 </span>
               }
               searchable
-              searchPlaceholder='Search members...'
+              searchPlaceholder='搜索成员…'
               showAllOption
-              allOptionLabel='All'
+              allOptionLabel='全部'
               className='w-full'
             />
           </div>
@@ -1825,7 +1825,7 @@ export function Files() {
             }}
             className='h-[32px] w-full text-caption hover-hover:bg-[var(--surface-active)]'
           >
-            Clear all filters
+            清除全部筛选
           </Button>
         )}
       </div>
@@ -1836,34 +1836,34 @@ export function Files() {
     const tags: FilterTag[] = []
     if (typeFilter.length > 0) {
       const typeLabels: Record<string, string> = {
-        document: 'Documents',
-        image: 'Images',
-        audio: 'Audio',
-        video: 'Video',
+        document: '文档',
+        image: '图片',
+        audio: '音频',
+        video: '视频',
       }
       const label =
         typeFilter.length === 1
-          ? `Type: ${typeLabels[typeFilter[0]]}`
-          : `Type: ${typeFilter.length} selected`
+          ? `类型:${typeLabels[typeFilter[0]]}`
+          : `类型:已选 ${typeFilter.length} 项`
       tags.push({ label, onRemove: () => setTypeFilter([]) })
     }
     if (sizeFilter.length > 0) {
       const sizeLabels: Record<string, string> = {
-        small: 'Small',
-        medium: 'Medium',
-        large: 'Large',
+        small: '小',
+        medium: '中',
+        large: '大',
       }
       const label =
         sizeFilter.length === 1
-          ? `Size: ${sizeLabels[sizeFilter[0]]}`
-          : `Size: ${sizeFilter.length} selected`
+          ? `大小:${sizeLabels[sizeFilter[0]]}`
+          : `大小:已选 ${sizeFilter.length} 项`
       tags.push({ label, onRemove: () => setSizeFilter([]) })
     }
     if (uploadedByFilter.length > 0) {
       const label =
         uploadedByFilter.length === 1
-          ? `Uploaded by: ${membersById.get(uploadedByFilter[0])?.name ?? '1 member'}`
-          : `Uploaded by: ${uploadedByFilter.length} members`
+          ? `上传者:${membersById.get(uploadedByFilter[0])?.name ?? '1 名成员'}`
+          : `上传者:${uploadedByFilter.length} 名成员`
       tags.push({ label, onRemove: () => setUploadedByFilter([]) })
     }
     return tags
@@ -1904,11 +1904,11 @@ export function Files() {
           <ChipConfirmModal
             open={showUnsavedChangesAlert}
             onOpenChange={setShowUnsavedChangesAlert}
-            srTitle='Unsaved Changes'
-            title='Unsaved Changes'
-            text='You have unsaved changes. Are you sure you want to discard them?'
-            dismissLabel='Keep editing'
-            confirm={{ label: 'Discard Changes', onClick: handleDiscardChanges }}
+            srTitle='未保存的更改'
+            title='未保存的更改'
+            text='你有未保存的更改。确定要放弃它们吗?'
+            dismissLabel='继续编辑'
+            confirm={{ label: '放弃更改', onClick: handleDiscardChanges }}
           />
         </Resource>
 
@@ -1938,7 +1938,7 @@ export function Files() {
       <Resource onContextMenu={handleContentContextMenu}>
         <Resource.Header
           icon={FilesIcon}
-          title='Files'
+          title='文件'
           breadcrumbs={listBreadcrumbs}
           actions={headerActionsConfig}
         />
@@ -1970,10 +1970,10 @@ export function Files() {
                   <Upload className='size-5 text-[var(--brand-secondary)]' />
                   <div className='flex flex-col gap-0.5 text-center'>
                     <p className='font-medium text-[14px] text-[var(--brand-secondary)]'>
-                      Drop to upload
+                      拖放即可上传
                     </p>
                     <p className='text-[11px] text-[var(--text-tertiary)]'>
-                      Release files here to add them to this workspace
+                      将文件释放到此处以添加到工作区
                     </p>
                   </div>
                 </div>

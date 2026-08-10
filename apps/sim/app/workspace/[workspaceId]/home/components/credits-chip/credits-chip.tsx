@@ -48,7 +48,7 @@ function CreditsChipInner() {
 
   const renderChip = (dollars: number) => (
     <Chip
-      aria-label='Credits remaining — upgrade plan'
+      aria-label='剩余积分 — 升级套餐'
       onClick={() => router.push(upgradeHref)}
       onMouseEnter={prefetchUpgrade}
       onFocus={prefetchUpgrade}

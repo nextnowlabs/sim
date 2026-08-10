@@ -74,34 +74,34 @@ export function TaskContextMenu({
           <>
             <DropdownMenuItem onSelect={onEdit}>
               <Pencil />
-              Edit
+              编辑
             </DropdownMenuItem>
             {canPauseResume &&
               (task?.disabled ? (
                 <DropdownMenuItem onSelect={onResume}>
                   <Play />
-                  Resume
+                  恢复
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem onSelect={onPause}>
                   <Pause />
-                  Pause
+                  暂停
                 </DropdownMenuItem>
               ))}
             <DropdownMenuItem onSelect={onDuplicate}>
               <DuplicateIcon />
-              Duplicate
+              复制
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={onDelete}>
               <Trash />
-              Delete
+              删除
             </DropdownMenuItem>
           </>
         ) : (
           <DropdownMenuItem onSelect={onDuplicate}>
             <DuplicateIcon />
-            Duplicate
+            复制
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

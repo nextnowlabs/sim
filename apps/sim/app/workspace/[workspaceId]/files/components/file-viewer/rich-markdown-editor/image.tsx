@@ -261,7 +261,7 @@ function ResizableImageView({ node, updateAttributes, selected, editor }: ReactN
       {editable && (selected || dragging) && (
         <button
           type='button'
-          aria-label='Resize image'
+          aria-label='调整图片大小'
           onPointerDown={startResize}
           className='absolute right-1 bottom-1 size-3 cursor-nwse-resize rounded-[3px] border border-[var(--bg)] bg-[var(--brand-secondary)]'
         />

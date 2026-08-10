@@ -22,7 +22,7 @@ const MERMAID = 'mermaid'
 /** Languages the Prism highlighter has registered (see {@link CodeBlockHighlight}). Every non-plain
  * value MUST have a grammar registered in {@link CodeBlockHighlight} — enforced by a unit test. */
 export const LANGUAGE_OPTIONS = [
-  { value: PLAIN, label: 'Plain text' },
+  { value: PLAIN, label: '纯文本' },
   { value: 'bash', label: 'Bash' },
   { value: 'c', label: 'C' },
   { value: 'cpp', label: 'C++' },
@@ -101,7 +101,7 @@ function CodeBlockView({ node, updateAttributes, editor, getPos }: ReactNodeView
   const label =
     LANGUAGE_OPTIONS.find((option) => option.value === language)?.label ??
     explicitLanguage ??
-    'Plain text'
+    '纯文本'
 
   const toggleSource = () => {
     if (!editor.isEditable) {
@@ -135,7 +135,7 @@ function CodeBlockView({ node, updateAttributes, editor, getPos }: ReactNodeView
         {isMermaid && (
           <button
             type='button'
-            aria-label={showSource ? 'Show diagram' : 'Show source'}
+            aria-label={showSource ? '显示图表' : '显示源码'}
             onMouseDown={(event) => event.preventDefault()}
             onClick={toggleSource}
             className={CONTROL_CLASS}
@@ -151,7 +151,7 @@ function CodeBlockView({ node, updateAttributes, editor, getPos }: ReactNodeView
               <DropdownMenuTrigger asChild>
                 <button
                   type='button'
-                  aria-label='Code language'
+                  aria-label='代码语言'
                   className={cn(
                     chipVariants({ variant: 'default', flush: true }),
                     'h-[24px] gap-1 px-1.5 text-[var(--text-muted)] data-[state=open]:bg-[var(--surface-active)] data-[state=open]:text-[var(--text-body)]'
@@ -182,7 +182,7 @@ function CodeBlockView({ node, updateAttributes, editor, getPos }: ReactNodeView
         {!isMermaid && editor.isEditable && (
           <button
             type='button'
-            aria-label='Toggle line wrap'
+            aria-label='切换自动换行'
             aria-pressed={wrap}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => setWrap((value) => !value)}
@@ -196,7 +196,7 @@ function CodeBlockView({ node, updateAttributes, editor, getPos }: ReactNodeView
         )}
         <button
           type='button'
-          aria-label='Copy code'
+          aria-label='复制代码'
           onMouseDown={(event) => event.preventDefault()}
           onClick={() => copy(text)}
           className={CONTROL_CLASS}

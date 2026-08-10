@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { SecretDetail } from '@/app/workspace/[workspaceId]/settings/secrets/[credentialId]/secret-detail'
 
 export const metadata: Metadata = {
-  title: 'Secret',
+  title: '密钥',
 }
 
 export default async function SecretDetailPage({

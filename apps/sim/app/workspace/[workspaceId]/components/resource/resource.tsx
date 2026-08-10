@@ -341,7 +341,7 @@ const ResourceTable = memo(function ResourceTable({
                     checked={selectable.isAllSelected}
                     onCheckedChange={handleSelectAll}
                     disabled={selectable.disabled}
-                    aria-label='Select all'
+                    aria-label='全选'
                   />
                 </div>
               )}
@@ -667,7 +667,7 @@ const DataRow = memo(function DataRow({
             checked={isSelected}
             onCheckedChange={handleSelectRow}
             disabled={selectable.disabled}
-            aria-label='Select row'
+            aria-label='选择行'
             onClick={handleSelectRowClick}
           />
         </div>

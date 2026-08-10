@@ -60,7 +60,7 @@ export function TimeInput({
     <TimePicker
       value={value || undefined}
       onChange={handleChange}
-      placeholder={placeholder || 'Select time'}
+      placeholder={placeholder || '选择时间'}
       disabled={isPreview || disabled}
       className={className}
       overlayContent={

@@ -539,7 +539,7 @@ export const TextEditor = memo(function TextEditor({
   if (hasContentError) {
     return (
       <div className='flex flex-1 items-center justify-center'>
-        <p className='text-[13px] text-[var(--text-muted)]'>Failed to load file content</p>
+        <p className='text-[13px] text-[var(--text-muted)]'>无法加载文件内容</p>
       </div>
     )
   }
@@ -615,7 +615,7 @@ export const TextEditor = memo(function TextEditor({
                 onMouseDown={() => setIsResizing(true)}
                 role='separator'
                 aria-orientation='vertical'
-                aria-label='Resize split'
+                aria-label='调整分屏大小'
               />
               {isResizing && (
                 <div className='-translate-x-[0.5px] pointer-events-none absolute top-0 z-20 h-full w-[2px] bg-[var(--selection)]' />

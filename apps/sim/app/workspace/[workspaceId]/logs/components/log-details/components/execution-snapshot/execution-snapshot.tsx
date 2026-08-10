@@ -214,7 +214,7 @@ export function ExecutionSnapshot({
           }}
         >
           <ModalContent size='full' className='flex h-[90vh] flex-col'>
-            <ModalHeader>Workflow State</ModalHeader>
+            <ModalHeader>工作流状态</ModalHeader>
 
             <ModalBody className='!p-0 min-h-0 flex-1 overflow-hidden'>
               <ModalDescription className='sr-only'>

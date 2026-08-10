@@ -62,7 +62,7 @@ export function SkillInput({
       groups.push({
         items: [
           {
-            label: 'Create Skill',
+            label: '创建技能',
             value: 'action-create-skill',
             icon: Plus,
             onSelect: () => {
@@ -77,7 +77,7 @@ export function SkillInput({
     const availableSkills = workspaceSkills.filter((s) => !selectedIds.has(s.id))
     if (!skillsDisabled && availableSkills.length > 0) {
       groups.push({
-        section: 'Skills',
+        section: '技能',
         items: availableSkills.map((s) => {
           return {
             label: s.name,
@@ -122,7 +122,7 @@ export function SkillInput({
         <Combobox
           options={[]}
           groups={skillGroups}
-          placeholder='Add skill...'
+          placeholder='添加技能…'
           disabled={disabled}
           searchable
           searchPlaceholder='Search skills...'
@@ -171,7 +171,7 @@ export function SkillInput({
                           handleRemove(stored.skillId)
                         }}
                         className='flex items-center justify-center text-[var(--text-tertiary)] transition-colors hover-hover:text-[var(--text-primary)]'
-                        aria-label='Remove skill'
+                        aria-label='移除技能'
                       >
                         <XIcon className='size-[13px]' />
                       </button>

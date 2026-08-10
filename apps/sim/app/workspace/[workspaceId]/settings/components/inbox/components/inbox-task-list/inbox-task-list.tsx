@@ -16,12 +16,12 @@ import type { InboxTaskItem } from '@/hooks/queries/inbox'
 import { useInboxConfig, useInboxTasks } from '@/hooks/queries/inbox'
 
 const STATUS_OPTIONS = [
-  { value: 'all', label: 'All statuses' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'processing', label: 'Processing' },
-  { value: 'received', label: 'Received' },
-  { value: 'failed', label: 'Failed' },
-  { value: 'rejected', label: 'Rejected' },
+  { value: 'all', label: '全部状态' },
+  { value: 'completed', label: '已完成' },
+  { value: 'processing', label: '处理中' },
+  { value: 'received', label: '已收到' },
+  { value: 'failed', label: '失败' },
+  { value: 'rejected', label: '已拒绝' },
 ] as const
 
 type StatusFilter = InboxStatusFilter
@@ -33,11 +33,11 @@ const STATUS_BADGES: Record<
   string,
   { label: string; variant: 'gray' | 'amber' | 'green' | 'red' | 'gray-secondary' }
 > = {
-  received: { label: 'Received', variant: 'gray' },
-  processing: { label: 'Processing', variant: 'amber' },
-  completed: { label: 'Complete', variant: 'green' },
-  failed: { label: 'Failed', variant: 'red' },
-  rejected: { label: 'Rejected', variant: 'gray-secondary' },
+  received: { label: '已收到', variant: 'gray' },
+  processing: { label: '处理中', variant: 'amber' },
+  completed: { label: '已完成', variant: 'green' },
+  failed: { label: '失败', variant: 'red' },
+  rejected: { label: '已拒绝', variant: 'gray-secondary' },
 }
 
 export function InboxTaskList() {
@@ -97,7 +97,7 @@ export function InboxTaskList() {
       <div className='flex items-center gap-2'>
         <ChipInput
           icon={Search}
-          placeholder='Search tasks...'
+          placeholder='搜索任务...'
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className='min-w-0 flex-1'
@@ -118,13 +118,13 @@ export function InboxTaskList() {
         {isLoading ? null : filteredTasks.length === 0 ? (
           searchTerm.trim() ? (
             <SettingsEmptyState variant='inline'>
-              {`No tasks matching "${searchTerm}"`}
+              {`没有与“${searchTerm}”匹配的任务`}
             </SettingsEmptyState>
           ) : (
             <SettingsEmptyState>
               {config?.address
-                ? `No email tasks yet. Send an email to ${config.address} to get started.`
-                : 'No email tasks yet.'}
+                ? `还没有邮件任务。发送邮件到 ${config.address} 即可开始。`
+                : '还没有邮件任务。'}
             </SettingsEmptyState>
           )
         ) : (
@@ -218,13 +218,13 @@ export function InboxTaskList() {
 function formatRejectionReason(reason: string): string {
   switch (reason) {
     case 'sender_not_allowed':
-      return 'Sender not allowed'
+      return '发送者不在允许列表中'
     case 'automated_sender':
-      return 'Automated sender'
+      return '自动发送者'
     case 'rate_limit_exceeded':
-      return 'Rate limit exceeded'
+      return '超出速率限制'
     case 'not_entitled':
-      return 'Plan no longer includes Sim Mailer'
+      return '当前套餐不再包含 Sim 邮件服务'
     default:
       return reason
   }

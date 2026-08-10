@@ -121,7 +121,7 @@ const TimePicker = React.forwardRef<HTMLDivElement, TimePickerProps>(
       size,
       value,
       onChange,
-      placeholder = 'Select time',
+      placeholder = '选择时间',
       disabled = false,
       overlayContent,
       ...props

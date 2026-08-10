@@ -202,7 +202,7 @@ export const SkillsMenuDropdown = React.memo(
               })
             ) : (
               <div className='px-2 py-1.5 text-center font-medium text-[var(--text-tertiary)] text-caption'>
-                No skills
+                没有技能
               </div>
             )}
           </div>

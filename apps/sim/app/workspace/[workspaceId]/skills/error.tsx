@@ -7,8 +7,8 @@ export default function SkillsError({ error, reset }: ErrorBoundaryProps) {
     <ErrorState
       error={error}
       reset={reset}
-      title='Failed to load skills'
-      description='Something went wrong while loading your skills. Please try again.'
+      title='无法加载技能'
+      description='加载技能时出错,请重试。'
       loggerName='SkillsError'
     />
   )

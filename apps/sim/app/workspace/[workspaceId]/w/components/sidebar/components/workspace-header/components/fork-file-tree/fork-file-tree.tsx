@@ -127,7 +127,7 @@ function ForkFileFolderRow({
       <div className='flex items-center gap-2 text-[var(--text-body)] text-sm'>
         <Checkbox
           size='sm'
-          aria-label={`Copy all in ${folder.name}`}
+          aria-label={`全部复制${folder.name}`}
           checked={headerState}
           onCheckedChange={() => onToggleMany(fileIds, headerState !== true)}
           disabled={disabled}

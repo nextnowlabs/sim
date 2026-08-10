@@ -112,11 +112,11 @@ function getTestButtonLabel(
   testResult: { success: boolean; error?: string; authRequired?: boolean } | null,
   isTestingConnection: boolean
 ): string {
-  if (isTestingConnection) return 'Testing...'
-  if (testResult?.success) return 'Connection success'
-  if (testResult?.authRequired) return 'Requires OAuth'
-  if (testResult && !testResult.success) return 'No connection: retry'
-  return 'Test Connection'
+  if (isTestingConnection) return '测试中…'
+  if (testResult?.success) return '连接成功'
+  if (testResult?.authRequired) return '需要 OAuth'
+  if (testResult && !testResult.success) return '连接失败：重试'
+  return '测试连接'
 }
 
 interface FormattedInputProps {
@@ -231,7 +231,7 @@ function HeaderRow({
   return (
     <div className='relative flex items-center gap-2'>
       <FormattedInput
-        placeholder='Name'
+        placeholder='名称'
         value={header.key || ''}
         scrollLeft={headerScrollLeft[`key-${index}`] || 0}
         showEnvVars={isKeyActive}
@@ -243,7 +243,7 @@ function HeaderRow({
       />
 
       <FormattedInput
-        placeholder='Value'
+        placeholder='值'
         value={header.value || ''}
         scrollLeft={headerScrollLeft[`value-${index}`] || 0}
         showEnvVars={isValueActive}
@@ -454,17 +454,17 @@ export function McpServerFormModal({
       if (parsed.mcpServers && typeof parsed.mcpServers === 'object') {
         const entries = Object.entries(parsed.mcpServers)
         if (entries.length === 0) {
-          setJsonError('No servers found in mcpServers')
+          setJsonError('mcpServers 中未找到服务器')
           return null
         }
         if (entries.length > 1) {
           setJsonError(
-            `Only the first server ("${entries[0][0]}") will be imported. Paste each config separately to add others.`
+            `仅会导入第一个服务器（"${entries[0][0]}"）。如需添加其他服务器，请分别粘贴各自的配置。`
           )
         }
         const [name, config] = entries[0] as [string, Record<string, unknown>]
         if (!config.url || typeof config.url !== 'string') {
-          setJsonError('Server config must include a "url" field')
+          setJsonError('服务器配置必须包含 "url" 字段')
           return null
         }
         if (entries.length <= 1) setJsonError(null)
@@ -476,10 +476,10 @@ export function McpServerFormModal({
         return { name: '', url: parsed.url, headers: extractStringHeaders(parsed.headers) }
       }
 
-      setJsonError('JSON must contain "mcpServers" or a "url" field')
+      setJsonError('JSON 必须包含 "mcpServers" 或 "url" 字段')
       return null
     } catch {
-      setJsonError('Invalid JSON')
+      setJsonError('JSON 无效')
       return null
     }
   }
@@ -519,9 +519,7 @@ export function McpServerFormModal({
       })
 
       if (!connectionResult.success && !connectionResult.authRequired) {
-        setSubmitError(
-          connectionResult.error || 'Connection test failed. Please check the URL and try again.'
-        )
+        setSubmitError(connectionResult.error || '连接测试失败。请检查 URL 后重试。')
         return
       }
 
@@ -548,7 +546,7 @@ export function McpServerFormModal({
 
       onOpenChange(false)
     } catch (error) {
-      setSubmitError(getErrorMessage(error, 'Failed to save server'))
+      setSubmitError(getErrorMessage(error, '保存服务器失败'))
       logger.error('Failed to save MCP server:', error)
     } finally {
       setIsSubmitting(false)
@@ -560,12 +558,12 @@ export function McpServerFormModal({
     if (!config) return
 
     if (!config.name) {
-      setJsonError('Server name is required. Use: { "mcpServers": { "name": { "url": "..." } } }')
+      setJsonError('必须填写服务器名称。格式：{ "mcpServers": { "name": { "url": "..." } } }')
       return
     }
 
     if (!isDomainAllowed(config.url, allowedMcpDomains)) {
-      setJsonError('Domain not permitted by server policy')
+      setJsonError('该域名不被服务器策略允许')
       return
     }
 
@@ -582,9 +580,7 @@ export function McpServerFormModal({
       })
 
       if (!connectionResult.success && !connectionResult.authRequired) {
-        setSubmitError(
-          connectionResult.error || 'Connection test failed. Please check the URL and try again.'
-        )
+        setSubmitError(connectionResult.error || '连接测试失败。请检查 URL 后重试。')
         return
       }
 
@@ -599,7 +595,7 @@ export function McpServerFormModal({
 
       onOpenChange(false)
     } catch (error) {
-      setSubmitError(getErrorMessage(error, 'Failed to save server'))
+      setSubmitError(getErrorMessage(error, '保存服务器失败'))
       logger.error('Failed to save MCP server from JSON:', error)
     } finally {
       setIsSubmitting(false)
@@ -609,8 +605,8 @@ export function McpServerFormModal({
   const isSubmitDisabled =
     isSubmitting || !isFormValid || isDomainBlocked || (mode === 'edit' && !hasChanges)
 
-  const title = mode === 'add' ? 'Add New MCP Server' : 'Edit MCP Server'
-  const submitLabel = mode === 'add' ? 'Add MCP' : 'Save'
+  const title = mode === 'add' ? '添加新 MCP 服务器' : '编辑 MCP 服务器'
+  const submitLabel = mode === 'add' ? '添加 MCP' : '保存'
 
   const handleToggleJsonMode = () => {
     if (testResult) clearTestResult()
@@ -622,7 +618,7 @@ export function McpServerFormModal({
   const secondaryAction: ChipModalFooterAction | undefined =
     mode === 'add'
       ? {
-          label: formMode === 'form' ? 'Edit JSON' : 'Edit Form',
+          label: formMode === 'form' ? '编辑 JSON' : '编辑表单',
           onClick: handleToggleJsonMode,
         }
       : formMode === 'form'
@@ -636,12 +632,12 @@ export function McpServerFormModal({
   const primaryAction: ChipModalFooterAction =
     formMode === 'json'
       ? {
-          label: isSubmitting ? 'Adding...' : submitLabel,
+          label: isSubmitting ? '添加中…' : submitLabel,
           onClick: handleSubmitJson,
           disabled: isSubmitting || !jsonInput.trim(),
         }
       : {
-          label: isSubmitting ? (mode === 'add' ? 'Adding...' : 'Saving...') : submitLabel,
+          label: isSubmitting ? (mode === 'add' ? '添加中…' : '保存中…') : submitLabel,
           onClick: handleSubmitForm,
           disabled: isSubmitDisabled,
         }
@@ -653,7 +649,7 @@ export function McpServerFormModal({
         {formMode === 'json' ? (
           <ChipModalField
             type='textarea'
-            title='Configuration'
+            title='配置'
             value={jsonInput}
             onChange={(value) => {
               setJsonInput(value)
@@ -688,20 +684,20 @@ export function McpServerFormModal({
             />
             <ChipModalField
               type='input'
-              title='Server Name'
+              title='服务器名称'
               value={formData.name}
               onChange={(value) => {
                 if (testResult) clearTestResult()
                 if (submitError) setSubmitError(null)
                 setFormData((prev) => ({ ...prev, name: value }))
               }}
-              placeholder='e.g., My MCP Server'
+              placeholder='例如：我的 MCP 服务器'
             />
 
             <ChipModalField
               type='custom'
-              title='Server URL'
-              error={isDomainBlocked ? 'Domain not permitted by server policy' : undefined}
+              title='服务器 URL'
+              error={isDomainBlocked ? '该域名不被服务器策略允许' : undefined}
             >
               <FormattedInput
                 ref={urlInputRef}
@@ -722,7 +718,7 @@ export function McpServerFormModal({
               />
             </ChipModalField>
 
-            <ChipModalField type='custom' title='Headers'>
+            <ChipModalField type='custom' title='请求头'>
               <div className='flex max-h-[140px] flex-col gap-2 overflow-y-auto'>
                 {(formData.headers || []).map((header, index) => (
                   <HeaderRow
@@ -757,13 +753,13 @@ export function McpServerFormModal({
               ) : (
                 <ChevronRight className='size-[14px]' />
               )}
-              Advanced settings
+              高级设置
             </Button>
             {showAdvanced && (
               <>
-                <ChipModalField type='custom' title='Client ID'>
+                <ChipModalField type='custom' title='客户端 ID'>
                   <ChipInput
-                    placeholder='OAuth Client ID (optional)'
+                    placeholder='OAuth 客户端 ID（可选）'
                     value={formData.oauthClientId || ''}
                     name='mcp_oauth_client_id'
                     autoComplete='off'
@@ -780,11 +776,11 @@ export function McpServerFormModal({
                 </ChipModalField>
                 <ChipModalField
                   type='custom'
-                  title='Client Secret'
-                  hint="Only needed for servers that don't support automatic client registration."
+                  title='客户端密钥'
+                  hint='仅当服务器不支持自动客户端注册时需要。'
                 >
                   <SecretInput
-                    placeholder='OAuth Client Secret (optional)'
+                    placeholder='OAuth 客户端密钥（可选）'
                     value={formData.oauthClientSecret || ''}
                     name='mcp_oauth_client_secret'
                     autoComplete='new-password'

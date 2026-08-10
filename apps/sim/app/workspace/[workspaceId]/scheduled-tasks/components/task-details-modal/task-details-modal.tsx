@@ -27,9 +27,9 @@ import type {
  * safety, though `pending` tasks open the edit `TaskModal` instead.
  */
 const STATUS_COPY: Record<ScheduledTaskStatus, { label: string; timeTitle: string }> = {
-  pending: { label: 'Pending', timeTitle: 'Runs' },
-  error: { label: 'Error', timeTitle: 'Failed' },
-  completed: { label: 'Completed', timeTitle: 'Ran' },
+  pending: { label: '待运行', timeTitle: '运行时间' },
+  error: { label: '失败', timeTitle: '失败时间' },
+  completed: { label: '已完成', timeTitle: '运行时间' },
 }
 
 interface TaskDetailsModalProps {
@@ -51,7 +51,7 @@ export function TaskDetailsModal({ task, onClose }: TaskDetailsModalProps) {
         if (!open) onClose()
       }}
       size='md'
-      srTitle='Scheduled task'
+      srTitle='定时任务'
     >
       {/* Key by the occurrence id so switching tasks while the modal stays open
           remounts the content — the editor seeds prompt + contexts on mount, so
@@ -85,22 +85,22 @@ function TaskDetailsContent({ task, onClose }: { task: ScheduledTask; onClose: (
   return (
     <>
       <ChipModalHeader icon={Calendar} onClose={onClose}>
-        Scheduled task
+        定时任务
       </ChipModalHeader>
       <ChipModalBody>
-        <ChipModalField type='copy' title='Status' value={STATUS_COPY[task.status].label} />
+        <ChipModalField type='copy' title='状态' value={STATUS_COPY[task.status].label} />
         <ChipModalField
           type='copy'
           title={STATUS_COPY[task.status].timeTitle}
-          value={format(task.runAt, "EEEE, MMMM d, yyyy 'at' h:mm a")}
+          value={format(task.runAt, 'yyyy年M月d日 HH:mm')}
         />
-        <ChipModalField type='custom' title='Prompt'>
+        <ChipModalField type='custom' title='提示词'>
           <div className={cn(chipFieldSurfaceClass, 'max-h-[200px] overflow-y-auto px-1 py-0.5')}>
-            <PromptEditor editor={editor} readOnly aria-label='Prompt' />
+            <PromptEditor editor={editor} readOnly aria-label='提示词' />
           </div>
         </ChipModalField>
       </ChipModalBody>
-      <ChipModalFooter onCancel={onClose} primaryAction={{ label: 'Done', onClick: onClose }} />
+      <ChipModalFooter onCancel={onClose} primaryAction={{ label: '完成', onClick: onClose }} />
     </>
   )
 }

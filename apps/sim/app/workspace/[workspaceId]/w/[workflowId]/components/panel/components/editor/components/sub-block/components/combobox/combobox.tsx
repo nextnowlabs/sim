@@ -137,7 +137,7 @@ export const ComboBox = memo(function ComboBox({
       const options = await fetchOptions(blockId)
       setFetchedOptions(options)
     } catch (error) {
-      const errorMessage = getErrorMessage(error, 'Failed to fetch options')
+      const errorMessage = getErrorMessage(error, '获取选项失败')
       setFetchError(errorMessage)
       setFetchedOptions([])
     } finally {

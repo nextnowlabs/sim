@@ -9,21 +9,21 @@ import { ChipTimePicker } from '../chip-time-picker/chip-time-picker'
 import { CalendarDayCell } from './calendar-day-cell'
 
 const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  '一月',
+  '二月',
+  '三月',
+  '四月',
+  '五月',
+  '六月',
+  '七月',
+  '八月',
+  '九月',
+  '十月',
+  '十一月',
+  '十二月',
 ] as const
 
-const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const
+const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'] as const
 
 const DEFAULT_RANGE_START_TIME = '00:00'
 const DEFAULT_RANGE_END_TIME = '23:59'
@@ -265,11 +265,11 @@ function CalendarHeader({
 }) {
   return (
     <div className='flex items-center justify-between pb-1'>
-      <Chip leftIcon={ChevronLeft} aria-label='Previous month' onClick={onPrev} />
+      <Chip leftIcon={ChevronLeft} aria-label='上个月' onClick={onPrev} />
       <span className={chipContentLabelClass}>
         {MONTHS[month]} {year}
       </span>
-      <Chip rightIcon={ChevronRight} aria-label='Next month' onClick={onNext} />
+      <Chip rightIcon={ChevronRight} aria-label='下个月' onClick={onNext} />
     </div>
   )
 }
@@ -340,7 +340,7 @@ function SingleCalendarView({ value, onChange, className }: CalendarSingleProps)
           'mt-1 justify-center'
         )}
       >
-        <span className={chipContentLabelClass}>Today</span>
+        <span className={chipContentLabelClass}>今天</span>
       </button>
     </div>
   )
@@ -446,21 +446,21 @@ function RangeCalendarView({
       {showTime && (
         <div className='mt-1 flex items-center gap-2'>
           <ChipTimePicker value={startTime} onChange={setStartTime} fullWidth flush />
-          <span className='shrink-0 text-[var(--text-muted)] text-caption'>to</span>
+          <span className='shrink-0 text-[var(--text-muted)] text-caption'>至</span>
           <ChipTimePicker value={endTime} onChange={setEndTime} fullWidth flush />
         </div>
       )}
 
       <div className='mt-1 flex items-center justify-between gap-2'>
         <Chip onClick={clear} disabled={!rangeStart && !rangeEnd}>
-          Clear
+          清除
         </Chip>
         <div className='flex items-center gap-2'>
           <Chip variant='border' onClick={() => onCancel?.()}>
-            Cancel
+            取消
           </Chip>
           <Chip variant='primary' onClick={apply} disabled={!rangeStart}>
-            Apply
+            应用
           </Chip>
         </div>
       </div>

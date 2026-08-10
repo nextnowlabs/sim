@@ -42,18 +42,16 @@ export function TeamSeatsOverview({
 
   if (!subscriptionData) {
     return (
-      <SettingsSection label='Seats'>
+      <SettingsSection label='席位'>
         <div className='flex items-center justify-between gap-3'>
           <div className='flex min-w-0 flex-col'>
             <span className='text-[var(--text-body)] text-small'>
-              {isSelfHostedOrgEnabled
-                ? 'Self-hosted organization'
-                : 'No active Team subscription'}
+              {isSelfHostedOrgEnabled ? '自托管组织' : '没有有效的 Team 订阅'}
             </span>
             <span className='text-[var(--text-muted)] text-small'>
               {isSelfHostedOrgEnabled
-                ? 'Organization management is enabled on your self-hosted instance.'
-                : 'Purchase a Team plan to invite teammates to this organization.'}
+                ? '你的自托管实例已启用组织管理功能。'
+                : '购买 Team 套餐,邀请团队成员加入此组织。'}
             </span>
           </div>
           {!isSelfHostedOrgEnabled && (
@@ -67,7 +65,7 @@ export function TeamSeatsOverview({
               }}
               disabled={!workspaceId}
             >
-              View plans
+              查看套餐
             </Chip>
           )}
         </div>
@@ -87,7 +85,7 @@ export function TeamSeatsOverview({
   const pendingBadge =
     pendingSeats > 0 ? (
       <Badge variant='gray-secondary' size='sm'>
-        {pendingSeats} pending
+        {pendingSeats} 待接受
       </Badge>
     ) : null
 
@@ -99,10 +97,10 @@ export function TeamSeatsOverview({
    */
   if (!isEnterprise) {
     return (
-      <SettingsSection label='Seats'>
+      <SettingsSection label='席位'>
         <div className='flex items-center justify-between gap-2'>
           <span className='text-[var(--text-body)] text-small tabular-nums'>
-            {usedSeats} {usedSeats === 1 ? 'seat' : 'seats'}
+            {usedSeats} 个席位
           </span>
           {pendingBadge}
         </div>
@@ -111,17 +109,17 @@ export function TeamSeatsOverview({
   }
 
   return (
-    <SettingsSection label='Seats'>
+    <SettingsSection label='席位'>
       <div className='flex flex-col gap-2.5'>
         <div className='flex items-center justify-between gap-2'>
           <span className='text-[var(--text-body)] text-small tabular-nums'>
-            {usedSeats} used / {totalSeats} total
+            已用 {usedSeats} / 共 {totalSeats}
           </span>
           <div className='flex items-center gap-1.5'>
             {pendingBadge}
             {isOverLimit && (
               <Badge variant='amber' size='sm'>
-                Over limit
+                超出上限
               </Badge>
             )}
           </div>
@@ -149,8 +147,8 @@ export function TeamSeatsOverview({
 
         <p className='text-[var(--text-muted)] text-small'>
           {isOverLimit
-            ? 'You have more teammates than seats. Contact support to adjust your enterprise seat count.'
-            : 'Contact support for enterprise seat changes.'}
+            ? '你的团队成员数超过了席位数量。请联系支持团队调整你的 Enterprise 席位数量。'
+            : '如需调整 Enterprise 席位,请联系支持团队。'}
         </p>
       </div>
     </SettingsSection>

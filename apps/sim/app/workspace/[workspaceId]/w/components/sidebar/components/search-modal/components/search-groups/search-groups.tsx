@@ -41,7 +41,7 @@ export const ActionsGroup = memo(function ActionsGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Actions' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='操作' className={GROUP_HEADING_CLASSNAME}>
       {items.map((action) => (
         <MemoizedActionItem
           key={action.id}
@@ -68,7 +68,7 @@ export const BlocksGroup = memo(function BlocksGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Blocks' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='节点' className={GROUP_HEADING_CLASSNAME}>
       {items.map((block) => (
         <MemoizedCommandItem
           key={block.id}
@@ -96,7 +96,7 @@ export const ToolsGroup = memo(function ToolsGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Tools' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='工具' className={GROUP_HEADING_CLASSNAME}>
       {items.map((tool) => (
         <MemoizedCommandItem
           key={tool.id}
@@ -124,7 +124,7 @@ export const TriggersGroup = memo(function TriggersGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Triggers' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='触发器' className={GROUP_HEADING_CLASSNAME}>
       {items.map((trigger) => (
         <MemoizedCommandItem
           key={trigger.id}
@@ -152,7 +152,7 @@ export const ToolOpsGroup = memo(function ToolOpsGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Tool operations' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='工具操作' className={GROUP_HEADING_CLASSNAME}>
       {items.map((op) => (
         <MemoizedCommandItem
           key={op.id}
@@ -180,7 +180,7 @@ export const DocsGroup = memo(function DocsGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Docs' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='文档' className={GROUP_HEADING_CLASSNAME}>
       {items.map((doc) => (
         <MemoizedCommandItem
           key={doc.id}
@@ -208,7 +208,7 @@ export const WorkflowsGroup = memo(function WorkflowsGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Workflows' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='工作流' className={GROUP_HEADING_CLASSNAME}>
       {items.map((workflow) => (
         <MemoizedWorkflowItem
           key={workflow.id}
@@ -235,7 +235,7 @@ export const ChatsGroup = memo(function ChatsGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Chats' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='对话' className={GROUP_HEADING_CLASSNAME}>
       {items.map((task) => (
         <MemoizedTaskItem
           key={task.id}
@@ -260,7 +260,7 @@ export const WorkspacesGroup = memo(function WorkspacesGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Workspaces' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='工作区' className={GROUP_HEADING_CLASSNAME}>
       {items.map((workspace) => (
         <MemoizedWorkspaceItem
           key={workspace.id}
@@ -286,7 +286,7 @@ export const PagesGroup = memo(function PagesGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Pages' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='页面' className={GROUP_HEADING_CLASSNAME}>
       {items.map((page) => (
         <MemoizedPageItem
           key={page.id}
@@ -302,11 +302,11 @@ export const PagesGroup = memo(function PagesGroup({
   )
 })
 
-export const TablesGroup = createIconGroup('Tables', 'table', Table)
-export const KnowledgeBasesGroup = createIconGroup('Knowledge bases', 'knowledge-base', Database)
+export const TablesGroup = createIconGroup('表格', 'table', Table)
+export const KnowledgeBasesGroup = createIconGroup('知识库', 'knowledge-base', Database)
 
-export const ConnectedAccountsGroup = createColoredIconGroup('Connected', 'connected-account')
-export const IntegrationsGroup = createColoredIconGroup('Integrations', 'integration')
+export const ConnectedAccountsGroup = createColoredIconGroup('已连接账号', 'connected-account')
+export const IntegrationsGroup = createColoredIconGroup('集成', 'integration')
 
 export const FilesGroup = memo(function FilesGroup({
   items,
@@ -319,7 +319,7 @@ export const FilesGroup = memo(function FilesGroup({
 }) {
   if (items.length === 0) return null
   return (
-    <Command.Group heading='Files' className={GROUP_HEADING_CLASSNAME}>
+    <Command.Group heading='文件' className={GROUP_HEADING_CLASSNAME}>
       {items.map((file) => (
         <MemoizedFileItem
           key={file.id}

@@ -13,7 +13,7 @@ export function AnimatedPlaceholderEffect({
   isInitialView,
 }: AnimatedPlaceholderEffectProps) {
   const animatedPlaceholder = useAnimatedPlaceholder(isInitialView)
-  const placeholder = isInitialView ? animatedPlaceholder : 'Send message to Sim'
+  const placeholder = isInitialView ? animatedPlaceholder : '给 Sim 发送消息'
 
   useEffect(() => {
     if (textareaRef.current) {

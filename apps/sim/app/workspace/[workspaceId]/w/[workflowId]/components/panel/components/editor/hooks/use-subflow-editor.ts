@@ -22,10 +22,10 @@ import type { BlockState } from '@/stores/workflows/workflow/types'
 const SUBFLOW_CONFIG = {
   loop: {
     typeLabels: {
-      for: 'For Loop',
-      forEach: 'For Each',
-      while: 'While Loop',
-      doWhile: 'Do While Loop',
+      for: '计数循环',
+      forEach: '遍历循环',
+      while: '条件循环',
+      doWhile: '先执行后判断循环',
     },
     typeKey: 'loopType' as const,
     storeKey: 'loops' as const,
@@ -36,7 +36,7 @@ const SUBFLOW_CONFIG = {
     } as any,
   },
   parallel: {
-    typeLabels: { count: 'Parallel Count', collection: 'Parallel Each' },
+    typeLabels: { count: '按数量并行', collection: '按列表并行' },
     typeKey: 'parallelType' as const,
     storeKey: 'parallels' as const,
     configKeys: {

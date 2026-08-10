@@ -32,13 +32,13 @@ const MAX_WHEN_FILTERED = 50
 
 /** Category heading order in the menu. */
 const GROUP_ORDER = [
-  'Files',
-  'Folders',
-  'Tables',
-  'Knowledge bases',
-  'Workflows',
-  'Skills',
-  'Integrations',
+  '文件',
+  '文件夹',
+  '表格',
+  '知识库',
+  '工作流',
+  '技能',
+  '集成',
 ] as const
 
 /**
@@ -99,9 +99,9 @@ export const MentionList = forwardRef<MentionListHandle, MentionListProps>(funct
       activeIndex={activeIndex}
       setActiveIndex={setActiveIndex}
       command={command}
-      ariaLabel='Mentions'
+      ariaLabel='提及'
       idPrefix='mention'
-      emptyLabel={rawItems.length === 0 ? 'Loading…' : 'No results'}
+      emptyLabel={rawItems.length === 0 ? '加载中…' : '无结果'}
       itemKey={(item) => `${item.kind}:${item.id}`}
       renderItem={(item) => {
         const Icon = item.icon

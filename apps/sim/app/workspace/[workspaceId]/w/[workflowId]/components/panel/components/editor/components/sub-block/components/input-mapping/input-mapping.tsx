@@ -132,7 +132,7 @@ export function InputMapping({
     return (
       <div className='flex h-32 items-center justify-center rounded-sm border border-[var(--border-1)] border-dashed bg-[var(--surface-3)] dark:bg-[var(--code-bg)]'>
         <div className='text-center'>
-          <p className='font-medium text-[var(--text-secondary)] text-sm'>No workflow selected</p>
+          <p className='font-medium text-[var(--text-secondary)] text-sm'>未选择工作流</p>
           <p className='mt-1 text-[var(--text-muted)] text-xs'>
             Select a workflow above to configure inputs
           </p>
@@ -163,7 +163,7 @@ export function InputMapping({
   }
 
   if (!childInputFields || childInputFields.length === 0) {
-    return <p className='text-[var(--text-muted)] text-sm'>No inputs available</p>
+    return <p className='text-[var(--text-muted)] text-sm'>没有可用输入</p>
   }
 
   return (

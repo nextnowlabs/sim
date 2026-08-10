@@ -159,7 +159,7 @@ export function FolderItem({ folder }: FolderItemProps) {
     try {
       const result = await createFolderMutation.mutateAsync({
         workspaceId,
-        name: 'New folder',
+        name: '新文件夹',
         parentId: folder.id,
         id: generateId(),
       })
@@ -212,7 +212,7 @@ export function FolderItem({ folder }: FolderItemProps) {
       }
 
       const total = selection.folderIds.length + selection.workflowIds.length
-      const ghostLabel = total > 1 ? `${folder.name} +${total - 1} more` : folder.name
+      const ghostLabel = total > 1 ? `${folder.name} +${total - 1} 项` : folder.name
       const icon = total === 1 ? { kind: 'folder' as const } : undefined
       const ghost = createSidebarDragGhost(ghostLabel, icon)
       void ghost.offsetHeight
@@ -533,7 +533,7 @@ export function FolderItem({ folder }: FolderItemProps) {
               {folder.locked && (
                 <span
                   role='img'
-                  aria-label='Folder is locked'
+                  aria-label='文件夹已锁定'
                   className={clsx(
                     'pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity',
                     !isAnyDragActive && 'group-hover:opacity-0',
@@ -545,7 +545,7 @@ export function FolderItem({ folder }: FolderItemProps) {
               )}
               <button
                 type='button'
-                aria-label='Folder options'
+                aria-label='文件夹选项'
                 onPointerDown={handleMorePointerDown}
                 onClick={handleMoreClick}
                 className={clsx(

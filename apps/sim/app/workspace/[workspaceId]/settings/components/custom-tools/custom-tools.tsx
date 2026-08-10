@@ -45,7 +45,7 @@ export function CustomTools() {
 
     setToolToDelete({
       id: toolId,
-      name: tool.title || tool.schema?.function?.name || 'this custom tool',
+      name: tool.title || tool.schema?.function?.name || '此自定义工具',
     })
     setShowDeleteDialog(true)
   }
@@ -89,7 +89,7 @@ export function CustomTools() {
 
   const actions: SettingsAction[] = [
     {
-      text: 'Add tool',
+      text: '添加工具',
       icon: Plus,
       variant: 'primary',
       onSelect: () => setShowAddForm(true),
@@ -103,7 +103,7 @@ export function CustomTools() {
         search={{
           value: searchTerm,
           onChange: setSearchTerm,
-          placeholder: 'Search tools...',
+          placeholder: '搜索工具…',
           disabled: isLoading,
         }}
         actions={actions}
@@ -111,18 +111,18 @@ export function CustomTools() {
         {error ? (
           <div className='flex h-full flex-col items-center justify-center gap-2'>
             <p className='text-[var(--text-error)] text-sm leading-tight'>
-              {getErrorMessage(error, 'Failed to load tools')}
+              {getErrorMessage(error, '加载工具失败')}
             </p>
           </div>
         ) : isLoading ? null : showEmptyState ? (
-          <SettingsEmptyState>Click "Add tool" above to get started</SettingsEmptyState>
+          <SettingsEmptyState>点击上方"添加工具"开始使用</SettingsEmptyState>
         ) : (
           <div className='flex flex-col gap-2'>
             {filteredTools.map((tool) => (
               <div key={tool.id} className='flex items-center justify-between gap-3'>
                 <div className='flex min-w-0 flex-col justify-center gap-[1px]'>
                   <span className='truncate text-[14px] text-[var(--text-body)]'>
-                    {tool.title || 'Unnamed Tool'}
+                    {tool.title || '未命名工具'}
                   </span>
                   {tool.schema?.function?.description && (
                     <p className='truncate text-[12px] text-[var(--text-muted)]'>
@@ -132,11 +132,11 @@ export function CustomTools() {
                 </div>
                 <div className='flex flex-shrink-0 items-center gap-1'>
                   <RowActionsMenu
-                    label='Tool actions'
+                    label='工具操作'
                     actions={[
-                      { label: 'Edit', onSelect: () => setEditingTool(tool.id) },
+                      { label: '编辑', onSelect: () => setEditingTool(tool.id) },
                       {
-                        label: 'Delete',
+                        label: '删除',
                         destructive: true,
                         disabled: deletingTools.has(tool.id),
                         onSelect: () => handleDeleteClick(tool.id),
@@ -148,7 +148,7 @@ export function CustomTools() {
             ))}
             {showNoResults && (
               <SettingsEmptyState variant='inline'>
-                No tools found matching "{searchTerm}"
+                未找到与"{searchTerm}"匹配的工具
               </SettingsEmptyState>
             )}
           </div>
@@ -183,14 +183,14 @@ export function CustomTools() {
         onOpenChange={(open) => {
           if (!open) setShowDeleteDialog(false)
         }}
-        srTitle='Delete Custom Tool'
-        title='Delete Custom Tool'
+        srTitle='删除自定义工具'
+        title='删除自定义工具'
         text={[
-          'Are you sure you want to delete ',
-          { text: toolToDelete?.name ?? 'this tool', bold: true },
-          '? This action cannot be undone.',
+          '确定要删除 ',
+          { text: toolToDelete?.name ?? '此工具', bold: true },
+          '？此操作无法撤销。',
         ]}
-        confirm={{ label: 'Delete', onClick: handleDeleteTool }}
+        confirm={{ label: '删除', onClick: handleDeleteTool }}
       />
     </>
   )

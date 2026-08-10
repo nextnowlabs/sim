@@ -91,18 +91,18 @@ export function ToolCallItem({ toolName, displayTitle, status, streamingArgs }: 
     const op = opMatch?.[1] ?? ''
     const verb =
       op === 'create'
-        ? 'Creating'
+        ? '正在创建'
         : op === 'append'
-          ? 'Adding'
+          ? '正在添加'
           : op === 'patch'
-            ? 'Editing'
+            ? '正在编辑'
             : op === 'update'
-              ? 'Writing'
+              ? '正在写入'
               : op === 'rename'
-                ? 'Renaming'
+                ? '正在重命名'
                 : op === 'delete'
-                  ? 'Deleting'
-                  : 'Writing'
+                  ? '正在删除'
+                  : '正在写入'
     const unescaped = titleMatch[1]
       .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex: string) =>
         String.fromCharCode(Number.parseInt(hex, 16))

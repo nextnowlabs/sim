@@ -73,13 +73,13 @@ export function ManageCreditsModal({
 
   const creditsUsed = data ? data.creditsUsed.toLocaleString() : '—'
   const creditsUsedTitle = data
-    ? `Credits used this ${data.billingInterval === 'year' ? 'year' : 'month'}`
-    : 'Credits used'
+    ? `本${data.billingInterval === 'year' ? '年' : '月'}已用积分`
+    : '已用积分'
 
   const handleSave = () => {
     if (!userId) return
     if (!isValid) {
-      setError('Enter a whole number of credits, or leave blank for no limit.')
+      setError('请输入整数积分,或留空表示不设上限。')
       return
     }
     setError(null)
@@ -87,32 +87,32 @@ export function ManageCreditsModal({
       { orgId: organizationId, userId, creditLimit: parsedLimit },
       {
         onSuccess: () => onOpenChange(false),
-        onError: (err) => setError(getErrorMessage(err, 'Failed to update credit limit')),
+        onError: (err) => setError(getErrorMessage(err, '更新积分上限失败')),
       }
     )
   }
 
   return (
-    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Manage credits'>
+    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='管理积分'>
       <ChipModalHeader onClose={() => onOpenChange(false)}>
-        {member ? `Manage credits — ${member.name || member.email}` : 'Manage credits'}
+        {member ? `管理积分 — ${member.name || member.email}` : '管理积分'}
       </ChipModalHeader>
       <ChipModalBody>
         <ChipModalField
           type='copy'
           title={creditsUsedTitle}
-          value={isLoading ? 'Loading…' : creditsUsed}
-          copyLabel='Copy credits used'
+          value={isLoading ? '加载中…' : creditsUsed}
+          copyLabel='复制已用积分'
         />
         <ChipModalField
           type='input'
           inputType='number'
           title={
             <span className='inline-flex items-center gap-1.5'>
-              Credit limit
+              积分上限
               <Info side='top'>
                 {
-                  "Set in credits — Sim's usage unit (1,000 credits = $5). Caps this member's usage across this organization's workspaces each billing period."
+                  '以积分计 — Sim 的用量单位(1,000 积分 = $5)。限制该成员在本组织各工作区每个计费周期内的用量。'
                 }
               </Info>
             </span>
@@ -122,8 +122,8 @@ export function ManageCreditsModal({
             hasEditedRef.current = true
             setDraft(value)
           }}
-          placeholder='No limit'
-          hint='Leave blank for no limit.'
+          placeholder='不设上限'
+          hint='留空表示不设上限。'
           disabled={isLoading || isSaving}
         />
         <ChipModalError>{error}</ChipModalError>
@@ -132,7 +132,7 @@ export function ManageCreditsModal({
         onCancel={() => onOpenChange(false)}
         cancelDisabled={isSaving}
         primaryAction={{
-          label: isSaving ? 'Saving…' : 'Save',
+          label: isSaving ? '保存中…' : '保存',
           onClick: handleSave,
           disabled: !isValid || !isDirty || isSaving || isLoading,
         }}

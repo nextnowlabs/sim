@@ -131,7 +131,7 @@ export function useUpgradeState(): UpgradeState {
           ...(seats ? { seats } : {}),
         })
       } catch (error) {
-        toast.error(getErrorMessage(error, 'Unknown error occurred'))
+        toast.error(getErrorMessage(error, '发生未知错误'))
       }
     },
     [handleUpgrade, isAnnual]
@@ -143,9 +143,7 @@ export function useUpgradeState(): UpgradeState {
   const handleSwitchInterval = useCallback(
     async (interval: 'month' | 'year') => {
       if (isLegacyPlan) {
-        throw new Error(
-          'Interval switching is not available on legacy plans. Please upgrade first.'
-        )
+        throw new Error('旧版套餐不支持切换计费周期,请先升级。')
       }
       await requestJson(billingSwitchPlanContract, {
         body: { targetPlanName: subscription.plan, interval },
@@ -182,7 +180,7 @@ export function useUpgradeState(): UpgradeState {
       })
       await refetchSubscription()
     } catch (e) {
-      toast.error(getErrorMessage(e, 'Failed to upgrade'))
+      toast.error(getErrorMessage(e, '升级失败'))
     }
   }, [subscription.isTeam, isAnnual, refetchSubscription])
 
@@ -198,7 +196,7 @@ export function useUpgradeState(): UpgradeState {
       })
       await refetchSubscription()
     } catch (e) {
-      toast.error(getErrorMessage(e, 'Failed to switch plan'))
+      toast.error(getErrorMessage(e, '切换套餐失败'))
     }
   }, [subscription.plan, subscription.isTeam, refetchSubscription])
 

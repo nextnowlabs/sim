@@ -78,9 +78,9 @@ const DEFAULT_SORT: SortConfig = { column: 'deleted', direction: 'desc' }
 const SEARCH_DEBOUNCE_MS = 300 as const
 
 const SORT_OPTIONS: ColumnOption[] = [
-  { id: 'deleted', label: 'Deleted' },
-  { id: 'name', label: 'Name' },
-  { id: 'type', label: 'Type' },
+  { id: 'deleted', label: '删除时间' },
+  { id: 'name', label: '名称' },
+  { id: 'type', label: '类型' },
 ]
 
 const ICON_CLASS = 'size-5'
@@ -109,21 +109,21 @@ interface RestoredResourceEntry {
 }
 
 const TABS: { id: ResourceType; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'workflow', label: 'Workflows' },
-  { id: 'folder', label: 'Folders' },
-  { id: 'table', label: 'Tables' },
-  { id: 'knowledge', label: 'Knowledge Bases' },
-  { id: 'file', label: 'Files' },
+  { id: 'all', label: '全部' },
+  { id: 'workflow', label: '工作流' },
+  { id: 'folder', label: '文件夹' },
+  { id: 'table', label: '数据表' },
+  { id: 'knowledge', label: '知识库' },
+  { id: 'file', label: '文件' },
 ]
 
 const TYPE_LABEL: Record<Exclude<ResourceType, 'all'>, string> = {
-  workflow: 'Workflow',
-  folder: 'Folder',
-  workspace_folder: 'File Folder',
-  table: 'Table',
-  knowledge: 'Knowledge Base',
-  file: 'File',
+  workflow: '工作流',
+  folder: '文件夹',
+  workspace_folder: '文件文件夹',
+  table: '数据表',
+  knowledge: '知识库',
+  file: '文件',
 }
 
 function ResourceIcon({ resource }: { resource: DeletedResource }) {
@@ -413,7 +413,7 @@ export function RecentlyDeleted() {
       <div className='flex items-center gap-2'>
         <ChipInput
           icon={Search}
-          placeholder='Search deleted items...'
+          placeholder='搜索已删除的项目...'
           value={urlSearchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           disabled={isLoading}
@@ -447,16 +447,16 @@ export function RecentlyDeleted() {
       {error ? (
         <div className='flex h-full flex-col items-center justify-center gap-2'>
           <p className='text-[var(--text-error)] text-sm leading-tight'>
-            {toError(error).message || 'Failed to load deleted items'}
+            {toError(error).message || '加载已删除的项目失败'}
           </p>
         </div>
       ) : isLoading ? null : filtered.length === 0 ? (
         showNoResults ? (
           <SettingsEmptyState variant='inline'>
-            {`No items found matching \u201c${urlSearchTerm}\u201d`}
+            {`没有找到匹配“${urlSearchTerm}”的项目`}
           </SettingsEmptyState>
         ) : (
-          <SettingsEmptyState>No deleted items</SettingsEmptyState>
+          <SettingsEmptyState>没有已删除的项目</SettingsEmptyState>
         )
       ) : (
         <div className='flex flex-col gap-2'>
@@ -473,19 +473,19 @@ export function RecentlyDeleted() {
                   <>
                     {TYPE_LABEL[resource.type]}
                     {' \u00b7 '}
-                    Deleted {formatDate(resource.deletedAt)}
+                    已删除 {formatDate(resource.deletedAt)}
                   </>
                 }
                 trailing={
                   isRestoring ? (
                     <Chip variant='primary' disabled className='shrink-0'>
-                      Restoring...
+                      恢复中...
                     </Chip>
                   ) : isRestored ? (
                     <div className='flex shrink-0 items-center gap-2'>
-                      <span className='text-[var(--text-muted)] text-small'>Restored</span>
+                      <span className='text-[var(--text-muted)] text-small'>已恢复</span>
                       <Chip variant='primary' onClick={() => handleView(resource)}>
-                        View
+                        查看
                       </Chip>
                     </div>
                   ) : (
@@ -494,7 +494,7 @@ export function RecentlyDeleted() {
                       onClick={() => void handleRestore(resource)}
                       className='shrink-0'
                     >
-                      Restore
+                      恢复
                     </Chip>
                   )
                 }

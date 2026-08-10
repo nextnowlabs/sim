@@ -46,7 +46,7 @@ function UserAvatar({ user, index }: UserAvatarProps) {
       {user.avatarUrl && (
         <AvatarImage
           src={user.avatarUrl}
-          alt={user.userName ? `${user.userName}'s avatar` : 'User avatar'}
+          alt={user.userName ? `${user.userName} 的头像` : '用户头像'}
           referrerPolicy='no-referrer'
         />
       )}

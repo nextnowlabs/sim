@@ -255,7 +255,7 @@ export function KnowledgeTagFilters({
         </span>
         {filter.collapsed && filter.tagName && (
           <Badge variant='type' size='sm'>
-            {FIELD_TYPE_LABELS[filter.fieldType] || 'Text'}
+            {FIELD_TYPE_LABELS[filter.fieldType] || '文本'}
           </Badge>
         )}
       </div>
@@ -270,7 +270,7 @@ export function KnowledgeTagFilters({
           className='h-auto p-0'
         >
           <Plus className='size-[14px]' />
-          <span className='sr-only'>Add Filter</span>
+          <span className='sr-only'>添加筛选</span>
         </Button>
         <Button
           variant='ghost'
@@ -398,7 +398,7 @@ export function KnowledgeTagFilters({
             value={filter.tagName}
             onChange={(value) => updateFilter(filter.id, 'tagName', value)}
             disabled={isReadOnly || isLoading}
-            placeholder='Select tag'
+            placeholder='选择标签'
           />
         </div>
 
@@ -409,7 +409,7 @@ export function KnowledgeTagFilters({
             value={filter.operator}
             onChange={(value) => updateFilter(filter.id, 'operator', value)}
             disabled={isReadOnly}
-            placeholder='Select operator'
+            placeholder='选择运算符'
           />
         </div>
 

@@ -29,17 +29,17 @@ const SUCCESS_RESET_DELAY_MS = 2000
 const DEFAULT_REQUEST_TYPE = 'bug'
 
 const REQUEST_TYPE_OPTIONS = [
-  { label: 'Bug report', value: 'bug' },
-  { label: 'Feedback', value: 'feedback' },
-  { label: 'Feature request', value: 'feature_request' },
-  { label: 'Other', value: 'other' },
+  { label: '问题反馈', value: 'bug' },
+  { label: '意见反馈', value: 'feedback' },
+  { label: '功能请求', value: 'feature_request' },
+  { label: '其他', value: 'other' },
 ]
 
 const formSchema = z.object({
-  subject: z.string().min(1, 'Subject is required'),
-  message: z.string().min(1, 'Message is required'),
+  subject: z.string().min(1, '请输入主题'),
+  message: z.string().min(1, '请输入消息'),
   type: z.enum(['bug', 'feedback', 'feature_request', 'other'], {
-    error: 'Please select a request type',
+    error: '请选择请求类型',
   }),
 })
 
@@ -111,7 +111,7 @@ async function submitHelpRequest({ data, images, workflowId, workspaceId }: Subm
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => null)
-    throw new Error(errorData?.error || 'Failed to submit help request')
+    throw new Error(errorData?.error || '提交帮助请求失败')
   }
 }
 
@@ -250,8 +250,8 @@ export function HelpModal({ open, onOpenChange, workflowId, workspaceId }: HelpM
   }
 
   return (
-    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Help & support' size='md'>
-      <ChipModalHeader onClose={() => onOpenChange(false)}>Help &amp; support</ChipModalHeader>
+    <ChipModal open={open} onOpenChange={onOpenChange} srTitle='帮助与支持' size='md'>
+      <ChipModalHeader onClose={() => onOpenChange(false)}>帮助与支持</ChipModalHeader>
 
       <form onSubmit={handleSubmit(onSubmit)} className='flex min-h-0 flex-1 flex-col'>
         <button type='submit' hidden disabled={helpMutation.isPending || isProcessing} />
@@ -262,11 +262,11 @@ export function HelpModal({ open, onOpenChange, workflowId, workspaceId }: HelpM
             render={({ field, fieldState }) => (
               <ChipModalField
                 type='dropdown'
-                title='Request'
+                title='请求'
                 value={field.value}
                 onChange={field.onChange}
                 options={REQUEST_TYPE_OPTIONS}
-                placeholder='Select a request type'
+                placeholder='选择请求类型'
                 error={fieldState.error?.message}
               />
             )}
@@ -277,10 +277,10 @@ export function HelpModal({ open, onOpenChange, workflowId, workspaceId }: HelpM
             render={({ field, fieldState }) => (
               <ChipModalField
                 type='input'
-                title='Subject'
+                title='主题'
                 value={field.value}
                 onChange={field.onChange}
-                placeholder='Brief description of your request'
+                placeholder='简要描述你的请求'
                 error={fieldState.error?.message}
               />
             )}
@@ -291,10 +291,10 @@ export function HelpModal({ open, onOpenChange, workflowId, workspaceId }: HelpM
             render={({ field, fieldState }) => (
               <ChipModalField
                 type='textarea'
-                title='Message'
+                title='消息'
                 value={field.value}
                 onChange={field.onChange}
-                placeholder='Please provide details about your request...'
+                placeholder='请提供关于你的请求的详细信息…'
                 rows={6}
                 error={fieldState.error?.message}
               />
@@ -302,16 +302,16 @@ export function HelpModal({ open, onOpenChange, workflowId, workspaceId }: HelpM
           />
           <ChipModalField
             type='file'
-            title='Attach images (optional)'
-            label='Drop images here or click to browse'
-            description='PNG, JPEG, WebP, GIF (max 20MB each)'
+            title='附加图片(可选)'
+            label='将图片拖到这里或点击浏览'
+            description='PNG、JPEG、WebP、GIF(单个最大 20MB)'
             accept={ACCEPTED_IMAGE_TYPES.join(',')}
             multiple
             onChange={processFiles}
           />
 
           {images.length > 0 && (
-            <ChipModalField type='custom' title='Uploaded images'>
+            <ChipModalField type='custom' title='已上传的图片'>
               <div className='grid grid-cols-2 gap-3'>
                 {images.map((image, index) => (
                   <div
@@ -321,7 +321,7 @@ export function HelpModal({ open, onOpenChange, workflowId, workspaceId }: HelpM
                     <div className='relative flex max-h-[120px] min-h-[80px] w-full items-center justify-center'>
                       <Image
                         src={image.preview}
-                        alt={`Preview ${index + 1}`}
+                        alt={`预览 ${index + 1}`}
                         fill
                         unoptimized
                         sizes='(max-width: 768px) 100vw, 50vw'
@@ -348,12 +348,12 @@ export function HelpModal({ open, onOpenChange, workflowId, workspaceId }: HelpM
           cancelDisabled={helpMutation.isPending}
           primaryAction={{
             label: helpMutation.isPending
-              ? 'Submitting...'
+              ? '提交中...'
               : submitStatus === 'error'
-                ? 'Error'
+                ? '错误'
                 : submitStatus === 'success'
-                  ? 'Success'
-                  : 'Submit',
+                  ? '已提交'
+                  : '提交',
             onClick: () => void handleSubmit(onSubmit)(),
             disabled: helpMutation.isPending || isProcessing,
           }}

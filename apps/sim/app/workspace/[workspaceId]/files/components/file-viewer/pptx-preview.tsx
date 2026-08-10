@@ -47,12 +47,12 @@ export const PptxPreview = memo(function PptxPreview({
 
   function handleRenderError(message: string) {
     logger.error('PPTX render failed', { error: message })
-    setRenderError(message || 'Failed to render presentation')
+    setRenderError(message || '无法渲染演示文稿')
   }
 
   const error = resolvePreviewError(preview.error, renderError)
 
-  if (error) return <PreviewError label='presentation' error={error} />
+  if (error) return <PreviewError label='演示文稿' error={error} />
 
   if (!fileData) {
     return <PreviewLoadingFrame className='h-full flex-1' tone='surface' />

@@ -36,7 +36,7 @@ export function SecretDetail({ workspaceId, credentialId }: SecretDetailProps) {
 
   const back = (
     <ChipLink href={secretsHref} onClick={guard.handleBackClick} leftIcon={ArrowLeft}>
-      Secrets
+      密钥
     </ChipLink>
   )
 
@@ -47,12 +47,12 @@ export function SecretDetail({ workspaceId, credentialId }: SecretDetailProps) {
       <>
         {isAdmin && !isPersonal && (
           <Chip leftIcon={Send} onClick={() => setIsShareModalOpen(true)}>
-            Share
+            分享
           </Chip>
         )}
         {canEditValue && (
           <Chip onClick={valueField.save} disabled={!valueField.isDirty || valueField.isSaving}>
-            {valueField.isSaving ? 'Saving...' : 'Save'}
+            {valueField.isSaving ? '保存中…' : '保存'}
           </Chip>
         )}
       </>
@@ -61,7 +61,7 @@ export function SecretDetail({ workspaceId, credentialId }: SecretDetailProps) {
   if (isPending && !credential) {
     return (
       <CredentialDetailLayout back={back} actions={actions}>
-        <p className='py-12 text-center text-[var(--text-muted)] text-sm'>Loading…</p>
+        <p className='py-12 text-center text-[var(--text-muted)] text-sm'>加载中…</p>
       </CredentialDetailLayout>
     )
   }
@@ -69,7 +69,7 @@ export function SecretDetail({ workspaceId, credentialId }: SecretDetailProps) {
   if (!credential) {
     return (
       <CredentialDetailLayout back={back} actions={actions}>
-        <p className='py-12 text-center text-[var(--text-muted)] text-sm'>Secret not found.</p>
+        <p className='py-12 text-center text-[var(--text-muted)] text-sm'>未找到密钥。</p>
       </CredentialDetailLayout>
     )
   }
@@ -83,24 +83,24 @@ export function SecretDetail({ workspaceId, credentialId }: SecretDetailProps) {
           subtitle={
             isPersonal
               ? valueField.isConflicted
-                ? 'Overridden by a workspace variable'
-                : 'Personal secret'
-              : 'Workspace secret'
+                ? '已被工作区变量覆盖'
+                : '个人密钥'
+              : '工作区密钥'
           }
         />
 
-        <DetailSection title='Key'>
-          <ChipCopyInput value={credential.envKey || ''} copyLabel='Copy key' />
+        <DetailSection title='键'>
+          <ChipCopyInput value={credential.envKey || ''} copyLabel='复制键' />
         </DetailSection>
 
-        <DetailSection title='Value'>
+        <DetailSection title='值'>
           <SecretValueField
             value={valueField.value}
             onChange={valueField.setValue}
             canEdit={valueField.canEdit}
             unmasked={valueField.isConflicted}
             readOnly={valueField.isConflicted}
-            placeholder='Enter value'
+            placeholder='输入值'
           />
         </DetailSection>
 

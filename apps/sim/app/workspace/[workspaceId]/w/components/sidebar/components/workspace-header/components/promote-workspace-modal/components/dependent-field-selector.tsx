@@ -50,7 +50,7 @@ export function DependentFieldSelector({
     return (
       <div className='flex h-[30px] items-center gap-2 rounded-lg border border-[var(--border-1)] bg-[var(--surface-5)] px-2 font-medium text-[var(--text-muted)] text-small dark:bg-[var(--surface-4)]'>
         <Loader className='size-3.5' animate />
-        Loading…
+        加载中…
       </div>
     )
   }
@@ -62,10 +62,10 @@ export function DependentFieldSelector({
       value={value || undefined}
       onChange={(next) => onChange(next)}
       searchable
-      searchPlaceholder={`Search ${title.toLowerCase()}...`}
-      placeholder={`Select ${title.toLowerCase()}`}
+      searchPlaceholder={`搜索${title}...`}
+      placeholder={`选择${title}`}
       disabled={!enabled}
-      emptyMessage={`No ${title.toLowerCase()} found`}
+      emptyMessage={`未找到${title}`}
     />
   )
 }

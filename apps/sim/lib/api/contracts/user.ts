@@ -68,7 +68,7 @@ export type MothershipEnvironment = z.infer<typeof mothershipEnvironmentSchema>
 export const ianaTimezoneSchema = z.string().refine(
   (tz) => {
     try {
-      new Intl.DateTimeFormat('en-US', { timeZone: tz })
+      new Intl.DateTimeFormat('zh-CN', { timeZone: tz })
       return true
     } catch {
       return false

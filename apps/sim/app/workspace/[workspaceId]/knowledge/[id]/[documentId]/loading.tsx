@@ -12,16 +12,16 @@ import {
 const noop = () => {}
 
 const COLUMNS = [
-  { id: 'content', header: 'Content' },
-  { id: 'index', header: 'Index', widthMultiplier: 0.6 },
+  { id: 'content', header: '内容' },
+  { id: 'index', header: '索引', widthMultiplier: 0.6 },
   { id: 'tokens', header: 'Tokens', widthMultiplier: 0.6 },
-  { id: 'status', header: 'Status', widthMultiplier: 0.75 },
+  { id: 'status', header: '状态', widthMultiplier: 0.75 },
 ]
 
-const ACTIONS: ChromeActionSpec[] = [{ text: 'New chunk', icon: Plus, variant: 'primary' }]
+const ACTIONS: ChromeActionSpec[] = [{ text: '新建分块', icon: Plus, variant: 'primary' }]
 
 const BREADCRUMBS: BreadcrumbItem[] = [
-  { label: 'Knowledge Base', icon: Database, onClick: noop },
+  { label: '知识库', icon: Database, onClick: noop },
   { label: '…', icon: Database },
   { label: '…', terminal: true },
 ]

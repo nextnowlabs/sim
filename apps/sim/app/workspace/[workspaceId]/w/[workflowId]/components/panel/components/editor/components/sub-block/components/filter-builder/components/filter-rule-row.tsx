@@ -241,7 +241,7 @@ export function FilterRuleRow({
           value={rule.column}
           onChange={(v) => onUpdate(rule.id, 'column', v)}
           disabled={isReadOnly}
-          placeholder='Select column'
+          placeholder='选择列'
           overlayContent={
             getLabelHighlight('column', getColumnLabel(rule.column)) ? (
               <span className='truncate text-[var(--text-primary)]'>

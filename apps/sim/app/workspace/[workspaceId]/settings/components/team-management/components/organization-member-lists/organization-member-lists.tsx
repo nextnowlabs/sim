@@ -44,22 +44,29 @@ import {
 const logger = createLogger('OrganizationMemberLists')
 
 const ORG_ROLE_OPTIONS = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'member', label: 'Member' },
+  { value: 'admin', label: '管理员' },
+  { value: 'member', label: '成员' },
 ] as const
 
 const WORKSPACE_ROLE_OPTIONS = [
-  { value: 'read', label: 'Read' },
-  { value: 'write', label: 'Write' },
-  { value: 'admin', label: 'Admin' },
+  { value: 'read', label: '只读' },
+  { value: 'write', label: '编辑' },
+  { value: 'admin', label: '管理员' },
 ] as const
 
-function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1)
+const ROLE_LABELS: Record<string, string> = {
+  admin: '管理员',
+  member: '成员',
+  owner: '所有者',
+  external: '外部',
+}
+
+function roleLabel(role: string) {
+  return ROLE_LABELS[role] ?? role
 }
 
 function formatJoinedDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US')
+  return new Date(iso).toLocaleDateString('zh-CN')
 }
 
 function copyToClipboard(text: string) {
@@ -67,7 +74,7 @@ function copyToClipboard(text: string) {
 }
 
 function buildActionsMenu(actions: RowAction[]) {
-  return <RowActionsMenu label='Member actions' actions={actions} />
+  return <RowActionsMenu label='成员操作' actions={actions} />
 }
 
 interface OrganizationMemberListsProps {
@@ -126,7 +133,7 @@ export function OrganizationMemberLists({
         name={member.name}
         email={member.email}
         image={member.image}
-        status={`Joined ${formatJoinedDate(member.createdAt)}`}
+        status={`已加入 ${formatJoinedDate(member.createdAt)}`}
         roleControl={
           editable ? (
             <ChipDropdown
@@ -147,18 +154,18 @@ export function OrganizationMemberLists({
           ) : (
             <ChipDropdown
               value={member.role}
-              options={[{ value: member.role, label: capitalize(member.role) }]}
+              options={[{ value: member.role, label: roleLabel(member.role) }]}
               matchTriggerWidth={false}
               disabled
             />
           )
         }
         menu={buildActionsMenu([
-          { label: 'Copy email', onSelect: () => copyToClipboard(member.email) },
+          { label: '复制邮箱', onSelect: () => copyToClipboard(member.email) },
           ...(!isOwner
             ? [
                 {
-                  label: 'Manage Credits',
+                  label: '管理积分',
                   onSelect: () =>
                     setCreditsTarget({
                       userId: member.userId,
@@ -171,7 +178,7 @@ export function OrganizationMemberLists({
           ...(canRemove
             ? [
                 {
-                  label: 'Remove',
+                  label: '移除',
                   destructive: true,
                   onSelect: () =>
                     onRemoveMember({
@@ -188,12 +195,12 @@ export function OrganizationMemberLists({
               ]
             : []),
           ...(isSelf && isOwner && onTransferOwnership
-            ? [{ label: 'Transfer ownership', onSelect: () => onTransferOwnership() }]
+            ? [{ label: '转让所有权', onSelect: () => onTransferOwnership() }]
             : []),
           ...(isSelf && !isOwner
             ? [
                 {
-                  label: 'Leave organization',
+                  label: '退出组织',
                   destructive: true,
                   onSelect: () =>
                     onRemoveMember({
@@ -224,19 +231,19 @@ export function OrganizationMemberLists({
       name={invitation.inviteeName ?? invitation.email}
       email={invitation.email}
       image={invitation.inviteeImage}
-      status='Invite pending'
+      status='邀请待接受'
       roleControl={roleControl}
       menu={buildActionsMenu([
-        { label: 'Copy email', onSelect: () => copyToClipboard(invitation.email) },
+        { label: '复制邮箱', onSelect: () => copyToClipboard(invitation.email) },
         {
-          label: 'Resend invite',
+          label: '重新发送邀请',
           onSelect: () =>
             resendInvitation
               .mutateAsync({ invitationId: invitation.id, orgId: organizationId })
               .catch((error) => logger.error('Failed to resend invitation', { error })),
         },
         {
-          label: 'Revoke invite',
+          label: '撤销邀请',
           destructive: true,
           onSelect: () =>
             cancelInvitation
@@ -252,7 +259,7 @@ export function OrganizationMemberLists({
     const roleControl = isExternal ? (
       <ChipDropdown
         value='external'
-        options={[{ value: 'external', label: 'External' }]}
+        options={[{ value: 'external', label: '外部' }]}
         matchTriggerWidth={false}
         disabled
       />
@@ -294,7 +301,7 @@ export function OrganizationMemberLists({
         name={member.name}
         email={member.email}
         image={member.image}
-        status={`Joined ${formatJoinedDate(member.createdAt)}`}
+        status={`已加入 ${formatJoinedDate(member.createdAt)}`}
         roleControl={
           <RoleLockTooltip reason={lockReason}>
             <ChipDropdown
@@ -317,19 +324,19 @@ export function OrganizationMemberLists({
           </RoleLockTooltip>
         }
         menu={buildActionsMenu([
-          { label: 'Copy email', onSelect: () => copyToClipboard(member.email) },
+          { label: '复制邮箱', onSelect: () => copyToClipboard(member.email) },
           ...(canRemoveFromWorkspace
             ? [
                 {
-                  label: 'Remove from workspace',
+                  label: '从工作区移除',
                   destructive: true,
                   onSelect: () =>
                     removeWorkspaceMember
                       .mutateAsync({ userId: member.userId, workspaceId, organizationId })
                       .catch((error) => {
                         logger.error('Failed to remove workspace member', { error })
-                        toast.error("Couldn't remove member", {
-                          description: getErrorMessage(error, 'Please try again in a moment.'),
+                        toast.error('无法移除成员', {
+                          description: getErrorMessage(error, '请稍后再试。'),
                         })
                       }),
                 },
@@ -411,7 +418,7 @@ export function OrganizationMemberLists({
       <div className='flex items-center gap-2'>
         <ChipInput
           icon={Search}
-          placeholder='Search members...'
+          placeholder='搜索成员...'
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           className='flex-1'
@@ -420,9 +427,9 @@ export function OrganizationMemberLists({
 
       {showMembersSection && (
         <MemberSection
-          label={`Members (${orgRowCount})`}
+          label={`成员 (${orgRowCount})`}
           isEmpty={!isLoadingRoster && filteredOrgMembers.length + filteredOrgPending.length === 0}
-          emptyText={isActiveSearch ? `No members matching “${query}”` : 'No members yet'}
+          emptyText={isActiveSearch ? `没有匹配 “${query}” 的成员` : '还没有成员'}
         >
           {filteredOrgMembers.map(renderOrgMemberRow)}
           {filteredOrgPending.map(renderOrgInviteRow)}
@@ -446,9 +453,7 @@ export function OrganizationMemberLists({
             key={`workspace-${workspace.id}`}
             label={`${workspace.name} (${totalCount})`}
             isEmpty={visibleMembers.length + visibleInvites.length === 0}
-            emptyText={
-              isActiveSearch ? `No members matching “${query}”` : 'No members in this workspace'
-            }
+            emptyText={isActiveSearch ? `没有匹配 “${query}” 的成员` : '此工作区中还没有成员'}
           >
             {visibleMembers.map(({ member, access }) =>
               renderWorkspaceMemberRow(member, workspace.id, access)

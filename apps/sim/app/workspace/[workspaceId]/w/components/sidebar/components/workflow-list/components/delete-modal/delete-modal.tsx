@@ -68,15 +68,15 @@ export function DeleteModal({
 
   let title = ''
   if (itemType === 'workflow') {
-    title = isMultiple ? 'Delete workflows' : 'Delete workflow'
+    title = isMultiple ? '删除工作流' : '删除工作流'
   } else if (itemType === 'folder') {
-    title = isMultiple ? 'Delete folders' : 'Delete folder'
+    title = isMultiple ? '删除文件夹' : '删除文件夹'
   } else if (itemType === 'task') {
-    title = isMultiple ? 'Delete chats' : 'Delete chat'
+    title = isMultiple ? '删除对话' : '删除对话'
   } else if (itemType === 'mixed') {
-    title = 'Delete items'
+    title = '删除所选项目'
   } else {
-    title = 'Delete workspace'
+    title = '删除工作区'
   }
 
   const restorableTypes = new Set<string>(['workflow', 'folder', 'mixed'])
@@ -84,108 +84,78 @@ export function DeleteModal({
   const buildDescriptionSegments = (): ChipConfirmTextSegment[] => {
     if (itemType === 'workflow') {
       const warning = {
-        text: 'All associated blocks, executions, and configuration will be removed.',
+        text: '所有关联的节点、执行记录和配置都将被移除。',
         error: true,
       }
       if (isMultiple) {
-        return [
-          'Are you sure you want to delete ',
-          { text: displayNames.join(', '), bold: true },
-          '? ',
-          warning,
-        ]
+        return ['确定要删除 ', { text: displayNames.join(', '), bold: true }, ' 吗？', warning]
       }
       if (isSingle && displayNames.length > 0) {
-        return [
-          'Are you sure you want to delete ',
-          { text: displayNames[0], bold: true },
-          '? ',
-          warning,
-        ]
+        return ['确定要删除 ', { text: displayNames[0], bold: true }, ' 吗？', warning]
       }
-      return ['Are you sure you want to delete this workflow? ', warning]
+      return ['确定要删除此工作流吗？', warning]
     }
 
     if (itemType === 'folder') {
       if (isMultiple) {
         return [
-          'Are you sure you want to delete ',
+          '确定要删除 ',
           { text: displayNames.join(', '), bold: true },
           '? ',
           {
-            text: 'All workflows and contents within these folders will be archived.',
+            text: '这些文件夹中的所有工作流和内容都将被归档。',
             error: true,
           },
         ]
       }
       const warning = {
-        text: 'All associated workflows and contents will be archived.',
+        text: '所有关联的工作流和内容都将被归档。',
         error: true,
       }
       if (isSingle && displayNames.length > 0) {
-        return [
-          'Are you sure you want to delete ',
-          { text: displayNames[0], bold: true },
-          '? ',
-          warning,
-        ]
+        return ['确定要删除 ', { text: displayNames[0], bold: true }, ' 吗？', warning]
       }
-      return ['Are you sure you want to delete this folder? ', warning]
+      return ['确定要删除此文件夹吗？', warning]
     }
 
     if (itemType === 'task') {
       const warning = {
-        text: 'This will permanently remove all conversation history.',
+        text: '这将永久删除所有对话历史记录。',
         error: true,
       }
       if (isMultiple) {
         return [
-          'Are you sure you want to delete ',
-          { text: `${displayNames.length} chats`, bold: true },
-          '? ',
+          '确定要删除 ',
+          { text: `${displayNames.length} 个对话`, bold: true },
+          ' 吗？',
           warning,
         ]
       }
       if (isSingle && displayNames.length > 0) {
-        return [
-          'Are you sure you want to delete ',
-          { text: displayNames[0], bold: true },
-          '? ',
-          warning,
-        ]
+        return ['确定要删除 ', { text: displayNames[0], bold: true }, ' 吗？', warning]
       }
-      return ['Are you sure you want to delete this chat? ', warning]
+      return ['确定要删除此对话吗？', warning]
     }
 
     if (itemType === 'mixed') {
       const warning = {
-        text: 'All selected workflows and folders, including their contents, will be archived.',
+        text: '所有选中的工作流和文件夹(包括其内容)都将被归档。',
         error: true,
       }
       if (displayNames.length > 0) {
-        return [
-          'Are you sure you want to delete ',
-          { text: displayNames.join(', '), bold: true },
-          '? ',
-          warning,
-        ]
+        return ['确定要删除 ', { text: displayNames.join(', '), bold: true }, ' 吗？', warning]
       }
-      return ['Are you sure you want to delete the selected items? ', warning]
+      return ['确定要删除选中的项目吗？', warning]
     }
 
     const workspaceWarning = {
-      text: 'This will permanently remove all associated workflows, tables, files, logs, and knowledge bases.',
+      text: '这将永久删除所有关联的工作流、表格、文件、日志和知识库。',
       error: true,
     }
     if (isSingle && displayNames.length > 0) {
-      return [
-        'Are you sure you want to delete ',
-        { text: displayNames[0], bold: true },
-        '? ',
-        workspaceWarning,
-      ]
+      return ['确定要删除 ', { text: displayNames[0], bold: true }, '? ', workspaceWarning]
     }
-    return ['Are you sure you want to delete this workspace? ', workspaceWarning]
+    return ['确定要删除此工作区吗？', workspaceWarning]
   }
 
   const handleClose = () => {
@@ -203,14 +173,14 @@ export function DeleteModal({
         ...buildDescriptionSegments(),
         ' ',
         restorableTypes.has(itemType)
-          ? 'You can restore it from Recently deleted in Settings.'
-          : 'This action cannot be undone.',
+          ? '你可以稍后在设置中的“最近删除”里恢复它。'
+          : '此操作无法撤销。',
       ]}
       confirm={{
-        label: 'Delete',
+        label: '删除',
         onClick: onConfirm,
         pending: isDeleting,
-        pendingLabel: 'Deleting...',
+        pendingLabel: '删除中...',
         disabled: !isConfirmed,
       }}
     >
@@ -219,9 +189,9 @@ export function DeleteModal({
           type='input'
           title={
             <span>
-              Type&nbsp;
+              输入&nbsp;
               <span className='font-medium text-[var(--text-primary)]'>{workspaceName}</span>
-              &nbsp;to confirm
+              &nbsp;以确认
             </span>
           }
           value={confirmationText}

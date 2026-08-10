@@ -33,28 +33,28 @@ const ENTERPRISE_BYOK_PROVIDERS: BYOKManagerProvider[] = [
     id: 'openai',
     name: 'OpenAI',
     icon: OpenAIIcon,
-    description: 'Enterprise mothership LLM calls',
+    description: '企业级 Mothership LLM 调用',
     placeholder: 'sk-...',
   },
   {
     id: 'anthropic',
     name: 'Anthropic',
     icon: AnthropicIcon,
-    description: 'Enterprise mothership LLM calls',
+    description: '企业级 Mothership LLM 调用',
     placeholder: 'sk-ant-...',
   },
 ]
 
 const TABS: { id: MothershipTab; label: string }[] = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'licenses', label: 'Licenses' },
+  { id: 'overview', label: '概览' },
+  { id: 'licenses', label: '许可证' },
   { id: 'byok', label: 'BYOK' },
 ]
 
 const ENV_OPTIONS: { value: MothershipEnv; label: string }[] = [
-  { value: 'dev', label: 'Dev' },
-  { value: 'staging', label: 'Staging' },
-  { value: 'prod', label: 'Prod' },
+  { value: 'dev', label: '开发' },
+  { value: 'staging', label: '预发布' },
+  { value: 'prod', label: '生产' },
 ]
 
 function defaultTimeRange() {
@@ -102,13 +102,13 @@ export function Mothership() {
     <SettingsPanel>
       <div className='flex flex-col gap-6'>
         <div className='flex items-center gap-2'>
-          <Label className='text-[var(--text-secondary)] text-sm'>Environment</Label>
+          <Label className='text-[var(--text-secondary)] text-sm'>环境</Label>
           <ChipSelect
             align='start'
             dropdownWidth={160}
             value={environment}
             onChange={(value) => setMothershipParams({ env: value as MothershipEnv })}
-            placeholder='Select environment'
+            placeholder='选择环境'
             options={ENV_OPTIONS}
           />
         </div>
@@ -136,7 +136,7 @@ export function Mothership() {
 
         <div className='flex items-center gap-3'>
           <div className='flex items-center gap-2'>
-            <Label className='text-[var(--text-secondary)] text-caption'>From</Label>
+            <Label className='text-[var(--text-secondary)] text-caption'>从</Label>
             <ChipInput
               type='datetime-local'
               value={start}
@@ -144,7 +144,7 @@ export function Mothership() {
             />
           </div>
           <div className='flex items-center gap-2'>
-            <Label className='text-[var(--text-secondary)] text-caption'>To</Label>
+            <Label className='text-[var(--text-secondary)] text-caption'>至</Label>
             <ChipInput type='datetime-local' value={end} onChange={(e) => setEnd(e.target.value)} />
           </div>
         </div>
@@ -182,7 +182,7 @@ function ByokTab() {
       isSaving={upsert.isPending}
       isDeleting={del.isPending}
       showSearch={false}
-      description="Store a customer-provided Anthropic or OpenAI key for this workspace. It is encrypted at rest in the mothership and used only for this workspace's enterprise requests."
+      description='为此工作区存储客户提供的 Anthropic 或 OpenAI 密钥。该密钥在 Mothership 中静态加密,且仅用于此工作区的企业级请求。'
       onSave={async (provider, apiKey) => {
         await upsert.mutateAsync({ workspaceId, provider, apiKey })
       }}
@@ -216,14 +216,10 @@ function OverviewTab({
   return (
     <div className='flex flex-col gap-5'>
       <div className='grid grid-cols-4 gap-3'>
+        <StatCard label='请求总数' value={breakdown?.total_requests} loading={breakdownLoading} />
+        <StatCard label='独立用户' value={breakdown?.total_users} loading={breakdownLoading} />
         <StatCard
-          label='Total Requests'
-          value={breakdown?.total_requests}
-          loading={breakdownLoading}
-        />
-        <StatCard label='Unique Users' value={breakdown?.total_users} loading={breakdownLoading} />
-        <StatCard
-          label='Total Cost'
+          label='总成本'
           value={
             breakdown?.users
               ? formatCost(
@@ -237,7 +233,7 @@ function OverviewTab({
           loading={breakdownLoading}
         />
         <StatCard
-          label='Avg Cost/Request'
+          label='平均请求成本'
           value={
             breakdown?.total_requests && breakdown.users
               ? formatCost(
@@ -252,7 +248,7 @@ function OverviewTab({
         />
       </div>
 
-      <SectionLabel>User Breakdown</SectionLabel>
+      <SectionLabel>用户明细</SectionLabel>
       {breakdownLoading && (
         <div className='flex flex-col gap-2'>
           {Array.from({ length: 5 }).map((_, i) => (
@@ -263,10 +259,10 @@ function OverviewTab({
       {breakdown?.users && (
         <div className='flex flex-col gap-0.5'>
           <div className='flex items-center gap-3 border-[var(--border-secondary)] border-b px-3 py-2 text-[var(--text-tertiary)] text-caption'>
-            <span className='flex-1'>User ID</span>
-            <span className='w-[100px] text-right'>Requests</span>
-            <span className='w-[100px] text-right'>Cost</span>
-            <span className='w-[160px] text-right'>Last Request</span>
+            <span className='flex-1'>用户 ID</span>
+            <span className='w-[100px] text-right'>请求数</span>
+            <span className='w-[100px] text-right'>成本</span>
+            <span className='w-[160px] text-right'>最近请求</span>
           </div>
           {breakdown.users.map(
             (u: {
@@ -298,7 +294,7 @@ function OverviewTab({
       )}
 
       <Divider />
-      <SectionLabel>Recent Requests ({requests?.count ?? '…'})</SectionLabel>
+      <SectionLabel>最近请求 ({requests?.count ?? '…'})</SectionLabel>
       {requestsLoading && (
         <div className='flex flex-col gap-2'>
           {Array.from({ length: 5 }).map((_, i) => (
@@ -310,13 +306,13 @@ function OverviewTab({
         <div className='max-h-[400px] overflow-auto'>
           <div className='flex flex-col gap-0.5'>
             <div className='sticky top-0 z-10 flex items-center gap-3 border-[var(--border-secondary)] border-b bg-[var(--surface-1)] px-3 py-2 text-[var(--text-tertiary)] text-caption'>
-              <span className='w-[180px]'>Request ID</span>
-              <span className='w-[80px]'>Model</span>
-              <span className='w-[80px] text-right'>Duration</span>
-              <span className='w-[80px] text-right'>Cost</span>
-              <span className='w-[60px] text-right'>Tools</span>
-              <span className='w-[70px] text-right'>Status</span>
-              <span className='flex-1 text-right'>Time</span>
+              <span className='w-[180px]'>请求 ID</span>
+              <span className='w-[80px]'>模型</span>
+              <span className='w-[80px] text-right'>时长</span>
+              <span className='w-[80px] text-right'>成本</span>
+              <span className='w-[60px] text-right'>工具</span>
+              <span className='w-[70px] text-right'>状态</span>
+              <span className='flex-1 text-right'>时间</span>
             </div>
             {requests.requests
               .slice(0, 100)
@@ -352,11 +348,11 @@ function OverviewTab({
                     </span>
                     <span className='w-[70px] text-right'>
                       {r.error ? (
-                        <Badge variant='red'>Error</Badge>
+                        <Badge variant='red'>错误</Badge>
                       ) : r.aborted ? (
-                        <Badge variant='amber'>Abort</Badge>
+                        <Badge variant='amber'>已中止</Badge>
                       ) : (
-                        <Badge variant='green'>OK</Badge>
+                        <Badge variant='green'>正常</Badge>
                       )}
                     </span>
                     <span className='flex-1 text-right text-[var(--text-tertiary)] text-caption'>
@@ -399,22 +395,22 @@ function LicensesTab({ environment }: { environment: MothershipEnv }) {
 
   return (
     <div className='flex flex-col gap-5'>
-      <SectionLabel>Generate License</SectionLabel>
+      <SectionLabel>生成许可证</SectionLabel>
       <div className='flex items-end gap-2'>
         <div className='flex flex-col gap-1'>
-          <Label className='text-[var(--text-secondary)] text-caption'>Enterprise Name</Label>
+          <Label className='text-[var(--text-secondary)] text-caption'>企业名称</Label>
           <ChipInput
             value={newName}
             onChange={(e) => {
               setNewName(e.target.value)
               setGeneratedKey(null)
             }}
-            placeholder='e.g. Acme Corp'
+            placeholder='例如:Acme Corp'
             className='w-[200px]'
           />
         </div>
         <div className='flex flex-col gap-1'>
-          <Label className='text-[var(--text-secondary)] text-caption'>Expiration (optional)</Label>
+          <Label className='text-[var(--text-secondary)] text-caption'>过期时间(可选)</Label>
           <ChipInput
             type='date'
             value={newExpiry}
@@ -428,15 +424,13 @@ function LicensesTab({ environment }: { environment: MothershipEnv }) {
           onClick={handleGenerate}
           disabled={generateLicense.isPending || !newName.trim()}
         >
-          {generateLicense.isPending ? 'Generating...' : 'Generate'}
+          {generateLicense.isPending ? '生成中...' : '生成'}
         </Button>
       </div>
 
       {generatedKey && (
         <div className='rounded-md border border-[var(--border-secondary)] bg-[var(--surface-hover)] p-3'>
-          <p className='mb-1 text-[var(--text-secondary)] text-caption'>
-            License key (only shown once):
-          </p>
+          <p className='mb-1 text-[var(--text-secondary)] text-caption'>许可证密钥(仅显示一次):</p>
           <code className='block break-all font-mono text-[12px] text-[var(--text-primary)]'>
             {generatedKey}
           </code>
@@ -448,7 +442,7 @@ function LicensesTab({ environment }: { environment: MothershipEnv }) {
       )}
 
       <Divider />
-      <SectionLabel>All Licenses</SectionLabel>
+      <SectionLabel>所有许可证</SectionLabel>
 
       {isLoading && (
         <div className='flex flex-col gap-2'>
@@ -461,13 +455,13 @@ function LicensesTab({ environment }: { environment: MothershipEnv }) {
       {data?.licenses && (
         <div className='flex flex-col gap-0.5'>
           <div className='flex items-center gap-3 border-[var(--border-secondary)] border-b px-3 py-2 text-[var(--text-tertiary)] text-caption'>
-            <span className='flex-1'>Name</span>
-            <span className='w-[100px] text-right'>Validations</span>
-            <span className='w-[140px] text-right'>Expiration</span>
-            <span className='w-[140px] text-right'>Created</span>
+            <span className='flex-1'>名称</span>
+            <span className='w-[100px] text-right'>验证次数</span>
+            <span className='w-[140px] text-right'>过期时间</span>
+            <span className='w-[140px] text-right'>创建时间</span>
           </div>
           {data.licenses.length === 0 && (
-            <SettingsEmptyState variant='inline'>No licenses found.</SettingsEmptyState>
+            <SettingsEmptyState variant='inline'>未找到许可证。</SettingsEmptyState>
           )}
           {data.licenses.map(
             (lic: {
@@ -486,7 +480,7 @@ function LicensesTab({ environment }: { environment: MothershipEnv }) {
                   {lic.count}
                 </span>
                 <span className='w-[140px] text-right text-[var(--text-tertiary)] text-caption'>
-                  {lic.expiration_date ? formatDate(lic.expiration_date) : 'Never'}
+                  {lic.expiration_date ? formatDate(lic.expiration_date) : '永久'}
                 </span>
                 <span className='w-[140px] text-right text-[var(--text-tertiary)] text-caption'>
                   {formatDate(lic.created_at)}

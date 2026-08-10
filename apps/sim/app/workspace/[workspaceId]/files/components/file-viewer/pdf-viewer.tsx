@@ -43,7 +43,7 @@ interface PdfViewerCoreProps {
 function PdfError({ error }: { error: string }) {
   return (
     <div className='flex flex-1 flex-col items-center justify-center gap-[8px]'>
-      <p className='font-medium text-[14px] text-[var(--text-body)]'>Failed to preview PDF</p>
+      <p className='font-medium text-[14px] text-[var(--text-body)]'>无法预览 PDF</p>
       <p className='text-[13px] text-[var(--text-muted)]'>{error}</p>
     </div>
   )
@@ -191,7 +191,7 @@ export const PdfViewerCore = memo(function PdfViewerCore({ source, filename }: P
           navigation={{
             current: currentPage,
             total: pageCount,
-            label: 'page',
+            label: '页',
             onPrevious: () => {
               const prev = Math.max(1, currentPage - 1)
               setCurrentPage(prev)
@@ -245,7 +245,7 @@ export const PdfViewerCore = memo(function PdfViewerCore({ source, filename }: P
             setLoadError(err.message)
             setIsDocumentReady(true)
           }}
-          error={<PdfError error={loadError ?? 'Failed to load PDF'} />}
+          error={<PdfError error={loadError ?? '无法加载 PDF'} />}
           className='mx-auto'
         >
           <div
@@ -274,7 +274,7 @@ export const PdfViewerCore = memo(function PdfViewerCore({ source, filename }: P
                     className='!overflow-clip [&_.textLayer]:!overflow-clip'
                     renderTextLayer
                     renderAnnotationLayer={false}
-                    aria-label={`${filename} page ${i + 1}`}
+                    aria-label={`${filename} 第 ${i + 1} 页`}
                   />
                 </div>
               ))}

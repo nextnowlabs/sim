@@ -57,7 +57,7 @@ function PreviewNavigationControls({
         leftIcon={ChevronLeft}
         onClick={onPrevious}
         disabled={!canPrevious}
-        aria-label={`Previous ${label}`}
+        aria-label={`上一个${label}`}
       />
       <span className='min-w-[4.5rem] text-center text-[var(--text-body)] text-sm'>
         {total > 0 ? `${current} / ${total}` : '0 / 0'}
@@ -66,7 +66,7 @@ function PreviewNavigationControls({
         leftIcon={ChevronRight}
         onClick={onNext}
         disabled={!canNext}
-        aria-label={`Next ${label}`}
+        aria-label={`下一个${label}`}
       />
     </>
   )
@@ -83,13 +83,13 @@ function PreviewZoomControls({
   return (
     <>
       {onReset && (
-        <Chip onClick={onReset} aria-label='Reset zoom'>
-          Reset
+        <Chip onClick={onReset} aria-label='重置缩放'>
+          重置
         </Chip>
       )}
-      <Chip leftIcon={ZoomOut} onClick={onZoomOut} disabled={!canZoomOut} aria-label='Zoom out' />
+      <Chip leftIcon={ZoomOut} onClick={onZoomOut} disabled={!canZoomOut} aria-label='缩小' />
       <span className='min-w-[3.25rem] text-center text-[var(--text-body)] text-sm'>{label}</span>
-      <Chip leftIcon={ZoomIn} onClick={onZoomIn} disabled={!canZoomIn} aria-label='Zoom in' />
+      <Chip leftIcon={ZoomIn} onClick={onZoomIn} disabled={!canZoomIn} aria-label='放大' />
     </>
   )
 }

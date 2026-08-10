@@ -6,14 +6,14 @@ import { useSession } from '@/lib/auth/auth-client'
 import { useStopImpersonating } from '@/hooks/queries/admin-users'
 
 function getImpersonationBannerText(userLabel: string, userEmail?: string) {
-  return `Impersonating ${userLabel}${userEmail ? ` (${userEmail})` : ''}. Changes will apply to this account until you switch back.`
+  return `正在模拟 ${userLabel}${userEmail ? ` (${userEmail})` : ''}。在切换回原账号前,更改将作用于该账号。`
 }
 
 export function ImpersonationBanner() {
   const { data: session, isPending } = useSession()
   const stopImpersonating = useStopImpersonating()
   const [isRedirecting, setIsRedirecting] = useState(false)
-  const userLabel = session?.user?.name || 'this user'
+  const userLabel = session?.user?.name || '该用户'
   const userEmail = session?.user?.email
 
   if (isPending || !session?.session?.impersonatedBy) {
@@ -26,7 +26,7 @@ export function ImpersonationBanner() {
       text={getImpersonationBannerText(userLabel, userEmail)}
       textClassName='text-red-700 dark:text-red-300'
       actionLabel={
-        stopImpersonating.isPending || isRedirecting ? 'Returning...' : 'Stop impersonating'
+        stopImpersonating.isPending || isRedirecting ? '正在返回…' : '停止模拟'
       }
       actionVariant='destructive'
       actionDisabled={stopImpersonating.isPending || isRedirecting}

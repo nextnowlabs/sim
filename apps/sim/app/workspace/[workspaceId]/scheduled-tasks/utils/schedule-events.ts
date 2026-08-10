@@ -163,7 +163,7 @@ export function taskToCalendarEvent(task: ScheduledTask): CalendarEvent {
   return {
     id: task.id,
     start: zonedClockDate(task.runAt, task.timezone),
-    title: prompt ? truncate(prompt, 60) : 'Scheduled task',
+    title: prompt ? truncate(prompt, 60) : '定时任务',
     task,
   }
 }

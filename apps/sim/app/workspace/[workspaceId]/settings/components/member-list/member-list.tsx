@@ -83,7 +83,7 @@ interface MemberSectionProps {
 export function MemberSection({
   label,
   isEmpty = false,
-  emptyText = 'No members yet',
+  emptyText = '还没有成员',
   children,
 }: MemberSectionProps) {
   return (

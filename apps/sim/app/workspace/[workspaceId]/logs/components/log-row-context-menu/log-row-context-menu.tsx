@@ -88,7 +88,7 @@ export const LogRowContextMenu = memo(function LogRowContextMenu({
           <>
             <DropdownMenuItem onSelect={onRetryExecution} disabled={isRetryPending}>
               <Redo />
-              {isRetryPending ? 'Retrying...' : 'Retry'}
+              {isRetryPending ? '重试中…' : '重试'}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
           </>

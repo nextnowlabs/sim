@@ -13,6 +13,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 
 /** The granularity the calendar is currently rendering. */
 export type CalendarScope = 'day' | 'week' | 'month'
@@ -57,7 +58,7 @@ export const TIME_SLOT_HEIGHT = 48
 /** Rendered height of a task pill in the time grid, used for overlap detection. */
 export const EVENT_CHIP_HEIGHT = 22
 
-const BASE_WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as const
+const BASE_WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'] as const
 
 /** Weekday header labels rotated to honor {@link WEEK_STARTS_ON}. */
 export const WEEKDAY_LABELS: string[] = [
@@ -155,19 +156,18 @@ export function visibleRange(scope: CalendarScope, anchor: Date): { start: Date;
   return { start: addDays(span.start, -1), end: addDays(span.end, 1) }
 }
 
-/** Toolbar period label, e.g. `June 2026`, `Jun 7 – 13, 2026`, `June 10, 2026`. */
+/** Toolbar period label, e.g. `2026年6月`, `2026年6月7日 – 6月13日`, `2026年6月10日`. */
 export function formatScopeLabel(scope: CalendarScope, anchor: Date): string {
-  if (scope === 'month') return format(anchor, 'MMMM yyyy')
-  if (scope === 'day') return format(anchor, 'MMMM d, yyyy')
+  if (scope === 'month') return format(anchor, 'yyyy年M月')
+  if (scope === 'day') return format(anchor, 'yyyy年M月d日')
   const start = startOfWeek(anchor, { weekStartsOn: WEEK_STARTS_ON })
   const end = endOfWeek(anchor, { weekStartsOn: WEEK_STARTS_ON })
-  if (isSameMonth(start, end)) return `${format(start, 'MMM d')} – ${format(end, 'd, yyyy')}`
-  return `${format(start, 'MMM d')} – ${format(end, 'MMM d, yyyy')}`
+  return `${format(start, 'yyyy年M月d日')} – ${format(end, 'M月d日')}`
 }
 
-/** Display label for an hour-of-day gutter row, e.g. `7 AM`, `12 PM`. */
+/** Display label for an hour-of-day gutter row, e.g. `上午7:00`, `下午12:00`. */
 export function formatHourLabel(hour: number): string {
-  return format(new Date(2000, 0, 1, hour), 'h a')
+  return format(new Date(2000, 0, 1, hour), 'ah:mm', { locale: zhCN })
 }
 
 /**

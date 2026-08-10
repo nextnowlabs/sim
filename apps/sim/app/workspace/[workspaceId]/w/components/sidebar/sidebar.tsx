@@ -236,7 +236,7 @@ const SidebarChatItem = memo(function SidebarChatItem({
             )}
             <button
               type='button'
-              aria-label='Chat options'
+              aria-label='对话选项'
               onPointerDown={onMorePointerDown}
               onClick={(e) => {
                 e.preventDefault()
@@ -712,19 +712,19 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
       [
         {
           id: 'home',
-          label: 'New chat',
+          label: '新建对话',
           icon: Home,
           href: `/workspace/${workspaceId}/home`,
         },
         {
           id: 'search',
-          label: 'Search',
+          label: '搜索',
           icon: Search,
           onClick: openSearchModal,
         },
         {
           id: 'integrations',
-          label: 'Integrations',
+          label: '集成',
           icon: Integration,
           href: `/workspace/${workspaceId}/integrations`,
           additionalActivePaths: [`/workspace/${workspaceId}/skills`],
@@ -739,34 +739,34 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
       [
         {
           id: 'tables',
-          label: 'Tables',
+          label: '表格',
           icon: Table,
           href: `/workspace/${workspaceId}/tables`,
           hidden: permissionConfig.hideTablesTab,
         },
         {
           id: 'files',
-          label: 'Files',
+          label: '文件',
           icon: Files,
           href: `/workspace/${workspaceId}/files`,
           hidden: permissionConfig.hideFilesTab,
         },
         {
           id: 'knowledge-base',
-          label: 'Knowledge base',
+          label: '知识库',
           icon: Database,
           href: `/workspace/${workspaceId}/knowledge`,
           hidden: permissionConfig.hideKnowledgeBaseTab,
         },
         {
           id: 'scheduled-tasks',
-          label: 'Scheduled tasks',
+          label: '定时任务',
           icon: Calendar,
           href: `/workspace/${workspaceId}/scheduled-tasks`,
         },
         {
           id: 'logs',
-          label: 'Logs',
+          label: '日志',
           icon: Library,
           href: `/workspace/${workspaceId}/logs`,
         },
@@ -783,7 +783,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
     () => [
       {
         id: 'settings',
-        label: 'Settings',
+        label: '设置',
         icon: Settings,
         href: getSettingsHref(),
         onClick: () => {
@@ -1134,7 +1134,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
   )
 
   const workflowsPrimaryAction = {
-    label: 'New workflow',
+    label: '新建工作流',
     onSelect: handleCreateWorkflow,
   }
 
@@ -1250,7 +1250,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
         <aside
           className='sidebar-container relative h-full overflow-hidden bg-[var(--surface-1)]'
           data-collapsed={isCollapsed || undefined}
-          aria-label='Workspace sidebar'
+          aria-label='工作区侧边栏'
           onClick={handleSidebarClick}
         >
           <div className='flex h-full flex-col'>
@@ -1276,7 +1276,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                 isCollapsed={isCollapsed}
                 onExpandSidebar={toggleCollapsed}
               />
-              <SidebarTooltip label='Collapse sidebar' enabled={!isCollapsed} side='bottom'>
+              <SidebarTooltip label='折叠侧边栏' enabled={!isCollapsed} side='bottom'>
                 <button
                   type='button'
                   onClick={toggleCollapsed}
@@ -1284,7 +1284,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                     'ml-2 flex h-[30px] items-center justify-center overflow-hidden rounded-lg transition-all duration-200 hover-hover:bg-[var(--surface-active)]',
                     isCollapsed ? 'w-0 opacity-0' : 'w-[30px] opacity-100'
                   )}
-                  aria-label='Collapse sidebar'
+                  aria-label='折叠侧边栏'
                   tabIndex={isCollapsed ? -1 : undefined}
                 >
                   <PanelLeft className='h-[16px] w-[16px] flex-shrink-0 text-[var(--text-icon)]' />
@@ -1327,22 +1327,22 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                   <div ref={scrollContentRef} className='flex flex-col'>
                     <div className='chats-section flex flex-shrink-0 flex-col'>
                       <div className='flex h-[18px] flex-shrink-0 items-center justify-between px-4'>
-                        <div className='text-[var(--text-muted)] text-small'>Chats</div>
+                        <div className='text-[var(--text-muted)] text-small'>对话</div>
                       </div>
                       {isCollapsed ? (
                         <CollapsedSidebarMenu
                           icon={chatsCollapsedIcon}
                           hover={chatsHover}
-                          ariaLabel='Chats'
+                          ariaLabel='对话'
                           className='mt-2'
                         >
                           {chatsLoading ? (
                             <DropdownMenuItem disabled>
                               <Loader className='h-[14px] w-[14px]' animate />
-                              Loading...
+                              加载中...
                             </DropdownMenuItem>
                           ) : chats.length === 0 ? (
-                            <DropdownMenuItem disabled>No chats yet</DropdownMenuItem>
+                            <DropdownMenuItem disabled>暂无对话</DropdownMenuItem>
                           ) : (
                             chats.map((chat) => (
                               <CollapsedChatFlyoutItem
@@ -1372,7 +1372,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                             <>
                               {chats.length === 0 ? (
                                 <div className='flex h-[30px] items-center px-2 text-[var(--text-muted)] text-small'>
-                                  No chats yet
+                                  暂无对话
                                 </div>
                               ) : null}
                               {/* `selectChatOnly` populates `selectedChats` on every click, so
@@ -1437,7 +1437,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                                     'text-[var(--text-muted)] text-small'
                                   )}
                                 >
-                                  {chats.length > visibleChatCount ? 'See more' : 'See less'}
+                                  {chats.length > visibleChatCount ? '查看更多' : '收起'}
                                 </button>
                               )}
                             </>
@@ -1448,7 +1448,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
 
                     <div className={cn(SIDEBAR_SECTION_GAP_CLASS, 'flex flex-shrink-0 flex-col')}>
                       <div className='px-4 pb-2'>
-                        <div className='text-[var(--text-muted)] text-small'>Workspace</div>
+                        <div className='text-[var(--text-muted)] text-small'>工作区</div>
                       </div>
                       <div className={cn(SIDEBAR_ITEM_GAP_CLASS, 'flex flex-col px-2')}>
                         {workspaceNavItems.map((item) => (
@@ -1470,7 +1470,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                       )}
                     >
                       <div className='flex h-[18px] flex-shrink-0 items-center justify-between px-4'>
-                        <div className='text-[var(--text-muted)] text-small'>Workflows</div>
+                        <div className='text-[var(--text-muted)] text-small'>工作流</div>
                         {!isCollapsed && (
                           <div className='flex items-center justify-center gap-2'>
                             <DropdownMenu>
@@ -1491,7 +1491,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                                   </DropdownMenuTrigger>
                                 </Tooltip.Trigger>
                                 <Tooltip.Content>
-                                  <p>More actions</p>
+                                  <p>更多操作</p>
                                 </Tooltip.Content>
                               </Tooltip.Root>
                               <DropdownMenuContent
@@ -1504,14 +1504,14 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                                   disabled={!canEdit || isImporting}
                                 >
                                   <Upload />
-                                  {isImporting ? 'Importing...' : 'Import workflow'}
+                                  {isImporting ? '导入中...' : '导入工作流'}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                   onSelect={handleCreateFolder}
                                   disabled={!canEdit || isCreatingFolder}
                                 >
                                   <FolderPlus />
-                                  {isCreatingFolder ? 'Creating folder...' : 'Create folder'}
+                                  {isCreatingFolder ? '创建中...' : '新建文件夹'}
                                 </DropdownMenuItem>
                               </DropdownMenuContent>
                             </DropdownMenu>
@@ -1528,10 +1528,10 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                               </Tooltip.Trigger>
                               <Tooltip.Content>
                                 {isCreatingWorkflow ? (
-                                  <p>Creating workflow...</p>
+                                  <p>创建中...</p>
                                 ) : (
                                   <Tooltip.Shortcut keys={isMac ? '⌘⇧P' : 'Ctrl+Shift+P'}>
-                                    New workflow
+                                    新建工作流
                                   </Tooltip.Shortcut>
                                 )}
                               </Tooltip.Content>
@@ -1543,17 +1543,17 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                         <CollapsedSidebarMenu
                           icon={workflowsCollapsedIcon}
                           hover={workflowsHover}
-                          ariaLabel='Workflows'
+                          ariaLabel='工作流'
                           className='mt-2'
                           primaryAction={workflowsPrimaryAction}
                         >
                           {workflowsLoading && regularWorkflows.length === 0 ? (
                             <DropdownMenuItem disabled>
                               <Loader className='h-[14px] w-[14px]' animate />
-                              Loading...
+                              加载中...
                             </DropdownMenuItem>
                           ) : regularWorkflows.length === 0 ? (
-                            <DropdownMenuItem disabled>No workflows yet</DropdownMenuItem>
+                            <DropdownMenuItem disabled>暂无工作流</DropdownMenuItem>
                           ) : (
                             <>
                               {collapsedRootItems.map((item) =>
@@ -1630,7 +1630,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                   )}
                 >
                   <DropdownMenu>
-                    <SidebarTooltip label='Help' enabled={showCollapsedTooltips}>
+                    <SidebarTooltip label='帮助' enabled={showCollapsedTooltips}>
                       <DropdownMenuTrigger asChild>
                         <button
                           type='button'
@@ -1639,7 +1639,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                         >
                           <HelpCircle className='h-[16px] w-[16px] flex-shrink-0 text-[var(--text-icon)]' />
                           <span className='sidebar-collapse-hide truncate text-[var(--text-body)]'>
-                            Help
+                            帮助
                           </span>
                         </button>
                       </DropdownMenuTrigger>
@@ -1647,11 +1647,11 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
                     <DropdownMenuContent align='start' side='top' sideOffset={4}>
                       <DropdownMenuItem onSelect={handleOpenDocs}>
                         <BookOpen className='h-[14px] w-[14px]' />
-                        Docs
+                        文档
                       </DropdownMenuItem>
                       <DropdownMenuItem onSelect={handleOpenHelpFromMenu}>
                         <HelpCircle className='h-[14px] w-[14px]' />
-                        Report an issue
+                        反馈问题
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -1726,7 +1726,7 @@ export const Sidebar = memo(function Sidebar({ isCollapsed }: SidebarProps) {
           role={isCollapsed ? 'button' : 'separator'}
           tabIndex={0}
           aria-orientation={isCollapsed ? undefined : 'vertical'}
-          aria-label={isCollapsed ? 'Expand sidebar' : 'Resize sidebar'}
+          aria-label={isCollapsed ? '展开侧边栏' : '调整侧边栏宽度'}
         />
       </div>
 

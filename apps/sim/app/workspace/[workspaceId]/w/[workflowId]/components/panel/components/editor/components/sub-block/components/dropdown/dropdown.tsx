@@ -170,7 +170,7 @@ export const Dropdown = memo(function Dropdown({
       const options = await fetchOptions(blockId)
       setFetchedOptions(options)
     } catch (error) {
-      const errorMessage = getErrorMessage(error, 'Failed to fetch options')
+      const errorMessage = getErrorMessage(error, '获取选项失败')
       setFetchError(errorMessage)
       setFetchedOptions([])
     } finally {
@@ -561,7 +561,7 @@ export const Dropdown = memo(function Dropdown({
       isLoading={isLoadingOptions}
       error={fetchError}
       searchable={isSearchable}
-      searchPlaceholder='Search...'
+      searchPlaceholder='搜索…'
     />
   )
 })

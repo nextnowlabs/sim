@@ -262,7 +262,7 @@ export function DocumentTagEntry({
         </span>
         {tag.collapsed && tag.tagName && (
           <Badge variant='type' size='sm'>
-            {FIELD_TYPE_LABELS[tag.fieldType] || 'Text'}
+            {FIELD_TYPE_LABELS[tag.fieldType] || '文本'}
           </Badge>
         )}
       </div>
@@ -278,7 +278,7 @@ export function DocumentTagEntry({
           className='h-auto p-0'
         >
           <Plus className='size-[14px]' />
-          <span className='sr-only'>Add Tag</span>
+          <span className='sr-only'>添加标签</span>
         </Button>
         <Button
           variant='ghost'
@@ -287,7 +287,7 @@ export function DocumentTagEntry({
           className='h-auto p-0 text-[var(--text-error)] hover-hover:text-[var(--text-error)]'
         >
           <Trash className='size-[14px]' />
-          <span className='sr-only'>Delete Tag</span>
+          <span className='sr-only'>删除标签</span>
         </Button>
       </div>
     </div>
@@ -400,7 +400,7 @@ export function DocumentTagEntry({
             value={tag.tagName}
             onChange={(value) => updateTag(tag.id, 'tagName', value)}
             disabled={isReadOnly || isLoading}
-            placeholder='Select tag'
+            placeholder='选择标签'
           />
         </div>
 

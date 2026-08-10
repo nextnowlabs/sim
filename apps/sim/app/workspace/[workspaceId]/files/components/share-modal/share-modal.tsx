@@ -35,10 +35,10 @@ interface ShareModalProps {
 type AccessMode = 'private' | ShareAuthType
 
 const ACCESS_LABELS: Record<AccessMode, string> = {
-  private: 'Private',
-  public: 'Public',
-  password: 'Password',
-  email: 'Email',
+  private: '私密',
+  public: '公开',
+  password: '密码',
+  email: '邮箱',
   sso: 'SSO',
 }
 
@@ -181,34 +181,34 @@ export function ShareModal({
   }
 
   const accessHint = (() => {
-    if (modeDisallowed) return 'This sharing method is disabled by an administrator.'
+    if (modeDisallowed) return '此共享方式已被管理员禁用。'
     if (enableBlockedByPolicy)
-      return 'Public sharing is disabled for this workspace by an administrator.'
-    if (effectiveMode === 'private') return 'Only workspace members can access this file.'
+      return '此工作区的公开共享已被管理员禁用。'
+    if (effectiveMode === 'private') return '只有工作区成员可以访问此文件。'
     if (effectiveMode === 'password')
-      return 'Anyone with the link and the password can view and download this file.'
+      return '任何拥有链接和密码的人都可以查看并下载此文件。'
     if (effectiveMode === 'email')
-      return 'Only allowed emails can access this file after a one-time code.'
+      return '只有允许的邮箱在输入一次性验证码后才能访问此文件。'
     if (effectiveMode === 'sso')
-      return 'Only allowed emails signed in via SSO can access this file.'
+      return '只有通过 SSO 登录的允许邮箱才能访问此文件。'
     return isDirty
-      ? 'Save to make this file accessible to anyone with the link.'
-      : 'Anyone with the link can view and download this file.'
+      ? '保存后,任何拥有链接的人都可以访问此文件。'
+      : '任何拥有链接的人都可以查看并下载此文件。'
   })()
 
   const emailItems: TagItem[] = effectiveEmails.map((value) => ({ value, isValid: true }))
 
   return (
-    <ChipModal open={open} onOpenChange={handleClose} size='sm' srTitle={`Share ${fileName}`}>
+    <ChipModal open={open} onOpenChange={handleClose} size='sm' srTitle={`共享 ${fileName}`}>
       <ChipModalHeader icon={Send} onClose={handleClose}>
-        Share file
+        共享文件
       </ChipModalHeader>
       <ChipModalBody>
-        <ChipModalField type='custom' title='Access' hint={accessHint}>
+        <ChipModalField type='custom' title='访问权限' hint={accessHint}>
           <ButtonGroup
             value={effectiveMode}
             onValueChange={(value) => setDraftMode(value as AccessMode)}
-            aria-label='File access'
+            aria-label='文件访问'
           >
             {accessModes.map((mode) => (
               <ButtonGroupItem key={mode} value={mode}>
@@ -220,43 +220,43 @@ export function ShareModal({
         {effectiveMode === 'password' ? (
           <ChipModalField
             type='custom'
-            title='Password'
+            title='密码'
             hint={
               saved?.hasPassword
-                ? 'Leave blank to keep the current password.'
-                : 'Anyone with the link must enter this password.'
+                ? '留空以保留当前密码。'
+                : '任何拥有链接的人都必须输入此密码。'
             }
           >
             <GeneratedPasswordInput
               value={draftPassword}
               onChange={setDraftPassword}
-              placeholder={saved?.hasPassword ? '••••••••' : 'Enter a password'}
+              placeholder={saved?.hasPassword ? '••••••••' : '输入密码'}
             />
           </ChipModalField>
         ) : null}
         {effectiveMode === 'email' || effectiveMode === 'sso' ? (
           <ChipModalField
             type='custom'
-            title='Allowed emails'
-            hint='Add specific emails or whole domains (@example.com).'
+            title='允许的邮箱'
+            hint='添加特定邮箱或整个域名(@example.com)。'
           >
             <TagInput
               items={emailItems}
               onAdd={addEmail}
               onRemove={removeEmail}
-              placeholder='Enter emails or domains'
-              placeholderWithTags='Add email'
+              placeholder='输入邮箱或域名'
+              placeholderWithTags='添加邮箱'
             />
           </ChipModalField>
         ) : null}
         {effectiveMode !== 'private' && shareUrl ? (
-          <ChipModalField type='copy' title='Link' value={shareUrl} copyLabel='Copy link' />
+          <ChipModalField type='copy' title='链接' value={shareUrl} copyLabel='复制链接' />
         ) : null}
       </ChipModalBody>
       <ChipModalFooter
         onCancel={handleClose}
         primaryAction={{
-          label: upsertShare.isPending ? 'Saving...' : 'Save',
+          label: upsertShare.isPending ? '保存中…' : '保存',
           onClick: handleSave,
           disabled:
             !isDirty ||

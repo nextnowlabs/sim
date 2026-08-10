@@ -62,7 +62,7 @@ export function QueuedMessages({
           <ChevronRight className='size-[14px] text-[var(--text-icon)]' />
         )}
         <span className='font-medium text-[var(--text-secondary)] text-small'>
-          {messageQueue.length} Queued
+          {messageQueue.length} 条排队消息
         </span>
       </button>
 
@@ -129,7 +129,7 @@ export function QueuedMessages({
                         </button>
                       </Tooltip.Trigger>
                       <Tooltip.Content side='top' sideOffset={4}>
-                        Cancel edit
+                        取消编辑
                       </Tooltip.Content>
                     </Tooltip.Root>
                   ) : (
@@ -149,7 +149,7 @@ export function QueuedMessages({
                           </button>
                         </Tooltip.Trigger>
                         <Tooltip.Content side='top' sideOffset={4}>
-                          {isDispatching ? 'Sending now' : 'Edit queued message'}
+                          {isDispatching ? '正在发送' : '编辑排队消息'}
                         </Tooltip.Content>
                       </Tooltip.Root>
 
@@ -168,7 +168,7 @@ export function QueuedMessages({
                           </button>
                         </Tooltip.Trigger>
                         <Tooltip.Content side='top' sideOffset={4}>
-                          Send now
+                          立即发送
                         </Tooltip.Content>
                       </Tooltip.Root>
 
@@ -186,7 +186,7 @@ export function QueuedMessages({
                           </button>
                         </Tooltip.Trigger>
                         <Tooltip.Content side='top' sideOffset={4}>
-                          Remove from queue
+                          从队列移除
                         </Tooltip.Content>
                       </Tooltip.Root>
                     </>

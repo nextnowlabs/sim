@@ -259,12 +259,12 @@ const UserInputImpl = forwardRef<UserInputHandle, UserInputProps>(function UserI
     // A per-member cap can only be raised by an org admin, so don't offer Upgrade
     // (the member can't act on it) — the message already tells them to ask an admin.
     toast.error(
-      message || 'You are out of credits.',
+      message || '你的配额已用完。',
       isMemberLimit
         ? undefined
         : {
             action: {
-              label: 'Upgrade',
+              label: '升级',
               onClick: () => navigateToSettings({ section: 'billing' }),
             },
           }
@@ -530,7 +530,7 @@ const UserInputImpl = forwardRef<UserInputHandle, UserInputProps>(function UserI
 
       <PromptEditor
         editor={editor}
-        placeholder='Ask Sim to '
+        placeholder='让 Sim 帮您 '
         onSubmit={handleEnterSubmit}
         onArrowUpOnEmpty={handleArrowUpOnEmpty}
         className={isInitialView ? 'max-h-[30vh]' : 'max-h-[200px]'}
@@ -544,13 +544,13 @@ const UserInputImpl = forwardRef<UserInputHandle, UserInputProps>(function UserI
                 type='button'
                 variant='ghost'
                 onClick={handlePlusClick}
-                aria-label='Add resources'
+                aria-label='添加资源'
                 className='size-[28px] rounded-full p-0 hover-hover:bg-[var(--surface-hover)]'
               >
                 <Plus className='size-[16px] text-[var(--text-icon)]' />
               </Button>
             </Tooltip.Trigger>
-            <Tooltip.Content side='top'>Add resources</Tooltip.Content>
+            <Tooltip.Content side='top'>添加资源</Tooltip.Content>
           </Tooltip.Root>
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
@@ -558,13 +558,13 @@ const UserInputImpl = forwardRef<UserInputHandle, UserInputProps>(function UserI
                 type='button'
                 variant='ghost'
                 onClick={handleFileSelectStable}
-                aria-label='Attach file'
+                aria-label='添加附件'
                 className='size-[28px] rounded-full p-0 hover-hover:bg-[var(--surface-hover)]'
               >
                 <Paperclip className='size-[16px] text-[var(--text-icon)]' />
               </Button>
             </Tooltip.Trigger>
-            <Tooltip.Content side='top'>Attach file</Tooltip.Content>
+            <Tooltip.Content side='top'>添加附件</Tooltip.Content>
           </Tooltip.Root>
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
@@ -572,13 +572,13 @@ const UserInputImpl = forwardRef<UserInputHandle, UserInputProps>(function UserI
                 type='button'
                 variant='ghost'
                 onClick={handleSlashTriggerClick}
-                aria-label='Skills'
+                aria-label='技能'
                 className='size-[28px] rounded-full p-0 hover-hover:bg-[var(--surface-hover)]'
               >
                 <Slash className='size-[16px] text-[var(--text-icon)]' />
               </Button>
             </Tooltip.Trigger>
-            <Tooltip.Content side='top'>Skills</Tooltip.Content>
+            <Tooltip.Content side='top'>技能</Tooltip.Content>
           </Tooltip.Root>
         </div>
         <div className='flex items-center gap-1.5'>

@@ -143,8 +143,8 @@ export function ConnectedCredentialDetail({
         callbackURL: window.location.href,
       })
     } catch (error: unknown) {
-      toast.error("Couldn't start reconnect", {
-        description: getErrorMessage(error, 'Please try again in a moment.'),
+      toast.error('无法开始重新连接', {
+        description: getErrorMessage(error, '请稍后重试。'),
       })
       logger.error('Failed to reconnect OAuth credential', error)
     }
@@ -157,8 +157,8 @@ export function ConnectedCredentialDetail({
         await deleteCredential.mutateAsync(credential.id)
       } else {
         if (!credential.accountId || !credential.providerId) {
-          toast.error("Can't disconnect", {
-            description: 'Missing account information. Try reconnecting this credential first.',
+          toast.error('无法断开连接', {
+            description: '缺少账号信息。请先重新连接此凭据。',
           })
           return
         }
@@ -177,8 +177,8 @@ export function ConnectedCredentialDetail({
       setShowDeleteConfirmDialog(false)
       router.push(integrationsHref)
     } catch (error) {
-      toast.error("Couldn't disconnect", {
-        description: getErrorMessage(error, 'Please try again in a moment.'),
+      toast.error('断开连接失败', {
+        description: getErrorMessage(error, '请稍后重试。'),
       })
       logger.error('Failed to disconnect integration', error)
     }
@@ -186,7 +186,7 @@ export function ConnectedCredentialDetail({
 
   const back = (
     <ChipLink href={integrationsHref} onClick={form.handleBackClick} leftIcon={ArrowLeft}>
-      Integrations
+      集成
     </ChipLink>
   )
 
@@ -199,20 +199,20 @@ export function ConnectedCredentialDetail({
             disabled={connectOAuthService.isPending}
             leftIcon={serviceConfig?.icon}
           >
-            Reconnect
+            重新连接
           </Chip>
         )}
         <Chip leftIcon={Send} onClick={() => setIsShareModalOpen(true)}>
-          Share
+          共享
         </Chip>
         <Chip
           onClick={() => setShowDeleteConfirmDialog(true)}
           disabled={disconnectOAuthService.isPending || deleteCredential.isPending}
         >
-          Disconnect
+          断开连接
         </Chip>
         <Chip onClick={form.save} disabled={!form.isDirty || form.isSaving}>
-          {form.isSaving ? 'Saving...' : 'Save'}
+          {form.isSaving ? '保存中…' : '保存'}
         </Chip>
       </>
     ) : null
@@ -220,7 +220,7 @@ export function ConnectedCredentialDetail({
   if (credentialsLoading && !credential) {
     return (
       <CredentialDetailLayout back={back} actions={actions}>
-        <p className='py-12 text-center text-[var(--text-muted)] text-sm'>Loading…</p>
+        <p className='py-12 text-center text-[var(--text-muted)] text-sm'>加载中…</p>
       </CredentialDetailLayout>
     )
   }
@@ -228,13 +228,13 @@ export function ConnectedCredentialDetail({
   if (!credential) {
     return (
       <CredentialDetailLayout back={back} actions={actions}>
-        <p className='py-12 text-center text-[var(--text-muted)] text-sm'>Credential not found.</p>
+        <p className='py-12 text-center text-[var(--text-muted)] text-sm'>未找到凭据。</p>
       </CredentialDetailLayout>
     )
   }
 
   const serviceLabel =
-    serviceConfig?.name || resolveProviderLabel(credential.providerId) || 'Unknown service'
+    serviceConfig?.name || resolveProviderLabel(credential.providerId) || '未知服务'
 
   return (
     <>
@@ -255,14 +255,14 @@ export function ConnectedCredentialDetail({
             )
           }
           title={serviceLabel}
-          subtitle={serviceConfig?.description || 'Connected service'}
+          subtitle={serviceConfig?.description || '已连接的服务'}
         />
 
-        <DetailSection title='Credential ID'>
-          <ChipCopyInput id='credential-id' value={credential.id} copyLabel='Copy credential ID' />
+        <DetailSection title='凭据 ID'>
+          <ChipCopyInput id='credential-id' value={credential.id} copyLabel='复制凭据 ID' />
         </DetailSection>
 
-        <DetailSection title='Display Name'>
+        <DetailSection title='显示名称'>
           <ChipInput
             id='credential-display-name'
             value={form.displayNameDraft}
@@ -273,13 +273,13 @@ export function ConnectedCredentialDetail({
           />
         </DetailSection>
 
-        <DetailSection title='Description'>
+        <DetailSection title='描述'>
           <ChipTextarea
             id='credential-description'
             rows={4}
             value={form.descriptionDraft}
             onChange={(event) => form.setDescriptionDraft(event.target.value)}
-            placeholder='Add a description...'
+            placeholder='添加描述…'
             maxLength={500}
             autoComplete='off'
             data-lpignore='true'
@@ -293,18 +293,18 @@ export function ConnectedCredentialDetail({
       <ChipConfirmModal
         open={showDeleteConfirmDialog}
         onOpenChange={setShowDeleteConfirmDialog}
-        srTitle='Disconnect Integration'
-        title='Disconnect Integration'
+        srTitle='断开集成连接'
+        title='断开集成连接'
         text={[
-          'Are you sure you want to disconnect ',
+          '确定要断开 ',
           { text: credential.displayName, bold: true },
-          '? This action cannot be undone.',
+          ' 吗?此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Disconnect',
+          label: '断开连接',
           onClick: handleConfirmDelete,
           pending: disconnectOAuthService.isPending || deleteCredential.isPending,
-          pendingLabel: 'Disconnecting...',
+          pendingLabel: '断开中…',
         }}
       />
 

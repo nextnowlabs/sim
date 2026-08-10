@@ -445,7 +445,7 @@ export function WorkflowItem({ workflow, active }: WorkflowItemProps) {
             {workflow.locked && (
               <span
                 role='img'
-                aria-label='Workflow is locked'
+                aria-label='工作流已锁定'
                 className={clsx(
                   'pointer-events-none absolute inset-0 flex items-center justify-center transition-opacity',
                   !isAnyDragActive && 'group-hover:opacity-0',
@@ -457,7 +457,7 @@ export function WorkflowItem({ workflow, active }: WorkflowItemProps) {
             )}
             <button
               type='button'
-              aria-label='Workflow options'
+              aria-label='工作流选项'
               onPointerDown={handleMorePointerDown}
               onClick={handleMoreClick}
               className={clsx(

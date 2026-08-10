@@ -30,7 +30,7 @@ import '@sim/emcn/components/code/code.css'
 import './rich-markdown-editor.css'
 
 const EXTENSIONS = createMarkdownEditorExtensions({
-  placeholder: "Write something, or press '/' for commands…",
+  placeholder: "输入内容,或按 '/' 查看命令…",
   embeds: true,
 })
 
@@ -100,7 +100,7 @@ export const RichMarkdownEditor = memo(function RichMarkdownEditor({
   if (hasContentError) {
     return (
       <div className='flex flex-1 items-center justify-center'>
-        <p className='text-[var(--text-muted)] text-small'>Failed to load file content</p>
+        <p className='text-[var(--text-muted)] text-small'>无法加载文件内容</p>
       </div>
     )
   }
@@ -223,7 +223,7 @@ export function LoadedRichMarkdownEditor({
   insertImagesRef.current = async (images, at) => {
     let position = at
     for (const image of images) {
-      const uploadingToastId = toast.info(`Uploading "${image.name}"…`, { duration: 0 })
+      const uploadingToastId = toast.info(`正在上传 "${image.name}"…`, { duration: 0 })
       const result = await uploadFile
         .mutateAsync({ workspaceId, file: image, folderId: file.folderId ?? null })
         .catch(() => null)

@@ -47,55 +47,55 @@ function getDateExamples() {
 export const FILTER_DEFINITIONS: FilterDefinition[] = [
   {
     key: 'level',
-    label: 'Status',
-    description: 'Filter by log level',
+    label: '状态',
+    description: '按日志级别筛选',
     options: [
-      { value: 'error', label: 'Error', description: 'Error logs only' },
-      { value: 'info', label: 'Info', description: 'Info logs only' },
+      { value: 'error', label: '错误', description: '仅错误日志' },
+      { value: 'info', label: '信息', description: '仅信息日志' },
     ],
   },
   {
     key: 'cost',
-    label: 'Cost',
-    description: 'Filter by run cost',
+    label: '费用',
+    description: '按运行费用筛选',
     options: [
       {
         value: '>0.01',
-        label: 'Over 2 credits',
-        description: 'Runs costing more than 2 credits',
+        label: '超过 2 积分',
+        description: '运行消耗超过 2 积分',
       },
       {
         value: '<0.005',
-        label: 'Under 1 credit',
-        description: 'Runs costing less than 1 credit',
+        label: '低于 1 积分',
+        description: '运行消耗少于 1 积分',
       },
       {
         value: '>0.05',
-        label: 'Over 10 credits',
-        description: 'Runs costing more than 10 credits',
+        label: '超过 10 积分',
+        description: '运行消耗超过 10 积分',
       },
-      { value: '=0', label: 'Free', description: 'Free runs' },
-      { value: '>0', label: 'Paid', description: 'Runs with cost' },
+      { value: '=0', label: 'Free', description: '免费套餐的运行' },
+      { value: '>0', label: '付费', description: '有费用的运行' },
     ],
   },
   {
     key: 'date',
-    label: 'Date',
-    description: 'Filter by date range',
+    label: '日期',
+    description: '按日期范围筛选',
     options: (() => {
       const { today, firstOfMonth, year, yearMonth } = getDateExamples()
       return [
-        { value: 'today', label: 'Today', description: "Today's logs" },
-        { value: 'yesterday', label: 'Yesterday', description: "Yesterday's logs" },
-        { value: 'this-week', label: 'This week', description: "This week's logs" },
-        { value: 'last-week', label: 'Last week', description: "Last week's logs" },
-        { value: 'this-month', label: 'This month', description: "This month's logs" },
-        { value: today, label: 'Specific date', description: 'YYYY-MM-DD' },
-        { value: yearMonth, label: 'Specific month', description: 'YYYY-MM' },
-        { value: year, label: 'Specific year', description: 'YYYY' },
+        { value: 'today', label: '今天', description: '今天的日志' },
+        { value: 'yesterday', label: '昨天', description: '昨天的日志' },
+        { value: 'this-week', label: '本周', description: '本周的日志' },
+        { value: 'last-week', label: '上周', description: '上周的日志' },
+        { value: 'this-month', label: '本月', description: '本月的日志' },
+        { value: today, label: '指定日期', description: 'YYYY-MM-DD' },
+        { value: yearMonth, label: '指定月份', description: 'YYYY-MM' },
+        { value: year, label: '指定年份', description: 'YYYY' },
         {
           value: `${firstOfMonth}..${today}`,
-          label: 'Date range',
+          label: '日期范围',
           description: 'YYYY-MM-DD..YYYY-MM-DD',
         },
       ]
@@ -103,14 +103,14 @@ export const FILTER_DEFINITIONS: FilterDefinition[] = [
   },
   {
     key: 'duration',
-    label: 'Duration',
-    description: 'Filter by run duration',
+    label: '时长',
+    description: '按运行时长筛选',
     options: [
-      { value: '>5s', label: 'Over 5s', description: 'Runs longer than 5 seconds' },
-      { value: '<1s', label: 'Under 1s', description: 'Runs shorter than 1 second' },
-      { value: '>10s', label: 'Over 10s', description: 'Runs longer than 10 seconds' },
-      { value: '>30s', label: 'Over 30s', description: 'Runs longer than 30 seconds' },
-      { value: '<500ms', label: 'Under 0.5s', description: 'Very fast runs' },
+      { value: '>5s', label: '超过 5 秒', description: '运行时长超过 5 秒' },
+      { value: '<1s', label: '低于 1 秒', description: '运行时长少于 1 秒' },
+      { value: '>10s', label: '超过 10 秒', description: '运行时长超过 10 秒' },
+      { value: '>30s', label: '超过 30 秒', description: '运行时长超过 30 秒' },
+      { value: '<500ms', label: '低于 0.5 秒', description: '非常快的运行' },
     ],
   },
 ]
@@ -189,8 +189,8 @@ export class SearchSuggestions {
     suggestions.push({
       id: 'filter-key-trigger',
       value: 'trigger:',
-      label: 'Trigger',
-      description: 'Filter by trigger type',
+      label: '触发器',
+      description: '按触发器类型筛选',
       category: 'filters',
     })
 
@@ -198,8 +198,8 @@ export class SearchSuggestions {
       suggestions.push({
         id: 'filter-key-workflow',
         value: 'workflow:',
-        label: 'Workflow',
-        description: 'Filter by workflow name',
+        label: '工作流',
+        description: '按工作流名称筛选',
         category: 'filters',
       })
     }
@@ -208,8 +208,8 @@ export class SearchSuggestions {
       suggestions.push({
         id: 'filter-key-folder',
         value: 'folder:',
-        label: 'Folder',
-        description: 'Filter by folder name',
+        label: '文件夹',
+        description: '按文件夹名称筛选',
         category: 'filters',
       })
     }
@@ -217,16 +217,16 @@ export class SearchSuggestions {
     suggestions.push({
       id: 'filter-key-workflowId',
       value: 'workflowId:',
-      label: 'Workflow ID',
-      description: 'Filter by workflow ID',
+      label: '工作流 ID',
+      description: '按工作流 ID 筛选',
       category: 'filters',
     })
 
     suggestions.push({
       id: 'filter-key-executionId',
       value: 'executionId:',
-      label: 'Run ID',
-      description: 'Filter by run ID',
+      label: '运行 ID',
+      description: '按运行 ID 筛选',
       category: 'filters',
     })
 
@@ -357,7 +357,7 @@ export class SearchSuggestions {
     const matchingFilterValues = this.getMatchingFilterValues(query)
     if (matchingFilterValues.length > 0) {
       sections.push({
-        title: 'SUGGESTED FILTERS',
+        title: '建议筛选',
         suggestions: matchingFilterValues,
       })
       allSuggestions.push(...matchingFilterValues)
@@ -366,7 +366,7 @@ export class SearchSuggestions {
     const matchingTriggers = this.getMatchingTriggers(query)
     if (matchingTriggers.length > 0) {
       sections.push({
-        title: 'TRIGGERS',
+        title: '触发器',
         suggestions: matchingTriggers,
       })
       allSuggestions.push(...matchingTriggers)
@@ -375,7 +375,7 @@ export class SearchSuggestions {
     const matchingWorkflows = this.getMatchingWorkflows(query)
     if (matchingWorkflows.length > 0) {
       sections.push({
-        title: 'WORKFLOWS',
+        title: '工作流',
         suggestions: matchingWorkflows,
       })
       allSuggestions.push(...matchingWorkflows)
@@ -384,7 +384,7 @@ export class SearchSuggestions {
     const matchingFolders = this.getMatchingFolders(query)
     if (matchingFolders.length > 0) {
       sections.push({
-        title: 'FOLDERS',
+        title: '文件夹',
         suggestions: matchingFolders,
       })
       allSuggestions.push(...matchingFolders)
@@ -399,7 +399,7 @@ export class SearchSuggestions {
       const filterKeys = this.getFilterKeysList()
       if (filterKeys.suggestions.length > 0) {
         sections.push({
-          title: 'SUGGESTED FILTERS',
+          title: '建议筛选',
           suggestions: filterKeys.suggestions.slice(0, 5),
         })
         allSuggestions.push(...filterKeys.suggestions.slice(0, 5))
@@ -439,8 +439,8 @@ export class SearchSuggestions {
       suggestions.push({
         id: `date-range-${partial}`,
         value: `date:${partial}`,
-        label: `${this.formatDateLabel(startDate)} to ${this.formatDateLabel(endDate)}`,
-        description: 'Custom date range',
+        label: `${this.formatDateLabel(startDate)} 至 ${this.formatDateLabel(endDate)}`,
+        description: '自定义日期范围',
         category: 'date',
       })
       return suggestions
@@ -452,8 +452,8 @@ export class SearchSuggestions {
       suggestions.push({
         id: `date-range-hint-${partial}`,
         value: `date:${startDate}..`,
-        label: `${this.formatDateLabel(startDate)} to ...`,
-        description: 'Type end date (YYYY-MM-DD)',
+        label: `${this.formatDateLabel(startDate)} 至 ...`,
+        description: '输入结束日期(YYYY-MM-DD)',
         category: 'date',
       })
       return suggestions
@@ -464,8 +464,8 @@ export class SearchSuggestions {
       suggestions.push({
         id: `date-year-${partial}`,
         value: `date:${partial}`,
-        label: `Year ${partial}`,
-        description: 'All logs from this year',
+        label: `${partial} 年`,
+        description: '本年度的全部日志',
         category: 'date',
       })
       return suggestions
@@ -475,25 +475,25 @@ export class SearchSuggestions {
     if (monthPattern.test(partial)) {
       const [year, month] = partial.split('-')
       const monthNames = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
+        '1月',
+        '2月',
+        '3月',
+        '4月',
+        '5月',
+        '6月',
+        '7月',
+        '8月',
+        '9月',
+        '10月',
+        '11月',
+        '12月',
       ]
       const monthName = monthNames[Number.parseInt(month, 10) - 1] || month
       suggestions.push({
         id: `date-month-${partial}`,
         value: `date:${partial}`,
-        label: `${monthName} ${year}`,
-        description: 'All logs from this month',
+        label: `${year}年${monthName}`,
+        description: '本月度的全部日志',
         category: 'date',
       })
       return suggestions
@@ -507,7 +507,7 @@ export class SearchSuggestions {
           id: `date-single-${partial}`,
           value: `date:${partial}`,
           label: this.formatDateLabel(partial),
-          description: 'Single date',
+          description: '单个日期',
           category: 'date',
         })
         // Also suggest starting a range
@@ -515,7 +515,7 @@ export class SearchSuggestions {
           id: `date-range-start-${partial}`,
           value: `date:${partial}..`,
           label: `${this.formatDateLabel(partial)} to ...`,
-          description: 'Start a date range',
+          description: '开始日期范围',
           category: 'date',
         })
       }
@@ -528,7 +528,7 @@ export class SearchSuggestions {
         id: 'date-custom-hint',
         value: `date:${partial}`,
         label: partial,
-        description: 'Continue typing: YYYY, YYYY-MM, or YYYY-MM-DD',
+        description: '继续输入:YYYY、YYYY-MM 或 YYYY-MM-DD',
         category: 'date',
       })
     }
@@ -542,7 +542,7 @@ export class SearchSuggestions {
   private formatDateLabel(dateStr: string): string {
     const date = new Date(dateStr)
     if (Number.isNaN(date.getTime())) return dateStr
-    return date.toLocaleDateString('en-US', {
+    return date.toLocaleDateString('zh-CN', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',

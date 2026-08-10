@@ -64,14 +64,14 @@ export const DiffControls = memo(function DiffControls() {
         {/* Reject side */}
         <button
           onClick={handleReject}
-          title='Reject changes'
+          title='拒绝更改'
           className='relative flex h-full items-center border border-[var(--border)] bg-[var(--surface-4)] pr-5 pl-3 font-medium text-[var(--text-secondary)] text-small transition-colors hover-hover:border-[var(--border-1)] hover-hover:bg-[var(--surface-6)] hover-hover:text-[var(--text-primary)] dark:hover-hover:bg-[var(--surface-5)]'
           style={{
             clipPath: 'polygon(0 0, calc(100% + 10px) 0, 100% 100%, 0 100%)',
             borderRadius: '4px 0 0 4px',
           }}
         >
-          Reject
+          拒绝
         </button>
         {/* Slanted divider - split gray/green */}
         <div
@@ -87,14 +87,14 @@ export const DiffControls = memo(function DiffControls() {
         {/* Accept side */}
         <button
           onClick={handleAccept}
-          title='Accept changes (⇧⌘⏎)'
+          title='接受更改 (⇧⌘⏎)'
           className='-ml-2.5 relative flex h-full items-center border border-[rgba(0,0,0,0.15)] bg-[var(--brand-accent)] pr-3 pl-5 font-medium text-[var(--text-inverse)] text-small transition-[background-color,border-color,fill,stroke] hover-hover:brightness-110 dark:border-[rgba(255,255,255,0.1)]'
           style={{
             clipPath: 'polygon(10px 0, 100% 0, 100% 100%, 0 100%)',
             borderRadius: '0 4px 4px 0',
           }}
         >
-          Accept
+          接受
           <kbd className='ml-2 rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-medium font-sans text-micro'>
             ⇧⌘<span className='translate-y-[-1px]'>⏎</span>
           </kbd>

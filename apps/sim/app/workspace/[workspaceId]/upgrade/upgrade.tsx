@@ -37,6 +37,18 @@ import { useFullscreenOriginStore } from '@/stores/fullscreen-origin'
 const TYPEFORM_ENTERPRISE_URL = 'https://form.typeform.com/to/jqCO12pF' as const
 
 /**
+ * zh-CN labels for the shared CTA labels resolved from `getUpgradeCardCta`
+ * (the shared matrix stays English for the public landing pricing page).
+ */
+const CTA_LABELS = {
+  'Talk to sales': '联系销售',
+  'Current Plan': '当前套餐',
+  'Downgrade plan': '降级套餐',
+  'Get started': '开始使用',
+  'Upgrade plan': '升级套餐',
+} as const
+
+/**
  * Props for {@link Upgrade}.
  */
 export interface UpgradeProps {
@@ -99,14 +111,19 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
       if (state.wantsIntervalSwitch) {
         return {
           ...cta,
-          label: `Switch to ${state.isAnnual ? 'Annual' : 'Monthly'}`,
+          label: `切换到${state.isAnnual ? '按年付费' : '按月付费'}`,
           onClick: () =>
             state
               .handleSwitchInterval(state.isAnnual ? 'year' : 'month')
-              .catch((e) => toast.error(getErrorMessage(e, 'Failed to switch interval'))),
+              .catch((e) => toast.error(getErrorMessage(e, '切换计费周期失败'))),
         }
       }
-      return { ...cta, onClick: () => {}, disabled: true }
+      return {
+        ...cta,
+        label: CTA_LABELS[cta.label as keyof typeof CTA_LABELS] ?? cta.label,
+        onClick: () => {},
+        disabled: true,
+      }
     }
 
     const onClick = (): void => {
@@ -127,7 +144,7 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
       }
     }
 
-    return { ...cta, onClick }
+    return { ...cta, label: CTA_LABELS[cta.label as keyof typeof CTA_LABELS] ?? cta.label, onClick }
   }
 
   const proCta = resolveCta('pro')
@@ -138,8 +155,8 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
   // Free has no card and intentionally renders no button.
   const comparisonCtas = { Pro: proCta, Max: maxCta, Enterprise: enterpriseCta }
 
-  const proBanner = state.isOnPro ? 'Your plan' : undefined
-  const maxBanner = state.isOnMax ? 'Your plan' : undefined
+  const proBanner = state.isOnPro ? '你的套餐' : undefined
+  const maxBanner = state.isOnMax ? '你的套餐' : undefined
 
   const discountPct = Math.round(ANNUAL_DISCOUNT_RATE * 100)
   const proPrice = state.isAnnual
@@ -149,14 +166,14 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
     ? Math.round(state.maxTier.dollars * (1 - ANNUAL_DISCOUNT_RATE))
     : state.maxTier.dollars
   const priceSubtext = state.isAnnual
-    ? 'per user/month, billed annually'
-    : 'per user/month, billed monthly'
+    ? '每位用户/月,按年计费'
+    : '每位用户/月,按月计费'
 
   return (
     <div className='flex h-full flex-col bg-[var(--bg)]'>
       <div className='flex flex-shrink-0 items-center bg-[var(--bg)] px-[16px] pt-[8.5px] pb-[8.5px]'>
         <Chip leftIcon={ArrowLeft} onClick={handleBack}>
-          Back
+          返回
         </Chip>
       </div>
 
@@ -167,7 +184,13 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
               {header}
             </h1>
             {state.showUpgradePlans && (
-              <BillingPeriodToggle isAnnual={state.isAnnual} onChange={state.setIsAnnual} />
+              <BillingPeriodToggle
+                isAnnual={state.isAnnual}
+                onChange={state.setIsAnnual}
+                annualLabel='按年'
+                monthlyLabel='按月'
+                ariaLabel='计费周期'
+              />
             )}
           </div>
 
@@ -177,9 +200,9 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
                 <UpgradePlanCard
                   name='Pro'
                   price={`$${proPrice}`}
-                  discountLabel={state.isAnnual ? `${discountPct}% off` : undefined}
+                  discountLabel={state.isAnnual ? `立减 ${discountPct}%` : undefined}
                   priceSubtext={priceSubtext}
-                  segmentLabel='For growing teams'
+                  segmentLabel='适用于成长型团队'
                   credits={PRO_PLAN_CREDITS.credits}
                   refresh={PRO_PLAN_CREDITS.refresh}
                   features={PRO_PLAN_FEATURES}
@@ -193,9 +216,9 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
                 <UpgradePlanCard
                   name='Max'
                   price={`$${maxPrice}`}
-                  discountLabel={state.isAnnual ? `${discountPct}% off` : undefined}
+                  discountLabel={state.isAnnual ? `立减 ${discountPct}%` : undefined}
                   priceSubtext={priceSubtext}
-                  segmentLabel='For scaling businesses'
+                  segmentLabel='适用于扩展型企业'
                   credits={MAX_PLAN_CREDITS.credits}
                   refresh={MAX_PLAN_CREDITS.refresh}
                   features={MAX_PLAN_FEATURES}
@@ -208,8 +231,8 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
 
                 <UpgradePlanCard
                   name='Enterprise'
-                  price='Custom'
-                  segmentLabel='For large organizations'
+                  price='自定义'
+                  segmentLabel='适用于大型组织'
                   credits={ENTERPRISE_PLAN_CREDITS.credits}
                   refresh={ENTERPRISE_PLAN_CREDITS.refresh}
                   features={ENTERPRISE_PLAN_FEATURES}
@@ -226,7 +249,7 @@ export function Upgrade({ workspaceId }: UpgradeProps) {
                   onClick={() => setShowAllFeatures((prev) => !prev)}
                   aria-expanded={showAllFeatures}
                 >
-                  {showAllFeatures ? 'Hide all features' : 'Show all features'}
+                  {showAllFeatures ? '隐藏全部功能' : '显示全部功能'}
                 </Chip>
 
                 {showAllFeatures && (

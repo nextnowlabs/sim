@@ -16,7 +16,7 @@ export type UpgradeReason = (typeof UPGRADE_REASONS)[number]
 export const UPGRADE_REASON_PARAM = 'reason' as const
 
 /** Header shown on the upgrade page when no (or an invalid) reason is present. */
-export const DEFAULT_UPGRADE_HEADER = 'Plans that scale with you' as const
+export const DEFAULT_UPGRADE_HEADER = '随你成长的套餐' as const
 
 interface UpgradeReasonCopy {
   /** Upgrade-page `<h1>` header. */
@@ -40,7 +40,7 @@ interface UpgradeReasonCopy {
  */
 export const UPGRADE_REASON_COPY: Record<UpgradeReason, UpgradeReasonCopy> = {
   credits: {
-    header: 'Upgrade to scale your usage',
+    header: '升级以扩展你的用量',
     noun: 'credits',
     warningSubject: "You're nearing your usage limit",
     reachedSubject: "You've reached your usage limit",
@@ -48,7 +48,7 @@ export const UPGRADE_REASON_COPY: Record<UpgradeReason, UpgradeReasonCopy> = {
     reachedLead: "You've reached your usage limit.",
   },
   storage: {
-    header: 'Upgrade to scale your storage',
+    header: '升级以扩展你的存储',
     noun: 'storage',
     warningSubject: "You're running low on storage",
     reachedSubject: "You've reached your storage limit",
@@ -56,7 +56,7 @@ export const UPGRADE_REASON_COPY: Record<UpgradeReason, UpgradeReasonCopy> = {
     reachedLead: "You've reached your storage limit.",
   },
   tables: {
-    header: 'Upgrade to scale your tables',
+    header: '升级以扩展你的表格',
     noun: 'table rows',
     warningSubject: "You're running low on table space",
     reachedSubject: "You've reached your table limit",
@@ -64,7 +64,7 @@ export const UPGRADE_REASON_COPY: Record<UpgradeReason, UpgradeReasonCopy> = {
     reachedLead: "You've reached your table limit.",
   },
   seats: {
-    header: 'Upgrade to scale with your teammates',
+    header: '升级以与你的团队成员共同扩展',
     noun: 'seats',
     warningSubject: "You're running low on seats",
     reachedSubject: "You've used all your seats",

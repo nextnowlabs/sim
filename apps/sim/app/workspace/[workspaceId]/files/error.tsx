@@ -7,8 +7,8 @@ export default function FilesError({ error, reset }: ErrorBoundaryProps) {
     <ErrorState
       error={error}
       reset={reset}
-      title='Failed to load files'
-      description='Something went wrong while loading your files. Please try again.'
+      title='无法加载文件'
+      description='加载文件时出错,请重试。'
       loggerName='FilesError'
     />
   )

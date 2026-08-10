@@ -143,7 +143,7 @@ export const WorkflowOutputSection = memo(
                     )}
                   </Button>
                 </Tooltip.Trigger>
-                <Tooltip.Content side='top'>{copied ? 'Copied' : 'Copy'}</Tooltip.Content>
+                <Tooltip.Content side='top'>{copied ? '已复制' : '复制'}</Tooltip.Content>
               </Tooltip.Root>
               <Tooltip.Root>
                 <Tooltip.Trigger asChild>
@@ -159,7 +159,7 @@ export const WorkflowOutputSection = memo(
                     <Search className='size-[10px]' />
                   </Button>
                 </Tooltip.Trigger>
-                <Tooltip.Content side='top'>Search</Tooltip.Content>
+                <Tooltip.Content side='top'>搜索</Tooltip.Content>
               </Tooltip.Root>
             </div>
           )}
@@ -177,7 +177,7 @@ export const WorkflowOutputSection = memo(
               type='text'
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder='Search...'
+              placeholder='搜索…'
               className='mr-0.5 w-[94px]'
             />
             <span
@@ -193,7 +193,7 @@ export const WorkflowOutputSection = memo(
               className='!p-1'
               onClick={goToPreviousMatch}
               disabled={matchCount === 0}
-              aria-label='Previous match'
+              aria-label='上一个匹配'
             >
               <ArrowUp className='size-[12px]' />
             </Button>
@@ -202,7 +202,7 @@ export const WorkflowOutputSection = memo(
               className='!p-1'
               onClick={goToNextMatch}
               disabled={matchCount === 0}
-              aria-label='Next match'
+              aria-label='下一个匹配'
             >
               <ArrowDown className='size-[12px]' />
             </Button>
@@ -210,7 +210,7 @@ export const WorkflowOutputSection = memo(
               variant='ghost'
               className='!p-1'
               onClick={closeSearch}
-              aria-label='Close search'
+              aria-label='关闭搜索'
             >
               <X className='size-[12px]' />
             </Button>
@@ -247,12 +247,12 @@ export const WorkflowOutputSection = memo(
               >
                 <DropdownMenuItem onSelect={handleCopy}>
                   <Duplicate />
-                  Copy
+                  复制
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onSelect={handleSearch}>
                   <SearchIcon />
-                  Search
+                  搜索
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>,
@@ -361,7 +361,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
         key: String(i),
         label:
           item.category === 'fixed' && item.description === 'execution_fee'
-            ? 'Base Run'
+            ? '基础运行'
             : item.description,
         credits: credits[String(i)] ?? 0,
         dollars: item.cost,
@@ -415,8 +415,8 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
       label: workflowName ?? 'this run',
     }
     const message = workflowName
-      ? `The "${workflowName}" workflow run failed. Investigate the error in this run and help me fix it.`
-      : 'This workflow run failed. Investigate the error in this run and help me fix it.'
+      ? `"${workflowName}" 工作流运行失败。请调查本次运行的错误并帮助我修复。`
+      : '此工作流运行失败。请调查本次运行的错误并帮助我修复。'
     if (sendMothershipMessage(message, [context])) return
     if (MothershipHandoffStorage.store({ message, contexts: [context] }, workspaceId)) {
       router.push(`/workspace/${workspaceId}/home`)
@@ -428,8 +428,8 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
       <div className='mt-4 flex min-h-0 flex-1 flex-col'>
         <ChipModalTabs
           tabs={[
-            { value: 'overview', label: 'Overview' },
-            ...(showTraceTab ? [{ value: 'trace', label: 'Trace' }] : []),
+            { value: 'overview', label: '概览' },
+            ...(showTraceTab ? [{ value: 'trace', label: '追踪' }] : []),
           ]}
           value={resolvedTab}
           onChange={(v) => setActiveTab(v as LogDetailsTab)}
@@ -443,7 +443,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
               <div className='grid grid-cols-2 gap-x-3 pb-0.5'>
                 <div className='flex min-w-0 flex-col gap-0.5'>
                   <span className='font-medium text-[var(--text-tertiary)] text-caption'>
-                    Timestamp
+                    时间戳
                   </span>
                   <span className='font-medium text-[var(--text-secondary)] text-sm tabular-nums'>
                     {formattedTimestamp
@@ -453,15 +453,15 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                 </div>
                 <div className='flex min-w-0 flex-col gap-0.5'>
                   <span className='font-medium text-[var(--text-tertiary)] text-caption'>
-                    {log.trigger === 'mothership' ? 'Job' : 'Workflow'}
+                    {log.trigger === 'mothership' ? '任务' : '工作流'}
                   </span>
                   <div className='flex min-w-0 items-center gap-1.5'>
                     <Workflow className='size-[14px] flex-shrink-0 text-[var(--text-icon)]' />
                     <span className='min-w-0 truncate font-medium text-[var(--text-secondary)] text-sm'>
                       {log.trigger === 'mothership'
-                        ? log.jobTitle || 'Untitled Job'
+                        ? log.jobTitle || '未命名任务'
                         : log.workflow?.name ||
-                          (!log.workflowId ? DELETED_WORKFLOW_LABEL : 'Unknown')}
+                          (!log.workflowId ? DELETED_WORKFLOW_LABEL : '未知')}
                     </span>
                   </div>
                 </div>
@@ -474,7 +474,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                   <div
                     role='button'
                     tabIndex={0}
-                    aria-label='Copy run ID'
+                    aria-label='复制运行 ID'
                     className='flex h-10 min-w-0 cursor-pointer items-center justify-between gap-4 px-3 transition-colors hover-hover:bg-[var(--surface-active)]'
                     onClick={() => copyRunId(log.executionId!)}
                     onKeyDown={(event) =>
@@ -482,10 +482,10 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                     }
                   >
                     <span className='flex-shrink-0 font-medium text-[var(--text-tertiary)] text-caption'>
-                      Run ID
+                      运行 ID
                     </span>
                     <span className='min-w-0 truncate font-medium text-[var(--text-secondary)] text-caption tabular-nums'>
-                      {copiedRunId ? 'Copied!' : log.executionId}
+                      {copiedRunId ? '已复制!' : log.executionId}
                     </span>
                   </div>
                 )}
@@ -493,7 +493,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                 {/* Level */}
                 <div className='flex h-10 items-center justify-between px-3'>
                   <span className='font-medium text-[var(--text-tertiary)] text-caption'>
-                    Level
+                    级别
                   </span>
                   <StatusBadge status={logStatus} />
                 </div>
@@ -501,13 +501,13 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                 {/* Trigger */}
                 <div className='flex h-10 items-center justify-between px-3'>
                   <span className='font-medium text-[var(--text-tertiary)] text-caption'>
-                    Trigger
+                    触发器
                   </span>
                   {log.trigger ? (
                     <TriggerBadge trigger={log.trigger} />
                   ) : (
                     <span className='font-medium text-[var(--text-secondary)] text-caption'>
-                      None
+                      无
                     </span>
                   )}
                 </div>
@@ -515,7 +515,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                 {/* Duration */}
                 <div className='flex h-10 items-center justify-between px-3'>
                   <span className='font-medium text-[var(--text-tertiary)] text-caption'>
-                    Duration
+                    时长
                   </span>
                   <span className='font-medium text-[var(--text-secondary)] text-caption tabular-nums'>
                     {formatDuration(log.duration, { precision: 2 }) || '—'}
@@ -526,7 +526,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                 {log.deploymentVersion && (
                   <div className='flex h-10 items-center gap-2 px-3'>
                     <span className='flex-shrink-0 font-medium text-[var(--text-tertiary)] text-caption'>
-                      Version
+                      版本
                     </span>
                     <div className='flex w-0 flex-1 justify-end'>
                       <Badge variant='green' size='sm' className='max-w-full truncate'>
@@ -540,10 +540,10 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                 {showWorkflowState && (
                   <div className='flex h-10 items-center justify-between px-3'>
                     <span className='font-medium text-[var(--text-tertiary)] text-caption'>
-                      Snapshot
+                      快照
                     </span>
                     <Chip leftIcon={Eye} flush onClick={() => setIsExecutionSnapshotOpen(true)}>
-                      View Snapshot
+                      查看快照
                     </Chip>
                   </div>
                 )}
@@ -552,10 +552,10 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                 {canTroubleshoot && (
                   <div className='flex h-10 items-center justify-between px-3'>
                     <span className='font-medium text-[var(--text-tertiary)] text-caption'>
-                      Troubleshoot
+                      故障排查
                     </span>
                     <Chip leftIcon={Wrench} flush onClick={handleTroubleshoot}>
-                      Troubleshoot in Chat
+                      在对话中排查
                     </Chip>
                   </div>
                 )}
@@ -565,7 +565,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
               {isWorkflowExecutionLog && workflowInput && !permissionConfig.hideTraceSpans && (
                 <div className='flex flex-col gap-1.5 rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-2.5 py-2 dark:bg-transparent'>
                   <span className='font-medium text-[var(--text-tertiary)] text-caption'>
-                    Workflow Input
+                    工作流输入
                   </span>
                   <WorkflowOutputSection output={workflowInput} />
                 </div>
@@ -582,7 +582,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                         : 'text-[var(--text-tertiary)]'
                     )}
                   >
-                    Workflow Output
+                    工作流输出
                   </span>
                   <WorkflowOutputSection output={workflowOutput} />
                 </div>
@@ -606,7 +606,7 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                   ))}
                   <div className='flex h-10 items-center justify-between px-3'>
                     <span className='font-medium text-[var(--text-secondary)] text-caption'>
-                      Total
+                      总计
                     </span>
                     <span className='font-semibold text-[var(--text-primary)] text-caption tabular-nums'>
                       {creditLabel(costBreakdown.totalCredits, costBreakdown.totalDollars)}
@@ -618,14 +618,13 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
                         Tokens
                       </span>
                       <span className='font-medium text-[var(--text-secondary)] text-caption tabular-nums'>
-                        {costBreakdown.tokens.input} in · {costBreakdown.tokens.output} out
+                        {costBreakdown.tokens.input} 输入 · {costBreakdown.tokens.output} 输出
                       </span>
                     </div>
                   )}
                   <div className='px-3 py-2'>
                     <p className='font-medium text-[var(--text-tertiary)] text-xs'>
-                      Total includes a {formatCost(BASE_EXECUTION_CHARGE)} base charge plus model
-                      and tool usage.
+                      总计包含 {formatCost(BASE_EXECUTION_CHARGE)} 基础费用以及模型和工具使用费。
                     </p>
                   </div>
                 </div>
@@ -642,13 +641,13 @@ export function LogDetailsContent({ log, onActiveTabChange }: LogDetailsContentP
             ) : log.executionData ? (
               <div className='flex h-full items-center justify-center px-4 text-center'>
                 <span className='font-medium text-[var(--text-tertiary)] text-sm'>
-                  No trace data available for this run
+                  本次运行没有追踪数据
                 </span>
               </div>
             ) : (
               <div className='flex h-full items-center justify-center px-4 text-center'>
                 <span className='font-medium text-[var(--text-tertiary)] text-sm'>
-                  Loading trace…
+                  加载追踪中…
                 </span>
               </div>
             )}
@@ -746,7 +745,7 @@ export const LogDetails = memo(function LogDetails({
           style={{ right: `calc(${effectiveWidth} - 4px)` }}
           onMouseDown={handleMouseDown}
           role='separator'
-          aria-label='Resize log details panel'
+          aria-label='调整日志详情面板大小'
           aria-orientation='vertical'
         />
       )}
@@ -757,13 +756,13 @@ export const LogDetails = memo(function LogDetails({
           isOpen ? 'translate-x-0' : 'translate-x-full'
         )}
         style={{ width: effectiveWidth }}
-        aria-label='Log details sidebar'
+        aria-label='日志详情侧栏'
       >
         {log && (
           <div className='flex h-full flex-col px-3.5 pt-3'>
             {/* Header */}
             <div className='flex items-center justify-between'>
-              <h2 className='font-medium text-[var(--text-primary)] text-sm'>Log Details</h2>
+              <h2 className='font-medium text-[var(--text-primary)] text-sm'>日志详情</h2>
               <div className='flex items-center gap-[1px]'>
                 {log.status === 'failed' &&
                   (log.workflow?.id || log.workflowId) &&
@@ -775,12 +774,12 @@ export const LogDetails = memo(function LogDetails({
                           className='!p-1'
                           onClick={() => onRetryExecution?.()}
                           disabled={isRetryPending}
-                          aria-label='Retry execution'
+                          aria-label='重试执行'
                         >
                           <Redo className='size-[14px]' />
                         </Button>
                       </Tooltip.Trigger>
-                      <Tooltip.Content side='bottom'>Retry</Tooltip.Content>
+                      <Tooltip.Content side='bottom'>重试</Tooltip.Content>
                     </Tooltip.Root>
                   )}
                 <Button
@@ -788,7 +787,7 @@ export const LogDetails = memo(function LogDetails({
                   className='!p-1'
                   onClick={() => hasPrev && onNavigatePrev?.()}
                   disabled={!hasPrev}
-                  aria-label='Previous log'
+                  aria-label='上一条日志'
                 >
                   <ChevronUp className='size-[14px]' />
                 </Button>
@@ -797,11 +796,11 @@ export const LogDetails = memo(function LogDetails({
                   className='!p-1'
                   onClick={() => hasNext && onNavigateNext?.()}
                   disabled={!hasNext}
-                  aria-label='Next log'
+                  aria-label='下一条日志'
                 >
                   <ChevronUp className='size-[14px] rotate-180' />
                 </Button>
-                <Button variant='ghost' className='!p-1' onClick={onClose} aria-label='Close'>
+                <Button variant='ghost' className='!p-1' onClick={onClose} aria-label='关闭'>
                   <X className='size-[14px]' />
                 </Button>
               </div>

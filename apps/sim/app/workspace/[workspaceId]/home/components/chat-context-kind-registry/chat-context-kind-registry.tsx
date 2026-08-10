@@ -53,50 +53,50 @@ function renderIntegrationTile({ context, className }: RenderIconArgs): ReactNod
  * without an icon.
  */
 export const CHAT_CONTEXT_KIND_REGISTRY: Record<ChatContextKind, ChatContextKindConfig> = {
-  workflow: { label: 'Workflow', renderIcon: renderWorkflowIcon },
-  current_workflow: { label: 'Current workflow', renderIcon: renderWorkflowIcon },
-  workflow_block: { label: 'Block', renderIcon: renderWorkflowIcon },
-  blocks: { label: 'Blocks', renderIcon: () => null },
+  workflow: { label: '工作流', renderIcon: renderWorkflowIcon },
+  current_workflow: { label: '当前工作流', renderIcon: renderWorkflowIcon },
+  workflow_block: { label: '节点', renderIcon: renderWorkflowIcon },
+  blocks: { label: '节点', renderIcon: () => null },
   knowledge: {
-    label: 'Knowledge base',
+    label: '知识库',
     renderIcon: ({ className }) => <Database className={className} />,
   },
   table: {
-    label: 'Table',
+    label: '表格',
     renderIcon: ({ className }) => <TableIcon className={className} />,
   },
   file: {
-    label: 'File',
-    renderIcon: ({ context, className }) => {
+    label: '文件',
+    renderIcon: ({ className, context }) => {
       const FileDocIcon = getDocumentIcon('', context.label)
       return <FileDocIcon className={className} />
     },
   },
   folder: {
-    label: 'Folder',
+    label: '文件夹',
     renderIcon: ({ className }) => <FolderIcon className={className} />,
   },
   filefolder: {
-    label: 'File folder',
+    label: '文件文件夹',
     renderIcon: ({ className }) => <FolderIcon className={className} />,
   },
   scheduledtask: {
-    label: 'Scheduled task',
+    label: '定时任务',
     renderIcon: ({ className }) => <Calendar className={className} />,
   },
   past_chat: {
-    label: 'Past chat',
+    label: '历史对话',
     renderIcon: ({ className }) => <Task className={className} />,
   },
   logs: {
-    label: 'Logs',
+    label: '日志',
     renderIcon: ({ className }) => <Library className={className} />,
   },
-  docs: { label: 'Docs', renderIcon: () => null },
-  slash_command: { label: 'Command', renderIcon: () => null },
-  integration: { label: 'Integration', renderIcon: renderIntegrationTile },
+  docs: { label: '文档', renderIcon: () => null },
+  slash_command: { label: '命令', renderIcon: () => null },
+  integration: { label: '集成', renderIcon: renderIntegrationTile },
   skill: {
-    label: 'Skill',
+    label: '技能',
     renderIcon: ({ className }) => <AgentSkillsIcon className={className} />,
   },
 }

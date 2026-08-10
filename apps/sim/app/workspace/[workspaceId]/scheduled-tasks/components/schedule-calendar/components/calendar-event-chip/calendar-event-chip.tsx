@@ -1,6 +1,7 @@
 'use client'
 import { chipContentGap, chipPrimaryFillTokens, cn } from '@sim/emcn'
 import { format } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
 import type {
   CalendarEvent,
   ScheduledTask,
@@ -53,7 +54,7 @@ export function CalendarEventChip({
         className
       )}
     >
-      <span className='flex-shrink-0'>{format(event.start, 'h:mm a')}</span>
+      <span className='flex-shrink-0'>{format(event.start, 'h:mm a', { locale: zhCN })}</span>
       <span className='min-w-0 truncate'>{event.title}</span>
     </button>
   )

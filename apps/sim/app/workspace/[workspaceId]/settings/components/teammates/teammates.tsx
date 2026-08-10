@@ -41,9 +41,9 @@ import {
 import { usePermissionConfig } from '@/hooks/use-permission-config'
 
 const ROLE_OPTIONS = [
-  { value: 'read', label: 'Read' },
-  { value: 'write', label: 'Write' },
-  { value: 'admin', label: 'Admin' },
+  { value: 'read', label: '只读' },
+  { value: 'write', label: '编辑' },
+  { value: 'admin', label: '管理员' },
 ] as const
 
 interface Teammate {
@@ -61,7 +61,7 @@ interface Teammate {
 }
 
 function formatJoinedDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US')
+  return new Date(iso).toLocaleDateString('zh-CN')
 }
 
 function copyToClipboard(text: string) {
@@ -131,7 +131,7 @@ export function Teammates() {
       name: member.name ?? member.email,
       image: member.image,
       role: member.permissionType,
-      status: `Joined ${formatJoinedDate(member.joinedAt)}`,
+      status: `已加入 ${formatJoinedDate(member.joinedAt)}`,
       isPending: false,
       userId: member.userId,
       roleSource: member.roleSource,
@@ -143,7 +143,7 @@ export function Teammates() {
       name: invitation.email,
       image: null,
       role: invitation.permissionType,
-      status: 'Invite pending',
+      status: '邀请待接受',
       isPending: true,
       invitationId: invitation.invitationId,
       token: invitation.token,
@@ -177,11 +177,11 @@ export function Teammates() {
         search={{
           value: searchTerm,
           onChange: (value) => void setSearchTerm(value),
-          placeholder: 'Search teammates...',
+          placeholder: '搜索团队成员...',
         }}
         actions={[
           {
-            text: 'Invite',
+            text: '邀请',
             icon: Plus,
             variant: 'primary',
             onSelect: handleInvite,
@@ -191,11 +191,9 @@ export function Teammates() {
         ]}
       >
         <MemberSection
-          label={`Teammates (${teammates.length})`}
+          label={`团队成员 (${teammates.length})`}
           isEmpty={showNoResults}
-          emptyText={
-            searchTerm.trim() ? `No teammates found matching “${searchTerm}”` : 'No teammates yet'
-          }
+          emptyText={searchTerm.trim() ? `没有匹配 “${searchTerm}” 的团队成员` : '还没有团队成员'}
         >
           {filteredTeammates.map((teammate) => (
             <MemberRow
@@ -227,16 +225,16 @@ export function Teammates() {
               })()}
               menu={
                 <RowActionsMenu
-                  label='Teammate actions'
+                  label='团队成员操作'
                   actions={[
                     {
-                      label: 'Copy email',
+                      label: '复制邮箱',
                       onSelect: () => copyToClipboard(teammate.email),
                     },
                     ...(canManage && teammate.isPending
                       ? [
                           {
-                            label: 'Resend invite',
+                            label: '重新发送邀请',
                             onSelect: () => {
                               if (teammate.invitationId) {
                                 resendInvitation.mutate({
@@ -247,7 +245,7 @@ export function Teammates() {
                             },
                           },
                           {
-                            label: 'Copy invite link',
+                            label: '复制邀请链接',
                             onSelect: () => {
                               if (teammate.invitationId && teammate.token) {
                                 copyToClipboard(
@@ -257,7 +255,7 @@ export function Teammates() {
                             },
                           },
                           {
-                            label: 'Revoke invite',
+                            label: '撤销邀请',
                             destructive: true,
                             onSelect: () => {
                               if (teammate.invitationId) {
@@ -273,7 +271,7 @@ export function Teammates() {
                     ...(canManage && !teammate.isPending && teammate.userId !== viewer?.userId
                       ? [
                           {
-                            label: 'Remove',
+                            label: '移除',
                             destructive: true,
                             onSelect: () => {
                               if (teammate.userId) {
@@ -281,11 +279,8 @@ export function Teammates() {
                                   { userId: teammate.userId, workspaceId },
                                   {
                                     onError: (error) => {
-                                      toast.error("Couldn't remove teammate", {
-                                        description: getErrorMessage(
-                                          error,
-                                          'Please try again in a moment.'
-                                        ),
+                                      toast.error('无法移除团队成员', {
+                                        description: getErrorMessage(error, '请稍后再试。'),
                                       })
                                     },
                                   }
@@ -306,7 +301,7 @@ export function Teammates() {
       <InviteModal
         open={isInviteModalOpen}
         onOpenChange={setIsInviteModalOpen}
-        workspaceName={activeWorkspace?.name ?? 'Workspace'}
+        workspaceName={activeWorkspace?.name ?? '工作区'}
         inviteDisabledReason={inviteDisabledReason}
         organizationId={activeWorkspace?.organizationId ?? null}
       />

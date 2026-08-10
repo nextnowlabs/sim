@@ -150,7 +150,7 @@ export function SettingsHeaderShell({ children }: { children: ReactNode }) {
         <div className='flex h-[30px] items-center gap-1'>
           {docsLink && (
             <ChipLink href={docsLink} target='_blank' rel='noopener noreferrer'>
-              Docs
+              文档
             </ChipLink>
           )}
           {actions?.map((action, index) => {
@@ -203,7 +203,7 @@ export function SettingsHeaderShell({ children }: { children: ReactNode }) {
           {search && (
             <ChipInput
               icon={Search}
-              placeholder={search.placeholder ?? 'Search...'}
+              placeholder={search.placeholder ?? '搜索...'}
               value={search.value}
               onChange={(event) => configRef?.current.search?.onChange(event.target.value)}
               disabled={search.disabled}

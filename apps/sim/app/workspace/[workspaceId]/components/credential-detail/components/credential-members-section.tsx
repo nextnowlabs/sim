@@ -97,7 +97,7 @@ export function CredentialMembersSection({ credentialId, isAdmin }: CredentialMe
                   <ChipDropdown
                     options={ROLE_OPTIONS}
                     value={member.role}
-                    placeholder='Role'
+                    placeholder='角色'
                     disabled={roleDisabled}
                     onChange={(role) =>
                       handleChangeMemberRole(member.userId, role as WorkspaceCredentialRole)
@@ -111,7 +111,7 @@ export function CredentialMembersSection({ credentialId, isAdmin }: CredentialMe
                     flush
                     className='justify-self-end'
                   >
-                    Remove
+                    移除
                   </Chip>
                 )}
               </div>

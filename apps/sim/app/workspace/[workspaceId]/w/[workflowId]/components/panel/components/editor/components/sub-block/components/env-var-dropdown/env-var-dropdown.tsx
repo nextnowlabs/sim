@@ -141,11 +141,11 @@ export const EnvVarDropdown: React.FC<EnvVarDropdownProps> = ({
     const workspaceVars = Object.keys(workspaceEnvData?.workspace || {})
     const personalVars = Object.keys(workspaceEnvData?.personal || {})
 
-    envVarGroups.push({ label: 'Workspace', variables: workspaceVars })
-    envVarGroups.push({ label: 'Personal', variables: personalVars })
+    envVarGroups.push({ label: '工作区', variables: workspaceVars })
+    envVarGroups.push({ label: '个人', variables: personalVars })
   } else {
     if (userEnvVars.length > 0) {
-      envVarGroups.push({ label: 'Personal', variables: userEnvVars })
+      envVarGroups.push({ label: '个人', variables: userEnvVars })
     }
   }
 
@@ -314,7 +314,7 @@ export const EnvVarDropdown: React.FC<EnvVarDropdownProps> = ({
               }}
             >
               <Plus className='size-3' />
-              <span>Create Secret</span>
+              <span>创建密钥</span>
             </PopoverItem>
           </PopoverScrollArea>
         ) : (

@@ -121,14 +121,14 @@ type MappableMappingKind = Exclude<ForkMappingEntry['kind'], 'knowledge-document
 
 /** Section label + display order per mapping kind (one mapping step per kind). */
 const MAPPING_SECTION: Record<MappableMappingKind, { label: string; order: number }> = {
-  credential: { label: 'Credentials', order: 0 },
-  'env-var': { label: 'Secrets', order: 1 },
-  table: { label: 'Tables', order: 2 },
-  'knowledge-base': { label: 'Knowledge bases', order: 3 },
-  file: { label: 'Files', order: 4 },
-  'mcp-server': { label: 'MCP servers', order: 5 },
-  'custom-tool': { label: 'Custom tools', order: 6 },
-  skill: { label: 'Skills', order: 7 },
+  credential: { label: '凭据', order: 0 },
+  'env-var': { label: '密钥', order: 1 },
+  table: { label: '表格', order: 2 },
+  'knowledge-base': { label: '知识库', order: 3 },
+  file: { label: '文件', order: 4 },
+  'mcp-server': { label: 'MCP 服务器', order: 5 },
+  'custom-tool': { label: '自定义工具', order: 6 },
+  skill: { label: '技能', order: 7 },
 }
 
 /**
@@ -140,11 +140,11 @@ const COPYABLE_KIND_SECTIONS: ReadonlyArray<{
   kind: ForkCopyableUnmapped['kind']
   label: string
 }> = [
-  { kind: 'file', label: 'Files' },
-  { kind: 'table', label: 'Tables' },
-  { kind: 'knowledge-base', label: 'Knowledge bases' },
-  { kind: 'custom-tool', label: 'Custom tools' },
-  { kind: 'skill', label: 'Skills' },
+  { kind: 'file', label: '文件' },
+  { kind: 'table', label: '表格' },
+  { kind: 'knowledge-base', label: '知识库' },
+  { kind: 'custom-tool', label: '自定义工具' },
+  { kind: 'skill', label: '技能' },
 ]
 
 const copyableKey = (candidate: ForkCopyableUnmapped) => forkRefKey(candidate)
@@ -185,13 +185,13 @@ export function PromoteWorkspaceModal({
     return [
       {
         value: `push:${parent.id}`,
-        label: `Push to ${parent.name}`,
+        label: `推送到 ${parent.name}`,
         otherWorkspaceId: parent.id,
         direction: 'push',
       },
       {
         value: `pull:${parent.id}`,
-        label: `Pull from ${parent.name}`,
+        label: `从 ${parent.name} 拉取`,
         otherWorkspaceId: parent.id,
         direction: 'pull',
       },
@@ -594,9 +594,7 @@ export function PromoteWorkspaceModal({
           // between the preview and Sync). The mutation's settled invalidation refetches the
           // diff, so the refreshed blocker list is already on its way in.
           const count = result.blockers.length
-          toast.error(
-            `Sync blocked: ${count} reference${count === 1 ? '' : 's'} would break in the target. Review the updated list and try again.`
-          )
+          toast.error(`同步被阻止:${count} 个引用会在目标中失效。请查看更新后的列表并重试。`)
           return
         }
         if (result.unmappedRequired.length > 0) {
@@ -604,15 +602,15 @@ export function PromoteWorkspaceModal({
           // blocks on required REFERENCES (credentials and/or secrets); required dependents are
           // gated client-side before this runs (see the Sync button's disabled tooltip).
           const kinds = new Set(result.unmappedRequired.map((reference) => reference.kind))
-          toast.error(`Map all required ${forkRequiredKindsLabel(kinds)} first`)
+          toast.error(`请先映射所有必需的${forkRequiredKindsLabel(kinds)}`)
           return
         }
-        toast.error('Sync did not complete')
+        toast.error('同步未完成')
         return
       }
 
-      const target = parent?.name ?? 'the workspace'
-      const label = direction === 'pull' ? `Pulled from "${target}"` : `Pushed to "${target}"`
+      const target = parent?.name ?? '该工作区'
+      const label = direction === 'pull' ? `已从 "${target}" 拉取` : `已推送到 "${target}"`
       const needsConfig = result.needsConfiguration
       const clearedOptional = result.clearedOptional
       // List the affected blocks, naming the workflow for a single one and falling back to
@@ -620,43 +618,34 @@ export function PromoteWorkspaceModal({
       // generic field titles ("Label") behind them.
       const formatWhere = (list: Array<{ workflowName: string; blocks: string[] }>) => {
         const totalBlocks = list.reduce((sum, workflow) => sum + workflow.blocks.length, 0)
-        if (list.length === 1) return `${list[0].blocks.join(', ')} in ${list[0].workflowName}`
-        return `${totalBlocks} block${totalBlocks === 1 ? '' : 's'} across ${list.length} workflows`
+        if (list.length === 1) return `${list[0].workflowName} 中的 ${list[0].blocks.join(', ')}`
+        return `${totalBlocks} 个节点,分布在 ${list.length} 个工作流中`
       }
       const optionalBlocks = clearedOptional.reduce(
         (sum, workflow) => sum + workflow.blocks.length,
         0
       )
       // Appended to a higher-priority warning so a cleared optional filter is never hidden.
-      const optionalSuffix =
-        optionalBlocks > 0
-          ? ` (+${optionalBlocks} block${optionalBlocks === 1 ? '' : 's'} with optional fields cleared)`
-          : ''
+      const optionalSuffix = optionalBlocks > 0 ? `(+${optionalBlocks} 个节点已清除可选字段)` : ''
       // Surfaced alongside a needs-config warning too, so concurrent deploy failures aren't only in
       // logs/Activity when both happen (the needs-config branch would otherwise win alone).
       const deployFailedSuffix =
-        result.deployFailed > 0
-          ? ` (+${result.deployFailed} workflow${result.deployFailed === 1 ? '' : 's'} failed to deploy)`
-          : ''
+        result.deployFailed > 0 ? `(+${result.deployFailed} 个工作流部署失败)` : ''
       if (needsConfig.length > 0) {
         toast.warning(
-          `${label}. Re-check ${formatWhere(needsConfig)}.${deployFailedSuffix}${optionalSuffix}`
+          `${label}。请重新检查 ${formatWhere(needsConfig)}。${deployFailedSuffix}${optionalSuffix}`
         )
       } else if (result.deployFailed > 0) {
         const n = result.deployFailed
-        toast.warning(
-          `${label}, but ${n} workflow${n === 1 ? '' : 's'} failed to deploy — open and redeploy ${n === 1 ? 'it' : 'them'}.${optionalSuffix}`
-        )
+        toast.warning(`${label},但 ${n} 个工作流部署失败 — 请打开并重新发布。${optionalSuffix}`)
       } else if (clearedOptional.length > 0) {
-        toast.warning(
-          `${label}. Optional settings cleared — re-check ${formatWhere(clearedOptional)}.`
-        )
+        toast.warning(`${label}。可选设置已清除 — 请重新检查 ${formatWhere(clearedOptional)}。`)
       } else {
         toast.success(label)
       }
       onOpenChange(false)
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Sync failed'))
+      toast.error(getErrorMessage(error, '同步失败'))
     } finally {
       setSubmitting(false)
     }
@@ -679,8 +668,7 @@ export function PromoteWorkspaceModal({
         .map((change) => change.currentName),
     [workflowChanges]
   )
-  const targetWorkspaceName =
-    direction === 'push' ? (parent?.name ?? 'the parent workspace') : 'this workspace'
+  const targetWorkspaceName = direction === 'push' ? (parent?.name ?? '父工作区') : '当前工作区'
 
   // One expandable row per copyable kind present in `byKind` - shared by the referenced group
   // and the unreferenced "Not used by any workflow" group so both render exactly like the fork
@@ -753,25 +741,25 @@ export function PromoteWorkspaceModal({
   const syncPrimaryAdjacent: ChipModalFooterSlotAction | undefined =
     safeStep === 0
       ? groupedEntries.length > 0
-        ? { label: 'Edit mappings', onClick: () => setStep(1), disabled: submitting }
+        ? { label: '编辑映射', onClick: () => setStep(1), disabled: submitting }
         : undefined
-      : { label: 'Back', onClick: () => setStep(safeStep - 1), disabled: submitting }
+      : { label: '返回', onClick: () => setStep(safeStep - 1), disabled: submitting }
 
   return (
     <>
-      <ChipModal open={open} onOpenChange={onOpenChange} srTitle='Sync workspace'>
+      <ChipModal open={open} onOpenChange={onOpenChange} srTitle='同步工作区'>
         <ChipModalHeader onClose={() => onOpenChange(false)}>
-          {currentGroup ? `Sync workspace: ${currentGroup.label}` : 'Sync workspace'}
+          {currentGroup ? `同步工作区:${currentGroup.label}` : '同步工作区'}
         </ChipModalHeader>
         <ChipModalBody>
           {safeStep === 0 ? (
             <div className='flex flex-col gap-7 px-2'>
-              <SettingsSection label='Sync'>
+              <SettingsSection label='同步'>
                 <ChipDropdown
                   value={selectedKey}
                   onChange={setSelectedKey}
                   options={edgeOptions}
-                  placeholder='Select action'
+                  placeholder='选择操作'
                   align='start'
                   fullWidth
                 />
@@ -779,23 +767,23 @@ export function PromoteWorkspaceModal({
 
               {/* Surface a failed/pending fetch so the modal never renders blank below the picker. */}
               {mapping.isError || diff.isError ? (
-                <SettingsSection label='Sync details'>
+                <SettingsSection label='同步详情'>
                   <div className='text-[var(--text-error)] text-small'>
                     {getErrorMessage(
                       mapping.error ?? diff.error,
-                      "Couldn't load sync details. Close and reopen to retry."
+                      '无法加载同步详情。请关闭后重新打开重试。'
                     )}
                   </div>
                 </SettingsSection>
               ) : !diff.data ? (
-                <div className='text-[var(--text-muted)] text-small'>Loading sync details…</div>
+                <div className='text-[var(--text-muted)] text-small'>正在加载同步详情…</div>
               ) : null}
 
               {/* Always shown once the diff loads so the user sees the section even with nothing
                   deployed - an empty change list means the source has no deployed workflows (every
                   deployed workflow appears here, changed or not), so the muted state nudges a deploy. */}
               {diff.data ? (
-                <SettingsSection label='Deployed Workflows'>
+                <SettingsSection label='已发布的工作流'>
                   {workflowChanges.length > 0 ? (
                     <div className='flex max-h-40 flex-col gap-1 overflow-y-auto'>
                       {workflowChanges.map((change, index) => {
@@ -823,32 +811,32 @@ export function PromoteWorkspaceModal({
                   ) : (
                     <div className='text-[var(--text-muted)] text-small'>
                       {direction === 'push'
-                        ? `No deployed workflows. Deploy workflows to push changes to ${parent?.name ?? 'the parent'}.`
-                        : `No deployed workflows in ${parent?.name ?? 'the parent'} to pull.`}
+                        ? `没有已发布的工作流。发布工作流以将更改推送到${parent?.name ?? '父工作区'}。`
+                        : `${parent?.name ?? '父工作区'}中没有可拉取的已发布工作流。`}
                     </div>
                   )}
                 </SettingsSection>
               ) : null}
 
               {headsUp ? (
-                <SettingsSection label='Heads up'>
+                <SettingsSection label='温馨提示'>
                   {(diff.data?.mcpReauthServerIds.length ?? 0) > 0 ? (
                     <div className='text-[var(--text-muted)] text-small'>
-                      {diff.data?.mcpReauthServerIds.length} MCP server(s) use OAuth and must be
-                      re-authorized in the target workspace.
+                      {diff.data?.mcpReauthServerIds.length} 个 MCP 服务器使用
+                      OAuth,需在目标工作区中重新授权。
                     </div>
                   ) : null}
                   {(diff.data?.inlineSecretSources.length ?? 0) > 0 ? (
                     <div className='mt-1 text-[var(--text-muted)] text-small'>
-                      {diff.data?.inlineSecretSources.length} inline secret(s) can't be auto-mapped
-                      — set them in the target workspace.
+                      {diff.data?.inlineSecretSources.length} 个内联密钥无法自动映射 —
+                      请在目标工作区中设置。
                     </div>
                   ) : null}
                 </SettingsSection>
               ) : null}
 
               {kindSummaries.length > 0 ? (
-                <SettingsSection label='Mappings'>
+                <SettingsSection label='映射'>
                   <div className='flex flex-col gap-2'>
                     {kindSummaries.map(
                       ({
@@ -864,15 +852,15 @@ export function PromoteWorkspaceModal({
                         const complete = resolved === total && !reconfigPending
                         const badgeLabel = complete
                           ? mapped === total
-                            ? 'Fully mapped'
+                            ? '已全部映射'
                             : copied === total
-                              ? 'Copied'
-                              : 'Mapped & copied'
+                              ? '已复制'
+                              : '已映射并复制'
                           : reconfigPending && resolved === total
-                            ? 'Needs setup'
+                            ? '需要配置'
                             : copied > 0
-                              ? `${resolved}/${total} ready`
-                              : `${mapped}/${total} mapped`
+                              ? `${resolved}/${total} 已就绪`
+                              : `${mapped}/${total} 已映射`
                         return (
                           <div key={kind} className='flex items-center justify-between gap-2'>
                             <span className='text-[var(--text-body)] text-small'>{label}</span>
@@ -898,57 +886,53 @@ export function PromoteWorkspaceModal({
               ) : null}
 
               {syncBlocked ? (
-                <SettingsSection label='Blocking sync'>
+                <SettingsSection label='阻止同步'>
                   <div className='flex max-h-40 flex-col gap-1 overflow-y-auto'>
                     {blockingRefs.map((ref, index) => (
                       <div
                         key={`${ref.targetWorkflowId}:${ref.blockId}:${ref.kind}:${ref.sourceId}:${ref.fieldLabel}:${index}`}
                         className='min-w-0 text-[var(--text-secondary)] text-small'
                       >
-                        <span className='text-[var(--text-body)]'>{ref.blockLabel}</span> would lose{' '}
-                        <span className='text-[var(--text-body)]'>{ref.fieldLabel}</span> in{' '}
-                        {ref.workflowName} — {forkBlockerResolution(ref)}
+                        <span className='text-[var(--text-body)]'>{ref.blockLabel}</span> 将丢失{' '}
+                        <span className='text-[var(--text-body)]'>{ref.fieldLabel}</span>(位于{' '}
+                        {ref.workflowName}) — {forkBlockerResolution(ref)}
                       </div>
                     ))}
                   </div>
                   <p className='text-[var(--text-muted)] text-caption'>
-                    Sync is blocked while any of these remain, so every synced workflow stays fully
-                    operational in the target.
+                    只要存在任一此类问题,同步就会被阻止,以确保每个同步的工作流在目标中保持完全可用。
                   </p>
                 </SettingsSection>
               ) : null}
 
               {dependentClears.length > 0 ? (
-                <SettingsSection label='Will be cleared'>
+                <SettingsSection label='将被清除'>
                   <div className='flex max-h-40 flex-col gap-1 overflow-y-auto'>
                     {dependentClears.map((ref, index) => (
                       <div
                         key={`${ref.targetWorkflowId}:${ref.blockId}:${ref.kind}:${ref.sourceId}:${ref.fieldLabel}:${index}`}
                         className='min-w-0 text-[var(--text-secondary)] text-small'
                       >
-                        <span className='text-[var(--text-body)]'>{ref.blockLabel}</span> will lose{' '}
-                        <span className='text-[var(--text-body)]'>{ref.fieldLabel}</span> in{' '}
-                        {ref.workflowName}
+                        <span className='text-[var(--text-body)]'>{ref.blockLabel}</span> 将丢失{' '}
+                        <span className='text-[var(--text-body)]'>{ref.fieldLabel}</span>(位于{' '}
+                        {ref.workflowName})
                       </div>
                     ))}
                   </div>
                   <p className='text-[var(--text-muted)] text-caption'>
-                    Fields that hang off a remapped credential or knowledge base are cleared —
-                    re-pick them in the target after the sync.
+                    挂接在重新映射的凭据或知识库下的字段将被清除 — 同步后请在目标中重新选择。
                   </p>
                 </SettingsSection>
               ) : null}
 
               {visibleCopyables.length > 0 ? (
-                <SettingsSection label='Copy resources'>
+                <SettingsSection label='复制资源'>
                   <div className='flex flex-col gap-2'>
                     {referencedByKind.size > 0 ? (
                       <>
                         {renderCopyKindSections(referencedByKind)}
                         <p className='text-[var(--text-muted)] text-caption'>
-                          These referenced resources aren't in the target yet. Selected ones are
-                          copied during the sync; a deselected one blocks the sync until it's mapped
-                          or selected again.
+                          这些被引用的资源尚不在目标中。选中的资源将在同步期间复制;未选中的资源会阻止同步,直到其被映射或重新选中。
                         </p>
                       </>
                     ) : null}
@@ -960,12 +944,11 @@ export function PromoteWorkspaceModal({
                             referencedByKind.size > 0 && 'mt-1'
                           )}
                         >
-                          Not used by any workflow
+                          未被任何工作流使用
                         </div>
                         {renderCopyKindSections(unreferencedByKind)}
                         <p className='text-[var(--text-muted)] text-caption'>
-                          These aren't referenced by any synced workflow. Selected ones are copied
-                          during the sync; deselected ones are simply left out.
+                          这些未被任何同步的工作流引用。选中的资源将在同步期间复制;未选中的将被直接忽略。
                         </p>
                       </>
                     ) : null}
@@ -993,7 +976,7 @@ export function PromoteWorkspaceModal({
                         ...(copyableKeys.has(entryKey(entry)) && targetFor(entry) !== ''
                           ? [
                               {
-                                label: 'Copy instead',
+                                label: '改为复制',
                                 value: COPY_INSTEAD_VALUE,
                                 onSelect: () => applyTargetChange(entry, ''),
                               },
@@ -1003,7 +986,7 @@ export function PromoteWorkspaceModal({
                           const owner = takenOwners.get(candidate.id)
                           return {
                             label: owner
-                              ? `${candidate.label} · mapped to ${owner}`
+                              ? `${candidate.label} · 已映射到 ${owner}`
                               : candidate.label,
                             value: candidate.id,
                             disabled: owner !== undefined,
@@ -1012,18 +995,17 @@ export function PromoteWorkspaceModal({
                       ]}
                       value={targetFor(entry) || undefined}
                       onChange={(value) => applyTargetChange(entry, value)}
-                      placeholder='Select target'
+                      placeholder='选择目标'
                     />
                     {entry.candidatesTruncated ? (
                       <div className='mt-1 text-[var(--text-muted)] text-small'>
-                        This workspace has more options than shown here. If you don't see the right
-                        one, narrow it down by name.
+                        该工作区的选项比此处显示的更多。如果没有看到合适的,请按名称筛选。
                       </div>
                     ) : null}
                     {copyingKeys.has(entryKey(entry)) ? (
                       <div className='mt-1 text-[var(--text-muted)] text-small'>
-                        Selected for copy in the overview — it'll be copied into the target. Pick a
-                        target above to map it to an existing one instead.
+                        已在概览中选择复制 —
+                        它将被复制到目标中。也可以在上方选择目标,将其映射到现有资源。
                       </div>
                     ) : null}
                     {/* Always-on: every workflow this resource is used in, each expandable to
@@ -1049,9 +1031,9 @@ export function PromoteWorkspaceModal({
           primaryAdjacentAction={syncPrimaryAdjacent}
           primaryAction={
             safeStep >= 1 && !isLastStep
-              ? { label: 'Next', onClick: () => setStep(safeStep + 1), disabled: submitting }
+              ? { label: '下一步', onClick: () => setStep(safeStep + 1), disabled: submitting }
               : {
-                  label: submitting ? 'Working...' : 'Sync',
+                  label: submitting ? '处理中...' : '同步',
                   onClick: () => setConfirmSyncOpen(true),
                   disabled: syncDisabled,
                   // Priority mirrors the resolution flow: clear the blockers, map the required
@@ -1059,13 +1041,13 @@ export function PromoteWorkspaceModal({
                   // obstacle (an unmapped credential/secret is a required-mapping failure, not
                   // a cleared-ref blocker; see `pendingRequiredKinds`).
                   disabledTooltip: syncBlocked
-                    ? 'Resolve every blocking reference first — map it, copy it, or fix it in the source'
+                    ? '请先解决所有阻止同步的引用 — 映射、复制或在源中修复'
                     : !requiredComplete
-                      ? `Map all required ${forkRequiredKindsLabel(pendingRequiredKinds)} first`
+                      ? `请先映射所有必需的${forkRequiredKindsLabel(pendingRequiredKinds)}`
                       : !reconfigComplete
-                        ? 'Reconfigure all required fields first'
+                        ? '请先重新配置所有必填字段'
                         : dataPending
-                          ? 'Loading sync details…'
+                          ? '正在加载同步详情…'
                           : undefined,
                 }
           }
@@ -1075,28 +1057,28 @@ export function PromoteWorkspaceModal({
       <ChipConfirmModal
         open={confirmSyncOpen}
         onOpenChange={setConfirmSyncOpen}
-        srTitle='Sync workspace'
-        title='Overwrite target workspace'
+        srTitle='同步工作区'
+        title='覆盖目标工作区'
         text={[
-          'The target may have been modified since the last sync. Syncing will ',
-          { text: 'overwrite any changes', bold: true },
-          ' there. Continue?',
+          '目标工作区自上次同步以来可能已被修改。同步将 ',
+          { text: '覆盖所有更改', bold: true },
+          '。是否继续？',
         ]}
         confirm={{
-          label: 'Sync',
+          label: '同步',
           onClick: () => {
             setConfirmSyncOpen(false)
             void runPromote()
           },
           pending: submitting,
-          pendingLabel: 'Syncing...',
+          pendingLabel: '同步中...',
         }}
       >
         {archivedWorkflowNames.length > 0 ? (
           <div className='flex flex-col gap-1 px-2'>
             <p className='break-words text-[var(--text-primary)] text-sm'>
-              Will be archived in <span className='font-medium'>{targetWorkspaceName}</span>{' '}
-              (deleted in the source):
+              将在 <span className='font-medium'>{targetWorkspaceName}</span> 中被归档
+              (已在源中删除):
             </p>
             {archivedWorkflowNames.slice(0, ARCHIVED_PREVIEW_LIMIT).map((name, index) => (
               <div
@@ -1108,7 +1090,7 @@ export function PromoteWorkspaceModal({
             ))}
             {archivedWorkflowNames.length > ARCHIVED_PREVIEW_LIMIT ? (
               <div className='text-[var(--text-muted)] text-small'>
-                and {archivedWorkflowNames.length - ARCHIVED_PREVIEW_LIMIT} more
+                以及另外 {archivedWorkflowNames.length - ARCHIVED_PREVIEW_LIMIT} 个
               </div>
             ) : null}
           </div>

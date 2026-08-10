@@ -63,7 +63,7 @@ const ProgressItem = forwardRef<HTMLDivElement, ProgressItemProps>(function Prog
   ref
 ) {
   const trailingAction = onCancel ?? onDismiss
-  const trailingLabel = onCancel ? 'Cancel' : (dismissLabel ?? 'Dismiss')
+  const trailingLabel = onCancel ? '取消' : (dismissLabel ?? '关闭')
   return (
     <div ref={ref} className={cn(progressItemVariants({ status }), className)} {...props}>
       <StatusIcon status={status} />

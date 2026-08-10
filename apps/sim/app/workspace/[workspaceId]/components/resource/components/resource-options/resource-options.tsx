@@ -209,7 +209,7 @@ const SearchSection = memo(function SearchSection({ search }: { search: SearchCo
           onKeyDown={search.onKeyDown}
           onFocus={search.onFocus}
           onBlur={search.onBlur}
-          placeholder={search.tags?.length ? '' : (search.placeholder ?? 'Search...')}
+          placeholder={search.tags?.length ? '' : (search.placeholder ?? '搜索…')}
           className='min-w-[80px] flex-1 bg-transparent py-1 text-[var(--text-body)] text-sm outline-none placeholder:text-[var(--text-muted)]'
         />
       </div>

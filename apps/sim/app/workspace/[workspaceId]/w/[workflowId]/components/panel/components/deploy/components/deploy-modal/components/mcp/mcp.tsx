@@ -287,7 +287,7 @@ export function McpDeploy({
   const saveDisabledReason = useMemo(() => {
     if (!toolName.trim() || toolNameError) return null
     if (selectedServerIdsForForm.length === 0 && selectedServerIds.length === 0) {
-      return 'Select a server to save this tool'
+      return '选择一个服务器以保存此工具'
     }
     return null
   }, [toolName, toolNameError, selectedServerIdsForForm, selectedServerIds])
@@ -547,7 +547,7 @@ export function McpDeploy({
         <ChipInput
           value={toolName}
           onChange={(e) => setToolName(e.target.value)}
-          placeholder='e.g., book_flight'
+          placeholder='例如 book_flight'
           aria-invalid={!!toolNameError}
           error={Boolean(toolNameError)}
         />
@@ -635,9 +635,9 @@ export function McpDeploy({
           multiSelect
           multiSelectValues={selectedServerIdsForForm}
           onMultiSelectChange={handleServerSelectionChange}
-          placeholder='Select servers...'
+          placeholder='选择服务器…'
           searchable
-          searchPlaceholder='Search servers...'
+          searchPlaceholder='搜索服务器…'
           disabled={!toolName.trim() || !!toolNameError || isPending}
           overlayContent={
             <span className='truncate text-[var(--text-primary)]'>{selectedServersLabel}</span>

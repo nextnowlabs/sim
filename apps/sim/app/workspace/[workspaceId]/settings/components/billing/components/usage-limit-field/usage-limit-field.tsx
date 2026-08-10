@@ -17,7 +17,7 @@ const AUTOSAVE_DELAY_MS = 1000
 const USAGE_LIMIT_INFO = (
   <Info side='top' className='text-[var(--text-muted)]'>
     {
-      "Max usage to consume per month, set in credits — Sim's usage unit (1,000 credits = $5). By default, it's your plan's included usage, but you can set it beyond."
+      '每月最多可消耗的用量,以积分(credits)为单位——Sim 的用量单位(1,000 积分 = $5)。默认等于你套餐的包含用量,你也可以设置更高。'
     }
   </Info>
 )
@@ -87,28 +87,28 @@ export function UsageLimitField({
     if (currentLimit == null || debouncedDraft.trim() === '') return
     const parsedCredits = Number.parseFloat(debouncedDraft)
     if (Number.isNaN(parsedCredits)) {
-      toast.error('Usage limit must be a number')
+      toast.error('用量上限必须是数字')
       return
     }
     if (parsedCredits === dollarsToCredits(currentLimit)) return
     const minimumCredits = dollarsToCredits(minimumLimit)
     if (parsedCredits < minimumCredits) {
-      toast.error(`Usage limit must be at least ${minimumCredits.toLocaleString()} credits`)
+      toast.error(`用量上限至少为 ${minimumCredits.toLocaleString()} 积分`)
       return
     }
 
     // Store dollars; the input is credits. Convert once at the boundary.
     const limitDollars = creditsToDollars(parsedCredits)
     const onError = (error: unknown) => {
-      toast.error("Couldn't update usage limit", {
-        description: getErrorMessage(error, 'Please try again in a moment.'),
+      toast.error('更新用量上限失败', {
+        description: getErrorMessage(error, '请稍后重试。'),
       })
     }
 
     if (context === 'organization') {
       if (!organizationId) {
-        toast.error("Couldn't update usage limit", {
-          description: 'Organization billing context is unavailable. Please refresh and try again.',
+        toast.error('更新用量上限失败', {
+          description: '组织账单上下文不可用,请刷新后重试。',
         })
         return
       }
@@ -120,7 +120,7 @@ export function UsageLimitField({
   }, [debouncedDraft, minimumLimit, canEdit, context, organizationId, saveOrgLimit, saveUserLimit])
 
   return (
-    <SettingsSection label='Usage limit' headerAccessory={USAGE_LIMIT_INFO}>
+    <SettingsSection label='用量上限' headerAccessory={USAGE_LIMIT_INFO}>
       <ChipInput
         type='number'
         inputMode='numeric'
@@ -129,9 +129,9 @@ export function UsageLimitField({
         onChange={(e) => setDraft(e.target.value)}
         placeholder={
           currentLimit == null
-            ? 'Enter monthly usage limit'
+            ? '输入每月用量上限'
             : currentLimit >= ON_DEMAND_UNLIMITED
-              ? 'No Usage Limit'
+              ? '无限用量'
               : String(dollarsToCredits(currentLimit))
         }
         disabled={!canEdit}

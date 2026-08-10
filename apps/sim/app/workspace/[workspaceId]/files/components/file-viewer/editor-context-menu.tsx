@@ -63,25 +63,25 @@ export function EditorContextMenu({
         {canEdit && (
           <DropdownMenuItem disabled={!hasSelection} onSelect={onCut}>
             <Scissors />
-            Cut
+            剪切
             <DropdownMenuShortcut>⌘X</DropdownMenuShortcut>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem disabled={!hasSelection} onSelect={onCopy}>
           <Duplicate />
-          Copy
+          复制
           <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onCopyAll}>
           <Duplicate />
-          Copy all
+          复制全部
         </DropdownMenuItem>
         {canEdit && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={onPaste}>
               <Clipboard />
-              Paste
+              粘贴
               <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
             </DropdownMenuItem>
           </>
@@ -89,12 +89,12 @@ export function EditorContextMenu({
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={onSelectAll}>
           <SelectAll />
-          Select all
+          全选
           <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onFind}>
           <Search />
-          Find
+          查找
           <DropdownMenuShortcut>⌘F</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuContent>

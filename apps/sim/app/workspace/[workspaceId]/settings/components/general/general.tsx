@@ -114,9 +114,7 @@ export function General() {
           setUploadError(null)
         })
         .catch(() => {
-          setUploadError(
-            url ? 'Failed to update profile picture' : 'Failed to remove profile picture'
-          )
+          setUploadError(url ? '更新头像失败' : '移除头像失败')
         })
     },
     onError: (error: string) => {
@@ -272,15 +270,15 @@ export function General() {
     ...(isHosted
       ? [
           {
-            text: 'Home page',
+            text: '首页',
             onSelect: () => window.open('/?home', '_blank', 'noopener,noreferrer'),
           },
         ]
       : []),
     ...(!isAuthDisabled
       ? [
-          { text: 'Sign out', onSelect: handleSignOut },
-          { text: 'Reset password', onSelect: () => setShowResetPasswordModal(true) },
+          { text: '退出登录', onSelect: handleSignOut },
+          { text: '重置密码', onSelect: () => setShowResetPasswordModal(true) },
         ]
       : []),
   ]
@@ -288,13 +286,13 @@ export function General() {
   return (
     <>
       <SettingsPanel actions={actions}>
-        <SettingsSection label='Profile'>
+        <SettingsSection label='个人资料'>
           <div className='flex flex-col gap-3'>
             <div className='flex items-center gap-3'>
               <div className='relative'>
                 <button
                   type='button'
-                  aria-label='Change profile picture'
+                  aria-label='更换头像'
                   className={`group relative flex size-9 flex-shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full transition-all hover-hover:bg-[var(--bg)] ${!imageUrl ? 'border border-[var(--border)]' : ''}`}
                   onClick={handleProfilePictureClick}
                 >
@@ -303,7 +301,7 @@ export function General() {
                       return (
                         <Image
                           src={imageUrl}
-                          alt={profile?.name || 'User'}
+                          alt={profile?.name || '用户'}
                           width={36}
                           height={36}
                           unoptimized
@@ -355,7 +353,7 @@ export function General() {
                         </span>
                         <input
                           ref={inputRef}
-                          aria-label='Your name'
+                          aria-label='你的姓名'
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           onKeyDown={handleKeyDown}
@@ -374,7 +372,7 @@ export function General() {
                         className='size-[12px] flex-shrink-0 p-0'
                         onClick={handleUpdateName}
                         disabled={updateProfile.isPending}
-                        aria-label='Save name'
+                        aria-label='保存姓名'
                       >
                         <Check className='size-[12px]' />
                       </Button>
@@ -386,7 +384,7 @@ export function General() {
                         variant='ghost'
                         className='size-[10.5px] flex-shrink-0 p-0'
                         onClick={() => setIsEditingName(true)}
-                        aria-label='Edit name'
+                        aria-label='编辑姓名'
                       >
                         <Pencil className='size-[10.5px]' />
                       </Button>
@@ -400,10 +398,10 @@ export function General() {
           </div>
         </SettingsSection>
 
-        <SettingsSection label='Preferences'>
+        <SettingsSection label='偏好设置'>
           <div className='flex flex-col gap-4'>
             <div className='flex items-center justify-between'>
-              <Label htmlFor='theme-select'>Theme</Label>
+              <Label htmlFor='theme-select'>主题</Label>
               <div className={DROPDOWN_TRIGGER_CLASS}>
                 <ChipSelect
                   align='start'
@@ -411,27 +409,27 @@ export function General() {
                   dropdownWidth='trigger'
                   value={settings?.theme}
                   onChange={handleThemeChange}
-                  placeholder='Select theme'
+                  placeholder='选择主题'
                   options={[
-                    { label: 'System', value: 'system' },
-                    { label: 'Light', value: 'light' },
-                    { label: 'Dark', value: 'dark' },
+                    { label: '跟随系统', value: 'system' },
+                    { label: '浅色', value: 'light' },
+                    { label: '深色', value: 'dark' },
                   ]}
                 />
               </div>
             </div>
 
             <div className='flex items-center justify-between gap-4'>
-              <Label>Timezone</Label>
+              <Label>时区</Label>
               <div className={DROPDOWN_TRIGGER_CLASS}>
                 <ChipCombobox
                   align='start'
                   dropdownWidth={240}
                   searchable
-                  searchPlaceholder='Search timezones'
+                  searchPlaceholder='搜索时区'
                   value={settings?.timezone ?? getBrowserTimezone()}
                   onChange={handleTimezoneChange}
-                  placeholder='Select timezone'
+                  placeholder='选择时区'
                   options={TIMEZONE_OPTIONS}
                 />
               </div>
@@ -439,16 +437,16 @@ export function General() {
 
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1.5'>
-                <Label htmlFor='auto-connect'>Auto-connect on drop</Label>
+                <Label htmlFor='auto-connect'>拖放时自动连接</Label>
                 <Tooltip.Root>
                   <Tooltip.Trigger asChild>
                     <Info className='size-[14px] cursor-default text-[var(--text-muted)]' />
                   </Tooltip.Trigger>
                   <Tooltip.Content side='bottom' align='start'>
-                    <p>Automatically connect blocks when dropped near each other</p>
+                    <p>当节点彼此靠近放置时自动连接</p>
                     <Tooltip.Preview
                       src='/tooltips/auto-connect-on-drop.mp4'
-                      alt='Auto-connect on drop example'
+                      alt='自动连接示例'
                       loop={true}
                     />
                   </Tooltip.Content>
@@ -463,16 +461,16 @@ export function General() {
 
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-1.5'>
-                <Label htmlFor='error-notifications'>Canvas error notifications</Label>
+                <Label htmlFor='error-notifications'>画布错误通知</Label>
                 <Tooltip.Root>
                   <Tooltip.Trigger asChild>
                     <Info className='size-[14px] cursor-default text-[var(--text-muted)]' />
                   </Tooltip.Trigger>
                   <Tooltip.Content side='bottom' align='start'>
-                    <p>Show error popups on blocks when a workflow run fails</p>
+                    <p>工作流运行失败时在节点上显示错误弹窗</p>
                     <Tooltip.Preview
                       src='/tooltips/canvas-error-notification.mp4'
-                      alt='Canvas error notification example'
+                      alt='画布错误通知示例'
                     />
                   </Tooltip.Content>
                 </Tooltip.Root>
@@ -485,7 +483,7 @@ export function General() {
             </div>
 
             <div className='flex items-center justify-between'>
-              <Label htmlFor='snap-to-grid'>Snap to grid</Label>
+              <Label htmlFor='snap-to-grid'>对齐网格</Label>
               <div className={DROPDOWN_TRIGGER_CLASS}>
                 <ChipSelect
                   align='start'
@@ -493,9 +491,9 @@ export function General() {
                   dropdownWidth='trigger'
                   value={String(snapToGridValue)}
                   onChange={handleSnapToGridChange}
-                  placeholder='Select size'
+                  placeholder='选择大小'
                   options={[
-                    { label: 'Off', value: '0' },
+                    { label: '关闭', value: '0' },
                     { label: '10px', value: '10' },
                     { label: '20px', value: '20' },
                     { label: '30px', value: '30' },
@@ -507,7 +505,7 @@ export function General() {
             </div>
 
             <div className='flex items-center justify-between'>
-              <Label htmlFor='show-action-bar'>Show canvas controls</Label>
+              <Label htmlFor='show-action-bar'>显示画布控件</Label>
               <Switch
                 id='show-action-bar'
                 checked={settings?.showActionBar ?? true}
@@ -517,7 +515,7 @@ export function General() {
 
             {isTrainingEnabled && (
               <div className='flex items-center justify-between'>
-                <Label htmlFor='training-controls'>Training controls</Label>
+                <Label htmlFor='training-controls'>训练控件</Label>
                 <Switch
                   id='training-controls'
                   checked={settings?.showTrainingControls ?? false}
@@ -528,10 +526,10 @@ export function General() {
           </div>
         </SettingsSection>
 
-        <SettingsSection label='Privacy'>
+        <SettingsSection label='隐私'>
           <div className='flex flex-col gap-3'>
             <div className='flex items-center justify-between'>
-              <Label htmlFor='telemetry'>Allow anonymous telemetry</Label>
+              <Label htmlFor='telemetry'>允许匿名遥测</Label>
               <Switch
                 id='telemetry'
                 checked={settings?.telemetryEnabled ?? true}
@@ -539,8 +537,7 @@ export function General() {
               />
             </div>
             <p className='text-[var(--text-muted)] text-small'>
-              We use OpenTelemetry to collect anonymous usage data to improve Sim. You can opt-out
-              at any time.
+              我们使用 OpenTelemetry 收集匿名使用数据以改进 Sim。你可以随时选择退出。
             </p>
           </div>
         </SettingsSection>
@@ -549,16 +546,14 @@ export function General() {
       <ChipModal
         open={showResetPasswordModal}
         onOpenChange={setShowResetPasswordModal}
-        srTitle='Reset Password'
+        srTitle='重置密码'
       >
-        <ChipModalHeader onClose={() => setShowResetPasswordModal(false)}>
-          Reset Password
-        </ChipModalHeader>
+        <ChipModalHeader onClose={() => setShowResetPasswordModal(false)}>重置密码</ChipModalHeader>
         <ChipModalBody>
           <p className='px-2 text-[var(--text-secondary)] text-sm'>
-            A password reset link will be sent to{' '}
-            <span className='font-medium text-[var(--text-primary)]'>{profile?.email}</span>. Click
-            the link in the email to create a new password.
+            密码重置链接将发送至{' '}
+            <span className='font-medium text-[var(--text-primary)]'>{profile?.email}</span>。点击
+            邮件中的链接即可创建新密码。
           </p>
           <ChipModalError>{resetPassword.error?.message}</ChipModalError>
         </ChipModalBody>
@@ -567,10 +562,10 @@ export function General() {
           cancelDisabled={resetPassword.isPending || resetPassword.isSuccess}
           primaryAction={{
             label: resetPassword.isPending
-              ? 'Sending...'
+              ? '发送中...'
               : resetPassword.isSuccess
-                ? 'Sent'
-                : 'Send Reset Email',
+                ? '已发送'
+                : '发送重置邮件',
             onClick: handleResetPasswordConfirm,
             disabled: resetPassword.isPending || resetPassword.isSuccess,
           }}

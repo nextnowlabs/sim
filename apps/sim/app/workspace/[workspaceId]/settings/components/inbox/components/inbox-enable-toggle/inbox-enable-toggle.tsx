@@ -62,10 +62,8 @@ export function InboxEnableToggle() {
     <>
       <div className='flex items-center justify-between'>
         <div className='flex flex-col gap-1'>
-          <span className='text-[13px] text-[var(--text-primary)]'>Enable email inbox</span>
-          <span className='text-[12px] text-[var(--text-muted)]'>
-            Allow this workspace to receive tasks via email
-          </span>
+          <span className='text-[13px] text-[var(--text-primary)]'>启用邮件收件箱</span>
+          <span className='text-[12px] text-[var(--text-muted)]'>允许此工作区通过邮件接收任务</span>
         </div>
         <Switch
           checked={config?.enabled ?? false}
@@ -74,28 +72,26 @@ export function InboxEnableToggle() {
         />
       </div>
 
-      <ChipModal open={isEnableOpen} onOpenChange={setIsEnableOpen} srTitle='Enable email inbox'>
-        <ChipModalHeader onClose={() => setIsEnableOpen(false)}>Enable email inbox</ChipModalHeader>
+      <ChipModal open={isEnableOpen} onOpenChange={setIsEnableOpen} srTitle='启用邮件收件箱'>
+        <ChipModalHeader onClose={() => setIsEnableOpen(false)}>启用邮件收件箱</ChipModalHeader>
         <ChipModalBody>
           <p className='px-2 text-[var(--text-secondary)] text-sm'>
-            An email address will be created for this workspace. Anyone in the allowed senders list
-            can email it to create tasks.
+            系统将为此工作区创建一个邮件地址。允许的发送者列表中的任何人向该地址发送邮件即可
+            创建任务。
           </p>
           <ChipModalField
             type='input'
-            title='Email prefix'
+            title='邮件前缀'
             value={enableUsername}
             onChange={setEnableUsername}
-            placeholder='Optional — leave blank to auto-generate'
+            placeholder='可选 — 留空将自动生成'
           />
-          <p className='px-2 text-[var(--text-muted)] text-sm'>
-            Leave blank for an auto-generated address.
-          </p>
+          <p className='px-2 text-[var(--text-muted)] text-sm'>留空则使用自动生成的地址。</p>
         </ChipModalBody>
         <ChipModalFooter
           onCancel={() => setIsEnableOpen(false)}
           primaryAction={{
-            label: 'Enable',
+            label: '启用',
             onClick: handleEnable,
             disabled: toggleInbox.isPending,
           }}
@@ -105,23 +101,23 @@ export function InboxEnableToggle() {
       <ChipConfirmModal
         open={isDisableOpen}
         onOpenChange={setIsDisableOpen}
-        srTitle='Disable email inbox'
-        title='Disable email inbox'
+        srTitle='禁用邮件收件箱'
+        title='禁用邮件收件箱'
         text={[
-          'Are you sure you want to disable the inbox',
+          '确定要禁用收件箱',
           config?.address && ' ',
           config?.address && { text: config.address, bold: true },
-          '? Any emails sent to this address after disabling will not be delivered. This action cannot be undone.',
+          '吗?禁用后发送到该地址的邮件将不会被接收。此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Disable inbox',
+          label: '禁用收件箱',
           onClick: handleDisable,
           pending: toggleInbox.isPending,
-          pendingLabel: 'Disabling...',
+          pendingLabel: '禁用中...',
         }}
       >
         <p className='px-2 text-[var(--text-secondary)] text-sm'>
-          Your existing conversations and task history will be preserved.
+          你现有的对话和任务历史将得到保留。
         </p>
       </ChipConfirmModal>
     </>

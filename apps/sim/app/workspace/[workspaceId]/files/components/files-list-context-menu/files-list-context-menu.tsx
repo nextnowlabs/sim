@@ -46,19 +46,19 @@ export const FilesListContextMenu = memo(function FilesListContextMenu({
         {onCreateFile && (
           <DropdownMenuItem disabled={disableCreate} onSelect={onCreateFile}>
             <Plus />
-            New file
+            新建文件
           </DropdownMenuItem>
         )}
         {onCreateFolder && (
           <DropdownMenuItem disabled={disableCreateFolder} onSelect={onCreateFolder}>
             <FolderPlus />
-            New folder
+            新建文件夹
           </DropdownMenuItem>
         )}
         {onUploadFile && (
           <DropdownMenuItem disabled={disableUpload} onSelect={onUploadFile}>
             <Upload />
-            Upload file
+            上传文件
           </DropdownMenuItem>
         )}
       </DropdownMenuContent>

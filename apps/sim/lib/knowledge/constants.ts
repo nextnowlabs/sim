@@ -90,10 +90,10 @@ export function isValidSlotForFieldType(tagSlot: string, fieldType: string): boo
  * Display labels for field types
  */
 export const FIELD_TYPE_LABELS: Record<string, string> = {
-  text: 'Text',
-  number: 'Number',
-  date: 'Date',
-  boolean: 'Boolean',
+  text: '文本',
+  number: '数字',
+  date: '日期',
+  boolean: '布尔',
 }
 
 /**

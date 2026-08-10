@@ -28,7 +28,7 @@ import { useTimezone } from '@/hooks/queries/general-settings'
 import type { ChatContext } from '@/stores/panel'
 
 const DEFAULT_TIME = '09:00'
-const PAST_LAUNCH_MESSAGE = "You can't schedule a one-time task in the past"
+const PAST_LAUNCH_MESSAGE = '无法安排在过去的单次任务'
 
 /** Whether a one-time launch has already passed, evaluated in the task's `timezone`. */
 function isLaunchInPast(launchDate: string, launchTime: string, timezone: string): boolean {
@@ -156,7 +156,7 @@ export function TaskModal({
       open={open}
       onOpenChange={handleOpenChange}
       size='lg'
-      srTitle={edit ? 'Edit scheduled task' : 'New scheduled task'}
+      srTitle={edit ? '编辑定时任务' : '新建定时任务'}
     >
       <TaskModalContent
         onOpenChange={handleOpenChange}
@@ -306,7 +306,7 @@ function TaskModalContent({
     ...(edit && onRequestDelete
       ? [
           {
-            label: 'Delete',
+            label: '删除',
             variant: 'destructive' as const,
             onClick: onRequestDelete,
             disabled: submitting,
@@ -320,12 +320,12 @@ function TaskModalContent({
   return (
     <>
       <ChipModalHeader icon={Calendar} onClose={close}>
-        {edit ? 'Edit scheduled task' : 'New scheduled task'}
+        {edit ? '编辑定时任务' : '新建定时任务'}
       </ChipModalHeader>
       <ChipModalPromptBody>
         <PromptEditor
           editor={editor}
-          placeholder='Use @ and launch Sim to...'
+          placeholder='使用 @ 并启动 Sim 来…'
           autoFocus
           onSubmit={handleSubmit}
         />
@@ -336,7 +336,7 @@ function TaskModalContent({
         cancelDisabled={submitting}
         secondaryActions={secondaryActions}
         primaryAction={{
-          label: submitting ? (edit ? 'Saving...' : 'Scheduling...') : edit ? 'Save' : 'Schedule',
+          label: submitting ? (edit ? '保存中…' : '安排中…') : edit ? '保存' : '安排',
           onClick: handleSubmit,
           disabled: !promptText || isPastLaunch || submitting,
           disabledTooltip: isPastLaunch ? PAST_LAUNCH_MESSAGE : undefined,

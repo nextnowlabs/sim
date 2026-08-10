@@ -13,7 +13,7 @@ interface PageProps {
 
 export async function generateMetadata({ searchParams }: PageProps): Promise<Metadata> {
   const { kbName } = await searchParams
-  return { title: kbName || 'Knowledge Base' }
+  return { title: kbName || '知识库' }
 }
 
 export default async function KnowledgeBasePage({ params, searchParams }: PageProps) {
@@ -21,7 +21,7 @@ export default async function KnowledgeBasePage({ params, searchParams }: PagePr
 
   return (
     <Suspense fallback={null}>
-      <KnowledgeBase id={id} knowledgeBaseName={kbName || 'Knowledge Base'} />
+      <KnowledgeBase id={id} knowledgeBaseName={kbName || '知识库'} />
     </Suspense>
   )
 }

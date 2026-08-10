@@ -235,7 +235,7 @@ export function DeployModal({
     if (value && value.trim().length > 0) {
       return value
     }
-    return workflowWorkspaceId ? 'Workspace API keys' : 'Personal API keys'
+    return workflowWorkspaceId ? '工作区 API 密钥' : '个人 API 密钥'
   }
 
   const getApiHeaderPlaceholder = () =>
@@ -352,7 +352,7 @@ export function DeployModal({
       if (deployActionIdRef.current !== actionId) return
       if (!isWorkflowStillActive(workflowId)) return
       logger.error('Error deploying workflow:', { error })
-      const errorMessage = toError(error).message || 'Failed to deploy workflow'
+      const errorMessage = toError(error).message || '部署工作流失败'
       setDeployError(errorMessage)
     } finally {
       releaseDeployAction(workflowId)
@@ -457,7 +457,7 @@ export function DeployModal({
       if (deployActionIdRef.current !== actionId) return
       if (!isWorkflowStillActive(workflowId)) return
       logger.error('Error redeploying workflow:', { error })
-      const errorMessage = toError(error).message || 'Failed to redeploy workflow'
+      const errorMessage = toError(error).message || '重新部署工作流失败'
       setDeployError(errorMessage)
     } finally {
       releaseDeployAction(workflowId)
@@ -520,7 +520,7 @@ export function DeployModal({
     <>
       <Modal open={open} onOpenChange={handleCloseModal}>
         <ModalContent size='lg' className='h-[76vh]'>
-          <ModalHeader>Workflow Deployment</ModalHeader>
+          <ModalHeader>工作流部署</ModalHeader>
 
           <ModalTabs
             value={activeTab}
@@ -528,7 +528,7 @@ export function DeployModal({
             className='flex min-h-0 flex-1 flex-col'
           >
             <ModalTabsList activeValue={activeTab}>
-              <ModalTabsTrigger value='general'>General</ModalTabsTrigger>
+              <ModalTabsTrigger value='general'>常规</ModalTabsTrigger>
               {!permissionConfig.hideDeployApi && (
                 <ModalTabsTrigger value='api'>API</ModalTabsTrigger>
               )}
@@ -536,14 +536,13 @@ export function DeployModal({
                 <ModalTabsTrigger value='mcp'>MCP</ModalTabsTrigger>
               )}
               {!permissionConfig.hideDeployChatbot && (
-                <ModalTabsTrigger value='chat'>Chat</ModalTabsTrigger>
+                <ModalTabsTrigger value='chat'>对话</ModalTabsTrigger>
               )}
             </ModalTabsList>
 
             <ModalBody className='min-h-0 flex-1'>
               <ModalDescription className='sr-only'>
-                Configure and manage workflow deployment settings including API, MCP, and chat
-                options.
+                配置和管理工作流部署设置,包括 API、MCP 和对话选项。
               </ModalDescription>
               {(deployError || deployWarnings.length > 0) && (
                 <div className='mb-3 flex flex-col gap-2'>
@@ -615,7 +614,7 @@ export function DeployModal({
                   {workflowId && (
                     <McpDeploy
                       workflowId={workflowId}
-                      workflowName={workflowMetadata?.name || 'Workflow'}
+                      workflowName={workflowMetadata?.name || '工作流'}
                       workflowDescription={workflowMetadata?.description}
                       isDeployed={isDeployed}
                       deployedState={deployedState}
@@ -651,14 +650,14 @@ export function DeployModal({
               <div />
               <div className='flex items-center gap-2'>
                 <Button variant='default' onClick={() => setIsApiInfoModalOpen(true)}>
-                  Edit API Info
+                  编辑 API 信息
                 </Button>
                 <Button
                   variant='tertiary'
                   onClick={() => setIsCreateKeyModalOpen(true)}
                   disabled={createButtonDisabled}
                 >
-                  Generate API Key
+                  生成 API 密钥
                 </Button>
               </div>
             </ModalFooter>
@@ -674,7 +673,7 @@ export function DeployModal({
                     onClick={handleChatDelete}
                     disabled={chatSubmitting}
                   >
-                    Delete
+                    删除
                   </Button>
                 )}
                 <Button
@@ -685,15 +684,15 @@ export function DeployModal({
                 >
                   {chatSuccess
                     ? chatExists
-                      ? 'Updated'
-                      : 'Launched'
+                      ? '已更新'
+                      : '已上线'
                     : chatSubmitting
                       ? chatExists
-                        ? 'Updating...'
-                        : 'Launching...'
+                        ? '更新中…'
+                        : '上线中…'
                       : chatExists
-                        ? 'Update'
-                        : 'Launch Chat'}
+                        ? '更新'
+                        : '启动对话'}
                 </Button>
               </div>
             </ModalFooter>
@@ -712,7 +711,7 @@ export function DeployModal({
                     })
                   }
                 >
-                  Manage
+                  管理
                 </Button>
                 <Tooltip.Root>
                   <Tooltip.Trigger asChild>
@@ -723,7 +722,7 @@ export function DeployModal({
                         onClick={handleMcpToolFormSubmit}
                         disabled={mcpToolSubmitting || !mcpToolCanSave}
                       >
-                        {mcpToolSubmitting ? 'Saving...' : 'Save Tool'}
+                        {mcpToolSubmitting ? '保存中…' : '保存工具'}
                       </Button>
                     </span>
                   </Tooltip.Trigger>
@@ -742,20 +741,20 @@ export function DeployModal({
         onOpenChange={(nextOpen) => {
           if (!nextOpen) setUndeployTargetWorkflowId(null)
         }}
-        srTitle='Undeploy API'
-        title='Undeploy API'
+        srTitle='取消部署 API'
+        title='取消部署 API'
         text={[
-          'Are you sure you want to undeploy this workflow? ',
+          '确定要取消部署此工作流吗?',
           {
-            text: 'This will remove the API endpoint and make it unavailable to external users.',
+            text: '这将移除 API 端点,外部用户将无法访问。',
             error: true,
           },
         ]}
         confirm={{
-          label: 'Undeploy',
+          label: '取消部署',
           onClick: handleUndeploy,
           pending: isUndeploying,
-          pendingLabel: 'Undeploying...',
+          pendingLabel: '取消部署中…',
         }}
       />
 
@@ -786,7 +785,7 @@ interface StatusBadgeProps {
 }
 
 function StatusBadge({ isWarning }: StatusBadgeProps) {
-  const label = isWarning ? 'Update deployment' : 'Live'
+  const label = isWarning ? '更新部署' : '在线'
   return (
     <Badge variant={isWarning ? 'amber' : 'green'} size='lg' dot>
       {label}
@@ -832,7 +831,7 @@ function GeneralFooter({
         <div className='flex items-center gap-2'>
           <Button variant='tertiary' onClick={onDeploy} disabled={isDeployBlocked}>
             {deployActionLoading && <Loader className='mr-1.5 size-3.5' animate />}
-            Deploy
+            部署
           </Button>
         </div>
       </ModalFooter>
@@ -849,12 +848,12 @@ function GeneralFooter({
       </div>
       <div className='flex items-center gap-2'>
         <Button variant='default' onClick={onUndeploy} disabled={isUndeploying || isSubmitting}>
-          {isUndeploying ? 'Undeploying...' : 'Undeploy'}
+          {isUndeploying ? '取消部署中…' : '取消部署'}
         </Button>
         {(needsRedeployment || isDeploymentSettling) && (
           <Button variant='tertiary' onClick={onRedeploy} disabled={isDeployBlocked}>
             {deployActionLoading && <Loader className='mr-1.5 size-3.5' animate />}
-            Update
+            更新
           </Button>
         )}
       </div>

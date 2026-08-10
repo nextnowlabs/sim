@@ -31,12 +31,12 @@ const EMPTY_KEY_NAMES: string[] = []
 /** Copies an API key's name and confirms with a toast. */
 function copyKeyName(name: string) {
   void navigator.clipboard.writeText(name)
-  toast.success('Copied name to clipboard')
+  toast.success('已复制名称到剪贴板')
 }
 
 /** Formats an API key's last-used timestamp, or "Never" when unused. */
 function formatLastUsed(dateString?: string | null): string {
-  if (!dateString) return 'Never'
+  if (!dateString) return '从未使用'
   return formatDate(new Date(dateString))
 }
 
@@ -55,10 +55,10 @@ function ApiKeyRowMenu({ keyName, onDelete, canDelete = true }: ApiKeyRowMenuPro
   return (
     <div className='flex-shrink-0'>
       <RowActionsMenu
-        label='API key actions'
+        label='API 密钥操作'
         actions={[
-          { label: 'Copy name', onSelect: () => copyKeyName(keyName) },
-          { label: 'Delete', destructive: true, disabled: !canDelete, onSelect: onDelete },
+          { label: '复制名称', onSelect: () => copyKeyName(keyName) },
+          { label: '删除', destructive: true, disabled: !canDelete, onSelect: onDelete },
         ]}
       />
     </div>
@@ -146,7 +146,7 @@ export function ApiKeys() {
 
   const actions: SettingsAction[] = [
     {
-      text: 'Create API key',
+      text: '创建 API 密钥',
       icon: Plus,
       variant: 'primary',
       onSelect: () => {
@@ -163,18 +163,18 @@ export function ApiKeys() {
         search={{
           value: searchTerm,
           onChange: setSearchTerm,
-          placeholder: 'Search API keys...',
+          placeholder: '搜索 API 密钥...',
         }}
         actions={actions}
       >
         {isLoading ? null : personalKeys.length === 0 && workspaceKeys.length === 0 ? (
-          <SettingsEmptyState>Click "Create API key" above to get started</SettingsEmptyState>
+          <SettingsEmptyState>点击上方"创建 API 密钥"以开始使用</SettingsEmptyState>
         ) : (
           <div className='flex flex-col gap-6'>
             {!searchTerm.trim() ? (
-              <SettingsSection label='Workspace'>
+              <SettingsSection label='工作区'>
                 {workspaceKeys.length === 0 ? (
-                  <div className='text-[var(--text-muted)] text-sm'>No workspace API keys yet</div>
+                  <div className='text-[var(--text-muted)] text-sm'>还没有工作区 API 密钥</div>
                 ) : (
                   <div className='flex flex-col gap-2'>
                     {workspaceKeys.map((key) => (
@@ -185,7 +185,7 @@ export function ApiKeys() {
                               {key.name}
                             </span>
                             <span className='text-[var(--text-secondary)] text-sm'>
-                              (last used: {formatLastUsed(key.lastUsed).toLowerCase()})
+                              (上次使用:{formatLastUsed(key.lastUsed).toLowerCase()})
                             </span>
                           </div>
                           <p className='truncate text-[12px] text-[var(--text-muted)]'>
@@ -206,7 +206,7 @@ export function ApiKeys() {
                 )}
               </SettingsSection>
             ) : filteredWorkspaceKeys.length > 0 ? (
-              <SettingsSection label='Workspace'>
+              <SettingsSection label='工作区'>
                 <div className='flex flex-col gap-2'>
                   {filteredWorkspaceKeys.map(({ key }) => (
                     <div key={key.id} className='flex items-center justify-between gap-3'>
@@ -216,7 +216,7 @@ export function ApiKeys() {
                             {key.name}
                           </span>
                           <span className='text-[var(--text-secondary)] text-sm'>
-                            (last used: {formatLastUsed(key.lastUsed).toLowerCase()})
+                            (上次使用:{formatLastUsed(key.lastUsed).toLowerCase()})
                           </span>
                         </div>
                         <p className='truncate text-[12px] text-[var(--text-muted)]'>
@@ -238,7 +238,7 @@ export function ApiKeys() {
             ) : null}
 
             {(!searchTerm.trim() || filteredPersonalKeys.length > 0) && (
-              <SettingsSection label='Personal'>
+              <SettingsSection label='个人'>
                 <div className='flex flex-col gap-2'>
                   {filteredPersonalKeys.map(({ key }) => {
                     const isConflict = conflicts.includes(key.name)
@@ -251,7 +251,7 @@ export function ApiKeys() {
                                 {key.name}
                               </span>
                               <span className='text-[var(--text-secondary)] text-sm'>
-                                (last used: {formatLastUsed(key.lastUsed).toLowerCase()})
+                                (上次使用:{formatLastUsed(key.lastUsed).toLowerCase()})
                               </span>
                             </div>
                             <p className='truncate text-[12px] text-[var(--text-muted)]'>
@@ -268,8 +268,7 @@ export function ApiKeys() {
                         </div>
                         {isConflict && (
                           <div className='text-[var(--text-error)] text-small leading-tight'>
-                            Workspace API key with the same name overrides this. Rename your
-                            personal key to use it.
+                            同名的工作区 API 密钥会覆盖此密钥。请重命名你的个人密钥以使用它。
                           </div>
                         )}
                       </div>
@@ -284,7 +283,7 @@ export function ApiKeys() {
               filteredWorkspaceKeys.length === 0 &&
               (personalKeys.length > 0 || workspaceKeys.length > 0) && (
                 <SettingsEmptyState variant='inline'>
-                  No API keys found matching "{searchTerm}"
+                  未找到匹配"{searchTerm}"的 API 密钥
                 </SettingsEmptyState>
               )}
           </div>
@@ -292,12 +291,10 @@ export function ApiKeys() {
 
         {!isLoading && canManageWorkspaceKeys && (
           <Tooltip.Provider delayDuration={150}>
-            <SettingsSection label='Permissions'>
+            <SettingsSection label='权限'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-2'>
-                  <span className='text-[14px] text-[var(--text-body)]'>
-                    Allow personal API keys
-                  </span>
+                  <span className='text-[14px] text-[var(--text-body)]'>允许个人 API 密钥</span>
                   <Tooltip.Root>
                     <Tooltip.Trigger asChild>
                       <button
@@ -308,8 +305,7 @@ export function ApiKeys() {
                       </button>
                     </Tooltip.Trigger>
                     <Tooltip.Content side='top' className='max-w-xs text-small'>
-                      Allow collaborators to create and use their own keys with billing charged to
-                      them.
+                      允许协作者创建并使用自己的密钥,费用由他们自己承担。
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </div>
@@ -353,20 +349,20 @@ export function ApiKeys() {
             setDeleteKey(null)
           }
         }}
-        srTitle='Delete API key'
-        title='Delete API key'
+        srTitle='删除 API 密钥'
+        title='删除 API 密钥'
         text={[
-          'Deleting ',
-          { text: deleteKey?.name ?? 'this key', bold: true },
+          '删除 ',
+          { text: deleteKey?.name ?? '此密钥', bold: true },
           ' ',
-          { text: 'will immediately revoke access for any integrations using it.', error: true },
-          ' This action cannot be undone.',
+          { text: '将立即撤销使用它的所有集成的访问权限。', error: true },
+          ' 此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Delete',
+          label: '删除',
           onClick: handleDeleteKey,
           pending: deleteApiKeyMutation.isPending,
-          pendingLabel: 'Deleting...',
+          pendingLabel: '删除中...',
         }}
       />
     </>

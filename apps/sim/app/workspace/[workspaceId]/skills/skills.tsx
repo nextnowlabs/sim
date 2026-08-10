@@ -16,7 +16,7 @@ import { useDeleteSkill, useSkills } from '@/hooks/queries/skills'
 
 const logger = createLogger('SkillsSettings')
 
-const SKILLS_LABEL = 'Skills'
+const SKILLS_LABEL = '技能'
 
 interface SkillItemProps {
   name: string
@@ -128,7 +128,7 @@ export function Skills() {
 
   const addButton = (
     <Chip variant='primary' onClick={handleOpenAddForm} disabled={isLoading} leftIcon={Plus}>
-      Add to Sim
+      添加到 Sim
     </Chip>
   )
 
@@ -137,11 +137,11 @@ export function Skills() {
       <IntegrationTabsHeader active='skills' workspaceId={workspaceId} rightSlot={addButton} />
       <div className='min-h-0 flex-1 overflow-y-auto px-6 [scrollbar-gutter:stable_both-edges]'>
         <div className='mx-auto flex max-w-[48rem] flex-col gap-7 pb-3'>
-          <ShowcaseWithExplore prompt='Explain the skills in Sim and which ones I should add to my agents.' />
+          <ShowcaseWithExplore prompt='介绍 Sim 中的技能,以及我应该为我的智能体添加哪些。' />
           <div className='flex items-center gap-2'>
             <ChipInput
               icon={Search}
-              placeholder='Search skills...'
+              placeholder='搜索技能…'
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               disabled={isLoading}
@@ -152,7 +152,7 @@ export function Skills() {
           <div className='flex flex-col gap-7'>
             {error ? (
               <div className='py-4 text-center text-[var(--error)] text-sm'>
-                {getErrorMessage(error, 'Failed to load skills')}
+                {getErrorMessage(error, '无法加载技能')}
               </div>
             ) : filteredSkills.length > 0 ? (
               <SkillSection label={SKILLS_LABEL}>
@@ -167,7 +167,7 @@ export function Skills() {
               </SkillSection>
             ) : showNoResults ? (
               <div className='py-4 text-center text-[var(--text-muted)] text-sm'>
-                No skills found matching “{searchTerm}”
+                没有找到匹配 “{searchTerm}” 的技能
               </div>
             ) : null}
           </div>
@@ -193,15 +193,15 @@ export function Skills() {
       <ChipConfirmModal
         open={showDeleteDialog}
         onOpenChange={setShowDeleteDialog}
-        srTitle='Delete Skill'
-        title='Delete Skill'
+        srTitle='删除技能'
+        title='删除技能'
         text={[
-          'Are you sure you want to delete ',
-          { text: skillToDelete?.name ?? 'this skill', bold: true },
-          '? This action cannot be undone.',
+          '确定要删除 ',
+          { text: skillToDelete?.name ?? '该技能', bold: true },
+          ' 吗?此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Delete',
+          label: '删除',
           onClick: handleDeleteSkill,
         }}
       />

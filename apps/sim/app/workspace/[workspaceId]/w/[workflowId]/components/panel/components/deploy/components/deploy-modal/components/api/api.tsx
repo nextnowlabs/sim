@@ -388,13 +388,13 @@ console.log(limits);`
   const getAsyncExampleTitle = () => {
     switch (asyncExampleType) {
       case 'execute':
-        return 'Execute Job'
+        return '执行任务'
       case 'status':
-        return 'Check Status'
+        return '查看状态'
       case 'rate-limits':
-        return 'Rate Limits'
+        return '速率限制'
       default:
-        return 'Execute Job'
+        return '执行任务'
     }
   }
 
@@ -450,14 +450,14 @@ console.log(limits);`
               <Button
                 variant='ghost'
                 onClick={() => handleCopy('sync', getSyncCommand())}
-                aria-label='Copy command'
+                aria-label='复制命令'
                 className='!p-1.5 -my-1.5'
               >
                 {copied.sync ? <Check className='size-3' /> : <Clipboard className='size-3' />}
               </Button>
             </Tooltip.Trigger>
             <Tooltip.Content>
-              <span>{copied.sync ? 'Copied' : 'Copy'}</span>
+              <span>{copied.sync ? '已复制' : '复制'}</span>
             </Tooltip.Content>
           </Tooltip.Root>
         </div>
@@ -480,21 +480,21 @@ console.log(limits);`
                 <Button
                   variant='ghost'
                   onClick={() => handleCopy('stream', getStreamCommand())}
-                  aria-label='Copy command'
+                  aria-label='复制命令'
                   className='!p-1.5 -my-1.5'
                 >
                   {copied.stream ? <Check className='size-3' /> : <Clipboard className='size-3' />}
                 </Button>
               </Tooltip.Trigger>
               <Tooltip.Content>
-                <span>{copied.stream ? 'Copied' : 'Copy'}</span>
+                <span>{copied.stream ? '已复制' : '复制'}</span>
               </Tooltip.Content>
             </Tooltip.Root>
             <OutputSelect
               workflowId={workflowId}
               selectedOutputs={selectedStreamingOutputs}
               onOutputSelect={onSelectedStreamingOutputsChange}
-              placeholder='Select outputs'
+              placeholder='选择输出'
               valueMode='label'
               align='end'
             />
@@ -519,23 +519,23 @@ console.log(limits);`
                 <Button
                   variant='ghost'
                   onClick={() => handleCopy('async', getAsyncCommand())}
-                  aria-label='Copy command'
+                  aria-label='复制命令'
                   className='!p-1.5 -my-1.5'
                 >
                   {copied.async ? <Check className='size-3' /> : <Clipboard className='size-3' />}
                 </Button>
               </Tooltip.Trigger>
               <Tooltip.Content>
-                <span>{copied.async ? 'Copied' : 'Copy'}</span>
+                <span>{copied.async ? '已复制' : '复制'}</span>
               </Tooltip.Content>
             </Tooltip.Root>
             <Combobox
               size='sm'
               className='!w-fit !py-0.5 min-w-[100px] rounded-md px-[9px]'
               options={[
-                { label: 'Execute Job', value: 'execute' },
-                { label: 'Check Status', value: 'status' },
-                { label: 'Rate Limits', value: 'rate-limits' },
+                { label: '执行任务', value: 'execute' },
+                { label: '查看状态', value: 'status' },
+                { label: '速率限制', value: 'rate-limits' },
               ]}
               value={asyncExampleType}
               onChange={(value) => setAsyncExampleType(value as AsyncExampleType)}

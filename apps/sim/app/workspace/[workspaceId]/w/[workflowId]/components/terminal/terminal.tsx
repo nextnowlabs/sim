@@ -1027,8 +1027,8 @@ export const Terminal = memo(function Terminal() {
 
   const handleFixInCopilot = useCallback(
     (entry: ConsoleEntry) => {
-      const errorMessage = entry.error ? String(entry.error) : 'Unknown error'
-      const blockName = entry.blockName || 'Unknown Block'
+      const errorMessage = entry.error ? String(entry.error) : '未知错误'
+      const blockName = entry.blockName || '未知节点'
       const message = `${errorMessage}\n\nError in ${blockName}.\n\nPlease fix this.`
       sendMothershipMessage(message)
       closeLogRowMenu()
@@ -1296,7 +1296,7 @@ export const Terminal = memo(function Terminal() {
         onFocus={handleTerminalFocus}
         onBlur={handleTerminalBlur}
         tabIndex={-1}
-        aria-label='Terminal'
+        aria-label='终端'
       >
         {/* Resize Handle */}
         <div
@@ -1304,7 +1304,7 @@ export const Terminal = memo(function Terminal() {
           onMouseDown={handleMouseDown}
           role='separator'
           aria-orientation='horizontal'
-          aria-label='Resize terminal'
+          aria-label='调整终端大小'
         />
 
         <div className='relative flex h-full'>
@@ -1319,7 +1319,7 @@ export const Terminal = memo(function Terminal() {
               onClick={handleHeaderClick}
             >
               {/* Left side - Logs label */}
-              <span className={TERMINAL_CONFIG.HEADER_TEXT_CLASS}>Logs</span>
+              <span className={TERMINAL_CONFIG.HEADER_TEXT_CLASS}>日志</span>
 
               {/* Right side - Icons and options */}
               {!selectedEntry && (
@@ -1334,7 +1334,7 @@ export const Terminal = memo(function Terminal() {
                             e.stopPropagation()
                             toggleSort()
                           }}
-                          aria-label='Sort by timestamp'
+                          aria-label='按时间排序'
                           className='!p-1.5 -m-1.5'
                         >
                           {sortConfig.direction === 'desc' ? (
@@ -1345,7 +1345,7 @@ export const Terminal = memo(function Terminal() {
                         </Button>
                       </Tooltip.Trigger>
                       <Tooltip.Content>
-                        <span>Sort by time</span>
+                        <span>按时间排序</span>
                       </Tooltip.Content>
                     </Tooltip.Root>
                   )}
@@ -1356,7 +1356,7 @@ export const Terminal = memo(function Terminal() {
                         <Link href='/playground'>
                           <Button
                             variant='ghost'
-                            aria-label='Component Playground'
+                            aria-label='组件实验室'
                             className='!p-1.5 -m-1.5'
                           >
                             <Palette className='h-3.5 w-3.5' />
@@ -1364,7 +1364,7 @@ export const Terminal = memo(function Terminal() {
                         </Link>
                       </Tooltip.Trigger>
                       <Tooltip.Content>
-                        <span>Component Playground</span>
+                        <span>组件实验室</span>
                       </Tooltip.Content>
                     </Tooltip.Root>
                   )}
@@ -1375,7 +1375,7 @@ export const Terminal = memo(function Terminal() {
                         <Button
                           variant='ghost'
                           onClick={handleTrainingClick}
-                          aria-label={isTraining ? 'Stop training' : 'Train Sim'}
+                          aria-label={isTraining ? '停止训练' : '训练 Sim'}
                           className={clsx(
                             '!p-1.5 -m-1.5',
                             isTraining && 'text-orange-600 dark:text-orange-400'
@@ -1389,7 +1389,7 @@ export const Terminal = memo(function Terminal() {
                         </Button>
                       </Tooltip.Trigger>
                       <Tooltip.Content>
-                        <span>{isTraining ? 'Stop Training' : 'Train Sim'}</span>
+                        <span>{isTraining ? '停止训练' : '训练 Sim'}</span>
                       </Tooltip.Content>
                     </Tooltip.Root>
                   )}
@@ -1401,14 +1401,14 @@ export const Terminal = memo(function Terminal() {
                           <Button
                             variant='ghost'
                             onClick={handleExportConsole}
-                            aria-label='Export console CSV'
+                            aria-label='导出控制台 CSV'
                             className='!p-1.5 -m-1.5'
                           >
                             <Download className='h-3.5 w-3.5' />
                           </Button>
                         </Tooltip.Trigger>
                         <Tooltip.Content>
-                          <span>Export CSV</span>
+                          <span>导出 CSV</span>
                         </Tooltip.Content>
                       </Tooltip.Root>
                       <Tooltip.Root>
@@ -1416,14 +1416,14 @@ export const Terminal = memo(function Terminal() {
                           <Button
                             variant='ghost'
                             onClick={handleClearConsole}
-                            aria-label='Clear console'
+                            aria-label='清空控制台'
                             className='!p-1.5 -m-1.5'
                           >
                             <Trash2 className='h-3.5 w-3.5' />
                           </Button>
                         </Tooltip.Trigger>
                         <Tooltip.Content>
-                          <Tooltip.Shortcut keys='⌘D'>Clear console</Tooltip.Shortcut>
+                          <Tooltip.Shortcut keys='⌘D'>清空控制台</Tooltip.Shortcut>
                         </Tooltip.Content>
                       </Tooltip.Root>
                     </>
@@ -1436,7 +1436,7 @@ export const Terminal = memo(function Terminal() {
                         onClick={(e) => {
                           e.stopPropagation()
                         }}
-                        aria-label='Terminal options'
+                        aria-label='终端选项'
                         className='!p-1.5 -m-1.5'
                       >
                         <MoreHorizontal className='h-3.5 w-3.5' />
@@ -1459,7 +1459,7 @@ export const Terminal = memo(function Terminal() {
                           setOpenOnRun(!openOnRun)
                         }}
                       >
-                        <span>Open on run</span>
+                        <span>运行时打开</span>
                       </PopoverItem>
                     </PopoverContent>
                   </Popover>

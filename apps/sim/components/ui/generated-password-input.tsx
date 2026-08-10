@@ -66,14 +66,14 @@ export function GeneratedPasswordInput({
                   variant='ghost'
                   onClick={() => onChange(generatePassword(24))}
                   disabled={disabled}
-                  aria-label='Generate password'
+                  aria-label='生成密码'
                   className='!p-1.5'
                 >
                   <RefreshCw className='size-3' />
                 </Button>
               </Tooltip.Trigger>
               <Tooltip.Content>
-                <span>Generate</span>
+                <span>生成</span>
               </Tooltip.Content>
             </Tooltip.Root>
           ) : null}
@@ -84,14 +84,14 @@ export function GeneratedPasswordInput({
                 variant='ghost'
                 onClick={copyToClipboard}
                 disabled={!value || disabled}
-                aria-label='Copy password'
+                aria-label='复制密码'
                 className='!p-1.5'
               >
                 {copySuccess ? <Check className='size-3' /> : <Clipboard className='size-3' />}
               </Button>
             </Tooltip.Trigger>
             <Tooltip.Content>
-              <span>{copySuccess ? 'Copied' : 'Copy'}</span>
+              <span>{copySuccess ? '已复制' : '复制'}</span>
             </Tooltip.Content>
           </Tooltip.Root>
           <Tooltip.Root>
@@ -101,14 +101,14 @@ export function GeneratedPasswordInput({
                 variant='ghost'
                 onClick={() => setShowPassword(!showPassword)}
                 disabled={disabled}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
+                aria-label={showPassword ? '隐藏密码' : '显示密码'}
                 className='!p-1.5'
               >
                 {showPassword ? <EyeOff className='size-3' /> : <Eye className='size-3' />}
               </Button>
             </Tooltip.Trigger>
             <Tooltip.Content>
-              <span>{showPassword ? 'Hide' : 'Show'}</span>
+              <span>{showPassword ? '隐藏' : '显示'}</span>
             </Tooltip.Content>
           </Tooltip.Root>
         </div>

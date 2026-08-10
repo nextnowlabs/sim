@@ -263,7 +263,7 @@ const renderLabel = (
                 </span>
               </Tooltip.Trigger>
               <Tooltip.Content side='top'>
-                <p>Invalid JSON</p>
+                <p>无效的 JSON</p>
               </Tooltip.Content>
             </Tooltip.Root>
           )}
@@ -276,7 +276,7 @@ const renderLabel = (
                 type='button'
                 onClick={copyState.onCopy}
                 className='-my-1 flex size-5 items-center justify-center'
-                aria-label='Copy value'
+                aria-label='复制值'
               >
                 {copyState.copied ? (
                   <Check className='size-3 text-green-500' />
@@ -286,7 +286,7 @@ const renderLabel = (
               </button>
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
-              <p>{copyState.copied ? 'Copied!' : 'Copy'}</p>
+              <p>{copyState.copied ? '已复制!' : '复制'}</p>
             </Tooltip.Content>
           </Tooltip.Root>
         )}
@@ -298,13 +298,13 @@ const renderLabel = (
                 className='-my-1 h-5 px-2 py-0 text-xs'
                 onClick={wandState.onSearchClick}
               >
-                Generate
+                生成
               </Button>
             ) : (
               <div className='-my-1 flex min-w-[120px] max-w-[280px] flex-1 items-center gap-1'>
                 <Input
                   ref={wandState.searchInputRef}
-                  value={wandState.isStreaming ? 'Generating...' : wandState.searchQuery}
+                  value={wandState.isStreaming ? '生成中…' : wandState.searchQuery}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     wandState.onSearchChange(e.target.value)
                   }
@@ -330,7 +330,7 @@ const renderLabel = (
                     'h-5 min-w-[80px] flex-1 text-xs',
                     wandState.isStreaming && 'text-muted-foreground'
                   )}
-                  placeholder='Generate with AI...'
+                  placeholder='用 AI 生成…'
                 />
                 <Button
                   variant='primary'
@@ -378,8 +378,8 @@ const renderLabel = (
                 disabled={canonicalToggleDisabledResolved}
                 aria-label={
                   canonicalToggle?.mode === 'advanced'
-                    ? 'Switch to selector'
-                    : 'Switch to manual ID'
+                    ? '切换到选择器'
+                    : '切换到手动 ID'
                 }
               >
                 <ArrowLeftRight
@@ -395,8 +395,8 @@ const renderLabel = (
             <Tooltip.Content side='top'>
               <p>
                 {canonicalToggle?.mode === 'advanced'
-                  ? 'Switch to selector'
-                  : 'Switch to manual ID'}
+                  ? '切换到选择器'
+                  : '切换到手动 ID'}
               </p>
             </Tooltip.Content>
           </Tooltip.Root>
@@ -536,14 +536,14 @@ function SubBlockComponent({
       return {
         show: true,
         onClick: handleNavigateToTable,
-        tooltip: 'View table',
+        tooltip: '查看表格',
       }
     }
     if (config.type === 'knowledge-base-selector' && hasSelectedKnowledgeBase) {
       return {
         show: true,
         onClick: handleNavigateToKnowledgeBase,
-        tooltip: 'View knowledge base',
+        tooltip: '查看知识库',
       }
     }
     return undefined

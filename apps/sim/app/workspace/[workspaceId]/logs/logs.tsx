@@ -103,12 +103,12 @@ const LIVE_REFRESH_INTERVAL_MS = 10_000 as const
 const ACTIVE_RUN_DETAIL_REFRESH_MS = 3_000 as const
 
 const LOG_COLUMNS: ResourceColumn[] = [
-  { id: 'workflow', header: 'Workflow' },
-  { id: 'date', header: 'Date' },
-  { id: 'status', header: 'Status' },
-  { id: 'cost', header: 'Cost' },
-  { id: 'trigger', header: 'Trigger' },
-  { id: 'duration', header: 'Duration' },
+  { id: 'workflow', header: '工作流' },
+  { id: 'date', header: '日期' },
+  { id: 'status', header: '状态' },
+  { id: 'cost', header: '成本' },
+  { id: 'trigger', header: '触发器' },
+  { id: 'duration', header: '时长' },
 ]
 
 interface LogSelectionState {
@@ -144,17 +144,17 @@ function logSelectionReducer(
 }
 
 const TIME_RANGE_OPTIONS: ComboboxOption[] = [
-  { value: 'All time', label: 'All time' },
-  { value: 'Past 30 minutes', label: 'Past 30 minutes' },
-  { value: 'Past hour', label: 'Past hour' },
-  { value: 'Past 6 hours', label: 'Past 6 hours' },
-  { value: 'Past 12 hours', label: 'Past 12 hours' },
-  { value: 'Past 24 hours', label: 'Past 24 hours' },
-  { value: 'Past 3 days', label: 'Past 3 days' },
-  { value: 'Past 7 days', label: 'Past 7 days' },
-  { value: 'Past 14 days', label: 'Past 14 days' },
-  { value: 'Past 30 days', label: 'Past 30 days' },
-  { value: 'Custom range', label: 'Custom range' },
+  { value: 'All time', label: '全部时间' },
+  { value: 'Past 30 minutes', label: '过去 30 分钟' },
+  { value: 'Past hour', label: '过去 1 小时' },
+  { value: 'Past 6 hours', label: '过去 6 小时' },
+  { value: 'Past 12 hours', label: '过去 12 小时' },
+  { value: 'Past 24 hours', label: '过去 24 小时' },
+  { value: 'Past 3 days', label: '过去 3 天' },
+  { value: 'Past 7 days', label: '过去 7 天' },
+  { value: 'Past 14 days', label: '过去 14 天' },
+  { value: 'Past 30 days', label: '过去 30 天' },
+  { value: 'Custom range', label: '自定义范围' },
 ] as const
 
 const colorIconCache = new Map<string, React.ComponentType<{ className?: string }>>()
@@ -535,9 +535,9 @@ export default function Logs() {
         })
         const input = extractRetryInput(detailLog)
         await retryExecution.mutateAsync({ workflowId, input })
-        toast.success('Retry started')
+        toast.success('重试已开始')
       } catch {
-        toast.error('Failed to retry execution')
+        toast.error('重试执行失败')
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -716,10 +716,10 @@ export default function Logs() {
         const isMothershipJob = log.trigger === 'mothership'
         const isDeletedWorkflow = !isMothershipJob && !log.workflow?.id && !log.workflowId
         const workflowName = isMothershipJob
-          ? log.jobTitle || 'Untitled Job'
+          ? log.jobTitle || '未命名任务'
           : isDeletedWorkflow
             ? DELETED_WORKFLOW_LABEL
-            : log.workflow?.name || 'Unknown'
+            : log.workflow?.name || '未知'
 
         const durationMs = parseDuration({ duration: log.duration ?? undefined })
         const durationText =
@@ -729,7 +729,7 @@ export default function Logs() {
           typeof log.cost?.total === 'number' ? dollarsToCredits(log.cost.total) : null
         const costText =
           costCredits !== null
-            ? `${costCredits.toLocaleString()} ${costCredits === 1 ? 'credit' : 'credits'}`
+            ? `${costCredits.toLocaleString()} ${costCredits === 1 ? '积分' : '积分'}`
             : '—'
 
         return {
@@ -774,7 +774,7 @@ export default function Logs() {
       const statuses = level.split(',').filter(Boolean)
       const labels = statuses.map((s) => STATUS_CONFIG[s as LogStatus]?.label ?? s)
       tags.push({
-        label: `Status: ${labels.join(', ')}`,
+        label: `状态: ${labels.join(', ')}`,
         onRemove: () => setLevel('all'),
       })
     }
@@ -782,7 +782,7 @@ export default function Logs() {
     if (workflowIds.length > 0) {
       const names = workflowIds.map((id) => allWorkflows[id]?.name ?? id.slice(0, 8))
       tags.push({
-        label: `Workflow: ${names.join(', ')}`,
+        label: `工作流: ${names.join(', ')}`,
         onRemove: () => setWorkflowIds([]),
       })
     }
@@ -790,14 +790,14 @@ export default function Logs() {
     if (folderIds.length > 0) {
       const names = folderIds.map((id) => folders[id]?.name ?? id.slice(0, 8))
       tags.push({
-        label: `Folder: ${names.join(', ')}`,
+        label: `文件夹: ${names.join(', ')}`,
         onRemove: () => setFolderIds([]),
       })
     }
 
     if (triggers.length > 0) {
       tags.push({
-        label: `Trigger: ${triggers.join(', ')}`,
+        label: `触发器: ${triggers.join(', ')}`,
         onRemove: () => setTriggers([]),
       })
     }
@@ -1011,10 +1011,10 @@ export default function Logs() {
   const sortConfig = useMemo<SortConfig>(
     () => ({
       options: [
-        { id: 'date', label: 'Date' },
-        { id: 'duration', label: 'Duration' },
-        { id: 'cost', label: 'Cost' },
-        { id: 'status', label: 'Status' },
+        { id: 'date', label: '日期' },
+        { id: 'duration', label: '时长' },
+        { id: 'cost', label: '成本' },
+        { id: 'status', label: '状态' },
       ],
       active: activeSort,
       onSort: (column, direction) => setActiveSort({ column, direction }),
@@ -1027,7 +1027,7 @@ export default function Logs() {
     () => ({
       value: currentInput,
       onChange: handleSearchInputChange,
-      placeholder: 'Search logs...',
+      placeholder: '搜索日志…',
       inputRef: searchInputRef,
       onKeyDown: handleSearchKeyDown,
       onFocus: handleSearchFocus,
@@ -1058,24 +1058,24 @@ export default function Logs() {
   const headerActions = useMemo<ResourceAction[]>(
     () => [
       {
-        text: 'Export',
+        text: '导出',
         icon: Download,
         onSelect: handleExport,
         disabled: !userPermissions.canEdit || isExporting || logs.length === 0,
       },
       {
-        text: 'Refresh',
+        text: '刷新',
         icon: refreshIcon,
         onSelect: handleRefresh,
         disabled: isVisuallyRefreshing,
       },
       {
-        text: 'Logs',
+        text: '日志',
         onSelect: () => setViewMode('logs'),
         active: !isDashboardView,
       },
       {
-        text: 'Dashboard',
+        text: '仪表盘',
         onSelect: () => setViewMode('dashboard'),
         active: isDashboardView,
       },
@@ -1096,7 +1096,7 @@ export default function Logs() {
   return (
     <>
       <Resource>
-        <Resource.Header icon={Library} title='Logs' actions={headerActions} />
+        <Resource.Header icon={Library} title='日志' actions={headerActions} />
         <Resource.Options
           search={searchConfig}
           sort={sortConfig}
@@ -1227,10 +1227,10 @@ function LogsFilterPanel({ searchQuery, onSearchQueryChange }: LogsFilterPanelPr
 
   const statusDisplayLabel =
     selectedStatuses.length === 0
-      ? 'Status'
+      ? '状态'
       : selectedStatuses.length === 1
-        ? statusOptions.find((s) => s.value === selectedStatuses[0])?.label || '1 selected'
-        : `${selectedStatuses.length} selected`
+        ? statusOptions.find((s) => s.value === selectedStatuses[0])?.label || '已选 1 项'
+        : `已选 ${selectedStatuses.length} 项`
 
   const selectedStatusColor =
     selectedStatuses.length === 1
@@ -1245,10 +1245,10 @@ function LogsFilterPanel({ searchQuery, onSearchQueryChange }: LogsFilterPanelPr
 
   const workflowDisplayLabel =
     workflowIds.length === 0
-      ? 'Workflow'
+      ? '工作流'
       : workflowIds.length === 1
-        ? workflows.find((w) => w.id === workflowIds[0])?.name || '1 selected'
-        : `${workflowIds.length} workflows`
+        ? workflows.find((w) => w.id === workflowIds[0])?.name || '已选 1 项'
+        : `${workflowIds.length} 个工作流`
 
   const selectedWorkflow =
     workflowIds.length === 1 ? workflows.find((w) => w.id === workflowIds[0]) : null
@@ -1257,10 +1257,10 @@ function LogsFilterPanel({ searchQuery, onSearchQueryChange }: LogsFilterPanelPr
 
   const folderDisplayLabel =
     folderIds.length === 0
-      ? 'Folder'
+      ? '文件夹'
       : folderIds.length === 1
-        ? folderList.find((f) => f.id === folderIds[0])?.name || '1 selected'
-        : `${folderIds.length} folders`
+        ? folderList.find((f) => f.id === folderIds[0])?.name || '已选 1 项'
+        : `${folderIds.length} 个文件夹`
 
   const triggerOptions: ComboboxOption[] = useMemo(
     () =>
@@ -1274,19 +1274,19 @@ function LogsFilterPanel({ searchQuery, onSearchQueryChange }: LogsFilterPanelPr
 
   const triggerDisplayLabel =
     triggers.length === 0
-      ? 'Trigger'
+      ? '触发器'
       : triggers.length === 1
-        ? triggerOptions.find((t) => t.value === triggers[0])?.label || '1 selected'
-        : `${triggers.length} triggers`
+        ? triggerOptions.find((t) => t.value === triggers[0])?.label || '已选 1 项'
+        : `${triggers.length} 个触发器`
 
   const timeDisplayLabel =
     timeRange === 'All time'
-      ? 'Time'
+      ? '时间'
       : timeRange === 'Custom range' && startDate && endDate
         ? `${formatDateShort(startDate)} - ${formatDateShort(endDate)}`
         : timeRange === 'Custom range'
-          ? 'Custom range'
-          : timeRange
+          ? '自定义范围'
+          : (TIME_RANGE_OPTIONS.find((o) => o.value === timeRange)?.label ?? timeRange)
 
   const handleTimeRangeChange = (val: string) => {
     if (val === 'Custom range') {
@@ -1328,13 +1328,13 @@ function LogsFilterPanel({ searchQuery, onSearchQueryChange }: LogsFilterPanelPr
   return (
     <div className='flex w-[240px] flex-col gap-4 p-3'>
       <div className='flex flex-col gap-[9px]'>
-        <span className='text-[var(--text-muted)] text-small'>Status</span>
+        <span className='text-[var(--text-muted)] text-small'>状态</span>
         <ChipCombobox
           options={statusOptions}
           multiSelect
           multiSelectValues={selectedStatuses}
           onMultiSelectChange={handleStatusChange}
-          placeholder='All statuses'
+          placeholder='全部状态'
           overlayContent={
             <span className='flex items-center gap-1.5 truncate text-[var(--text-primary)]'>
               {selectedStatusColor && (
@@ -1347,19 +1347,19 @@ function LogsFilterPanel({ searchQuery, onSearchQueryChange }: LogsFilterPanelPr
             </span>
           }
           showAllOption
-          allOptionLabel='All statuses'
+          allOptionLabel='全部状态'
           className='w-full'
         />
       </div>
 
       <div className='flex flex-col gap-[9px]'>
-        <span className='text-[var(--text-muted)] text-small'>Workflow</span>
+        <span className='text-[var(--text-muted)] text-small'>工作流</span>
         <ChipCombobox
           options={workflowOptions}
           multiSelect
           multiSelectValues={workflowIds}
           onMultiSelectChange={setWorkflowIds}
-          placeholder='All workflows'
+          placeholder='全部工作流'
           overlayContent={
             <span className='flex items-center gap-1.5 truncate text-[var(--text-primary)]'>
               {selectedWorkflow && (
@@ -1369,59 +1369,59 @@ function LogsFilterPanel({ searchQuery, onSearchQueryChange }: LogsFilterPanelPr
             </span>
           }
           searchable
-          searchPlaceholder='Search workflows...'
+          searchPlaceholder='搜索工作流…'
           showAllOption
-          allOptionLabel='All workflows'
+          allOptionLabel='全部工作流'
           className='w-full'
         />
       </div>
 
       <div className='flex flex-col gap-[9px]'>
-        <span className='text-[var(--text-muted)] text-small'>Folder</span>
+        <span className='text-[var(--text-muted)] text-small'>文件夹</span>
         <ChipCombobox
           options={folderOptions}
           multiSelect
           multiSelectValues={folderIds}
           onMultiSelectChange={setFolderIds}
-          placeholder='All folders'
+          placeholder='全部文件夹'
           overlayContent={
             <span className='truncate text-[var(--text-primary)]'>{folderDisplayLabel}</span>
           }
           searchable
-          searchPlaceholder='Search folders...'
+          searchPlaceholder='搜索文件夹…'
           showAllOption
-          allOptionLabel='All folders'
+          allOptionLabel='全部文件夹'
           className='w-full'
         />
       </div>
 
       <div className='flex flex-col gap-[9px]'>
-        <span className='text-[var(--text-muted)] text-small'>Trigger</span>
+        <span className='text-[var(--text-muted)] text-small'>触发器</span>
         <ChipCombobox
           options={triggerOptions}
           multiSelect
           multiSelectValues={triggers}
           onMultiSelectChange={setTriggers}
-          placeholder='All triggers'
+          placeholder='全部触发器'
           overlayContent={
             <span className='truncate text-[var(--text-primary)]'>{triggerDisplayLabel}</span>
           }
           searchable
-          searchPlaceholder='Search triggers...'
+          searchPlaceholder='搜索触发器…'
           showAllOption
-          allOptionLabel='All triggers'
+          allOptionLabel='全部触发器'
           className='w-full'
         />
       </div>
 
       <div className='flex flex-col gap-[9px]'>
-        <span className='text-[var(--text-muted)] text-small'>Time Range</span>
+        <span className='text-[var(--text-muted)] text-small'>时间范围</span>
         <div className='relative'>
           <ChipCombobox
             options={TIME_RANGE_OPTIONS}
             value={timeRange}
             onChange={handleTimeRangeChange}
-            placeholder='All time'
+            placeholder='全部时间'
             overlayContent={
               <span className='truncate text-[var(--text-primary)]'>{timeDisplayLabel}</span>
             }
@@ -1461,7 +1461,7 @@ function LogsFilterPanel({ searchQuery, onSearchQueryChange }: LogsFilterPanelPr
           onClick={handleClearFilters}
           className='h-[32px] w-full rounded-md'
         >
-          Clear All Filters
+          清除全部筛选
         </Button>
       )}
     </div>

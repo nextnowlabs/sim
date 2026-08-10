@@ -15,8 +15,8 @@ interface DocumentPageProps {
 
 export async function generateMetadata({ searchParams }: DocumentPageProps): Promise<Metadata> {
   const { docName, kbName } = await searchParams
-  const title = docName || 'Document'
-  const parentName = kbName || 'Knowledge Base'
+  const title = docName || '文档'
+  const parentName = kbName || '知识库'
   return { title: `${title} — ${parentName}` }
 }
 
@@ -28,8 +28,8 @@ export default async function DocumentChunksPage({ params, searchParams }: Docum
       <Document
         knowledgeBaseId={id}
         documentId={documentId}
-        knowledgeBaseName={kbName || 'Knowledge Base'}
-        documentName={docName || 'Document'}
+        knowledgeBaseName={kbName || '知识库'}
+        documentName={docName || '文档'}
       />
     </Suspense>
   )

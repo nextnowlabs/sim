@@ -51,7 +51,7 @@ export function ResourceKindRow({
       <div className='flex items-center gap-2 text-[var(--text-body)] text-sm'>
         <Checkbox
           size='sm'
-          aria-label={`Copy all ${label}`}
+          aria-label={`全部复制${label}`}
           checked={headerState}
           onCheckedChange={() =>
             onToggleMany(
@@ -149,7 +149,7 @@ export function FileKindRow({
       <div className='flex items-center gap-2 text-[var(--text-body)] text-sm'>
         <Checkbox
           size='sm'
-          aria-label={`Copy all ${label}`}
+          aria-label={`全部复制${label}`}
           checked={headerState}
           onCheckedChange={() => onToggleAll(headerState !== true)}
           disabled={disabled}

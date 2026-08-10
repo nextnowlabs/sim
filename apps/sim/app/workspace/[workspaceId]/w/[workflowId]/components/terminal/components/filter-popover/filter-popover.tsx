@@ -72,7 +72,7 @@ export const FilterPopover = memo(function FilterPopover({
           onClick={() => toggleStatus('error')}
         >
           <div className='size-[6px] rounded-xs' style={{ backgroundColor: 'var(--text-error)' }} />
-          <span className='flex-1'>Error</span>
+          <span className='flex-1'>错误</span>
         </PopoverItem>
         <PopoverItem
           active={filters.statuses.has('info')}

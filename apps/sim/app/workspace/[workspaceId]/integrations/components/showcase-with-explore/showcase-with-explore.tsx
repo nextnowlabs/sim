@@ -38,7 +38,7 @@ export function ShowcaseWithExplore({ prompt }: ShowcaseWithExploreProps) {
         }}
         className='absolute right-0 bottom-0 mx-0'
       >
-        Explore in chat
+        在对话中探索
       </Chip>
     </div>
   )

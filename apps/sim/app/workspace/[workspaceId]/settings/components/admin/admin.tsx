@@ -26,10 +26,10 @@ import { useImportWorkflow } from '@/hooks/queries/workflows'
 const PAGE_SIZE = 20 as const
 
 const MOTHERSHIP_ENV_OPTIONS: { value: MothershipEnvironment; label: string }[] = [
-  { value: 'default', label: 'Default' },
-  { value: 'dev', label: 'Dev' },
-  { value: 'staging', label: 'Staging' },
-  { value: 'prod', label: 'Prod' },
+  { value: 'default', label: '默认' },
+  { value: 'dev', label: '开发' },
+  { value: 'staging', label: '预发布' },
+  { value: 'prod', label: '生产' },
 ]
 
 export function Admin() {
@@ -107,7 +107,7 @@ export function Admin() {
     setImpersonationGuardError(null)
     if (session?.user?.role !== 'admin') {
       setImpersonatingUserId(null)
-      setImpersonationGuardError('Only admins can impersonate users.')
+      setImpersonationGuardError('只有管理员可以模拟用户。')
       return
     }
 
@@ -153,7 +153,7 @@ export function Admin() {
     <SettingsPanel>
       <div className='flex flex-col gap-4'>
         <div className='flex items-center justify-between'>
-          <Label htmlFor='super-user-mode'>Super admin mode</Label>
+          <Label htmlFor='super-user-mode'>超级管理员模式</Label>
           <Switch
             id='super-user-mode'
             checked={settings?.superUserModeEnabled ?? false}
@@ -166,9 +166,9 @@ export function Admin() {
           <>
             <div className='flex items-center justify-between gap-3'>
               <div className='flex flex-col gap-1'>
-                <Label className='text-[var(--text-primary)] text-sm'>Mothership Environment</Label>
+                <Label className='text-[var(--text-primary)] text-sm'>Mothership 环境</Label>
                 <p className='text-[var(--text-secondary)] text-xs'>
-                  Default uses the configured Sim agent URL.
+                  默认使用配置的 Sim 智能体 URL。
                 </p>
               </div>
               <ChipSelect
@@ -178,7 +178,7 @@ export function Admin() {
                 onChange={(value) =>
                   handleMothershipEnvironmentChange(value as MothershipEnvironment)
                 }
-                placeholder='Select environment'
+                placeholder='选择环境'
                 disabled={updateSetting.isPending}
                 options={MOTHERSHIP_ENV_OPTIONS}
               />
@@ -191,7 +191,7 @@ export function Admin() {
 
       <div className='flex flex-col gap-2'>
         <p className='text-[var(--text-secondary)] text-sm'>
-          Import a workflow by ID along with its associated copilot chats.
+          按 ID 导入工作流及其关联的 Copilot 对话。
         </p>
         <div className='flex gap-2'>
           <ChipInput
@@ -200,7 +200,7 @@ export function Admin() {
               setWorkflowId(e.target.value)
               importWorkflow.reset()
             }}
-            placeholder='Enter workflow ID'
+            placeholder='输入工作流 ID'
             disabled={importWorkflow.isPending}
           />
           <Button
@@ -208,7 +208,7 @@ export function Admin() {
             onClick={handleImport}
             disabled={importWorkflow.isPending || !workflowId.trim()}
           >
-            {importWorkflow.isPending ? 'Importing...' : 'Import'}
+            {importWorkflow.isPending ? '导入中...' : '导入'}
           </Button>
         </div>
         {importWorkflow.error && (
@@ -216,8 +216,8 @@ export function Admin() {
         )}
         {importWorkflow.isSuccess && (
           <p className='text-[var(--text-secondary)] text-small'>
-            Workflow imported successfully (new ID: {importWorkflow.data.newWorkflowId},{' '}
-            {importWorkflow.data.copilotChatsImported ?? 0} copilot chats imported)
+            工作流导入成功(新 ID: {importWorkflow.data.newWorkflowId},{' '}
+            {importWorkflow.data.copilotChatsImported ?? 0} 个 Copilot 对话已导入)
           </p>
         )}
       </div>
@@ -225,24 +225,24 @@ export function Admin() {
       <div className='h-px bg-[var(--border)]' />
 
       <div className='flex flex-col gap-3'>
-        <p className='font-medium text-[var(--text-muted)] text-small'>User Management</p>
+        <p className='font-medium text-[var(--text-muted)] text-small'>用户管理</p>
         <div className='flex gap-2'>
           <ChipInput
             icon={Search}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            placeholder='Search by email or paste a user ID...'
+            placeholder='按邮箱搜索或粘贴用户 ID...'
             className='min-w-0 flex-1'
           />
           <Button variant='primary' onClick={handleSearch} disabled={usersLoading}>
-            {usersLoading ? 'Searching...' : 'Search'}
+            {usersLoading ? '搜索中...' : '搜索'}
           </Button>
         </div>
 
         {usersError && (
           <p className='text-[var(--text-error)] text-small'>
-            {getErrorMessage(usersError, 'Failed to fetch users')}
+            {getErrorMessage(usersError, '获取用户失败')}
           </p>
         )}
 
@@ -255,7 +255,7 @@ export function Admin() {
             {impersonationGuardError ||
               (setUserRole.error || banUser.error || unbanUser.error || impersonateUser.error)
                 ?.message ||
-              'Action failed. Please try again.'}
+              '操作失败,请重试。'}
           </p>
         )}
 
@@ -263,15 +263,15 @@ export function Admin() {
           <>
             <div className='flex flex-col gap-0.5'>
               <div className='flex items-center gap-3 border-[var(--border-secondary)] border-b px-3 py-2 text-[var(--text-tertiary)] text-caption'>
-                <span className='w-[200px]'>Name</span>
-                <span className='flex-1'>Email</span>
-                <span className='w-[80px]'>Role</span>
-                <span className='w-[80px]'>Status</span>
-                <span className='w-[250px] text-right'>Actions</span>
+                <span className='w-[200px]'>名称</span>
+                <span className='flex-1'>邮箱</span>
+                <span className='w-[80px]'>角色</span>
+                <span className='w-[80px]'>状态</span>
+                <span className='w-[250px] text-right'>操作</span>
               </div>
 
               {usersData.users.length === 0 && (
-                <SettingsEmptyState variant='inline'>No users found.</SettingsEmptyState>
+                <SettingsEmptyState variant='inline'>未找到用户。</SettingsEmptyState>
               )}
 
               {usersData.users.map((u) => (
@@ -294,9 +294,9 @@ export function Admin() {
                     </span>
                     <span className='w-[80px]'>
                       {u.banned ? (
-                        <Badge variant='red'>Banned</Badge>
+                        <Badge variant='red'>已封禁</Badge>
                       ) : (
-                        <Badge variant='green'>Active</Badge>
+                        <Badge variant='green'>活跃</Badge>
                       )}
                     </span>
                     <span className='flex w-[250px] justify-end gap-1'>
@@ -312,8 +312,8 @@ export function Admin() {
                             (impersonateUser.isPending &&
                               (impersonateUser.variables as { userId?: string } | undefined)
                                 ?.userId === u.id)
-                              ? 'Switching...'
-                              : 'Impersonate'}
+                              ? '切换中...'
+                              : '模拟用户'}
                           </Button>
                           <Button
                             variant='active'
@@ -327,7 +327,7 @@ export function Admin() {
                             }}
                             disabled={pendingUserIds.has(u.id)}
                           >
-                            {u.role === 'admin' ? 'Demote' : 'Promote'}
+                            {u.role === 'admin' ? '降级' : '升级'}
                           </Button>
                           {u.banned ? (
                             <Button
@@ -339,7 +339,7 @@ export function Admin() {
                               }}
                               disabled={pendingUserIds.has(u.id)}
                             >
-                              Unban
+                              解封
                             </Button>
                           ) : (
                             <Button
@@ -361,7 +361,7 @@ export function Admin() {
                               }}
                               disabled={pendingUserIds.has(u.id)}
                             >
-                              {banUserId === u.id ? 'Cancel' : 'Ban'}
+                              {banUserId === u.id ? '取消' : '封禁'}
                             </Button>
                           )}
                         </>
@@ -373,7 +373,7 @@ export function Admin() {
                       <ChipInput
                         value={banReason}
                         onChange={(e) => setBanReason(e.target.value)}
-                        placeholder='Reason (optional)'
+                        placeholder='原因(可选)'
                         className='flex-1'
                       />
                       <Button
@@ -396,7 +396,7 @@ export function Admin() {
                         }}
                         disabled={pendingUserIds.has(u.id)}
                       >
-                        Confirm Ban
+                        确认封禁
                       </Button>
                     </div>
                   )}
@@ -407,7 +407,7 @@ export function Admin() {
             {totalPages > 1 && (
               <div className='flex items-center justify-between text-[var(--text-secondary)] text-small'>
                 <span>
-                  Page {currentPage} of {totalPages} ({usersData.total} users)
+                  第 {currentPage} 页,共 {totalPages} 页(共 {usersData.total} 个用户)
                 </span>
                 <div className='flex gap-1'>
                   <Button
@@ -420,7 +420,7 @@ export function Admin() {
                     }
                     disabled={usersOffset === 0 || usersLoading}
                   >
-                    Previous
+                    上一页
                   </Button>
                   <Button
                     variant='active'
@@ -428,7 +428,7 @@ export function Admin() {
                     onClick={() => setAdminParams((prev) => ({ offset: prev.offset + PAGE_SIZE }))}
                     disabled={usersOffset + PAGE_SIZE >= (usersData?.total ?? 0) || usersLoading}
                   >
-                    Next
+                    下一页
                   </Button>
                 </div>
               </div>

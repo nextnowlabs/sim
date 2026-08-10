@@ -620,7 +620,7 @@ export function MessagesInput({
                             'cursor-default hover-hover:bg-transparent hover-hover:text-[var(--text-primary)]'
                         )}
                         onClick={(e) => e.stopPropagation()}
-                        aria-label='Select message role'
+                        aria-label='选择消息角色'
                       >
                         {formatRole(message.role)}
                         {!isPreview && !disabled && (
@@ -663,7 +663,7 @@ export function MessagesInput({
                             }}
                             disabled={disabled}
                             className='-my-1 -mr-1 size-6 p-0'
-                            aria-label='Delete message'
+                            aria-label='删除消息'
                           >
                             <Trash className='size-3' />
                           </Button>
@@ -675,7 +675,7 @@ export function MessagesInput({
                             }}
                             disabled={disabled || index === 0}
                             className='-my-1 -mr-1 size-6 p-0'
-                            aria-label='Move message up'
+                            aria-label='上移消息'
                           >
                             <ChevronUp className='size-3' />
                           </Button>
@@ -687,7 +687,7 @@ export function MessagesInput({
                             }}
                             disabled={disabled || index === currentMessages.length - 1}
                             className='-my-1 -mr-1 size-6 p-0'
-                            aria-label='Move message down'
+                            aria-label='下移消息'
                           >
                             <ChevronDown className='size-3' />
                           </Button>
@@ -701,7 +701,7 @@ export function MessagesInput({
                         }}
                         disabled={disabled}
                         className='-mr-1.5 -my-1 size-6 p-0'
-                        aria-label='Add message below'
+                        aria-label='在下方添加消息'
                       >
                         <Plus className='size-3.5' />
                       </Button>
@@ -716,7 +716,7 @@ export function MessagesInput({
                       textareaRefs.current[fieldId] = el
                     }}
                     className='relative z-[2] m-0 box-border h-auto min-h-[80px] w-full resize-none overflow-y-auto overflow-x-hidden whitespace-pre-wrap break-words border-none bg-transparent p-2 font-medium font-sans text-sm text-transparent leading-[1.5] caret-[var(--text-primary)] outline-none [-ms-overflow-style:none] [scrollbar-width:none] placeholder:text-[var(--text-muted)] focus:outline-none focus-visible:outline-none disabled:cursor-not-allowed [&::-webkit-scrollbar]:hidden'
-                    placeholder='Enter message content...'
+                    placeholder='输入消息内容…'
                     value={message.content}
                     onChange={fieldHandlers.onChange}
                     onKeyDown={(e) => {

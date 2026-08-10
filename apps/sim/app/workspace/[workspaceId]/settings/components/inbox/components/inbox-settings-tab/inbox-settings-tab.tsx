@@ -63,7 +63,7 @@ export function InboxSettingsTab() {
       setIsEditAddressOpen(false)
       setNewUsername('')
     } catch (error) {
-      setEditAddressError(getErrorMessage(error, 'Failed to update address'))
+      setEditAddressError(getErrorMessage(error, '更新地址失败'))
     }
   }, [workspaceId, newUsername, updateAddress.mutateAsync])
 
@@ -80,7 +80,7 @@ export function InboxSettingsTab() {
       setNewSenderEmail('')
       setNewSenderLabel('')
     } catch (error) {
-      setAddSenderError(getErrorMessage(error, 'Failed to add sender'))
+      setAddSenderError(getErrorMessage(error, '添加发送者失败'))
     }
   }, [workspaceId, newSenderEmail, newSenderLabel, addSender.mutateAsync])
 
@@ -90,7 +90,7 @@ export function InboxSettingsTab() {
       try {
         await removeSender.mutateAsync({ workspaceId, senderId })
       } catch (error) {
-        setRemoveSenderError(getErrorMessage(error, 'Failed to remove sender'))
+        setRemoveSenderError(getErrorMessage(error, '移除发送者失败'))
       }
     },
     [workspaceId, removeSender.mutateAsync]
@@ -100,11 +100,11 @@ export function InboxSettingsTab() {
     <>
       <div className='flex flex-col gap-7'>
         {config?.address && (
-          <SettingsSection label="Sim's email">
+          <SettingsSection label='Sim 邮箱'>
             <div className='flex flex-col gap-1.5'>
               <div className='flex items-center justify-between'>
                 <p className='text-[12px] text-[var(--text-muted)]'>
-                  Send emails here to create tasks.
+                  向此地址发送邮件即可创建任务。
                 </p>
                 <div className='flex items-center gap-1.5'>
                   <Tooltip.Root>
@@ -113,7 +113,7 @@ export function InboxSettingsTab() {
                         type='button'
                         onClick={handleCopyAddress}
                         className='-my-1 flex size-5 items-center justify-center'
-                        aria-label='Copy address'
+                        aria-label='复制地址'
                       >
                         {copiedAddress ? (
                           <Check className='size-[14px] text-[var(--text-success)]' />
@@ -123,7 +123,7 @@ export function InboxSettingsTab() {
                       </button>
                     </Tooltip.Trigger>
                     <Tooltip.Content side='top'>
-                      <p>{copiedAddress ? 'Copied!' : 'Copy'}</p>
+                      <p>{copiedAddress ? '已复制!' : '复制'}</p>
                     </Tooltip.Content>
                   </Tooltip.Root>
                   <Tooltip.Root>
@@ -136,13 +136,13 @@ export function InboxSettingsTab() {
                           setIsEditAddressOpen(true)
                         }}
                         className='-my-1 flex size-5 items-center justify-center'
-                        aria-label='Edit address'
+                        aria-label='编辑地址'
                       >
                         <Pencil className='size-[14px] text-[var(--text-icon)]' />
                       </button>
                     </Tooltip.Trigger>
                     <Tooltip.Content side='top'>
-                      <p>Edit</p>
+                      <p>编辑</p>
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </div>
@@ -156,10 +156,10 @@ export function InboxSettingsTab() {
           </SettingsSection>
         )}
 
-        <SettingsSection label='Allowed senders'>
+        <SettingsSection label='允许的发送者'>
           <div className='flex flex-col gap-1.5'>
             <p className='text-[12px] text-[var(--text-muted)]'>
-              Only emails from these addresses can create tasks.
+              只有来自这些地址的邮件才能创建任务。
             </p>
 
             <div className='mt-1 flex flex-col gap-[1px] overflow-hidden rounded-lg border border-[var(--border)]'>
@@ -173,7 +173,7 @@ export function InboxSettingsTab() {
                       <div className='flex items-center gap-2'>
                         <span className='text-[14px] text-[var(--text-body)]'>{member.email}</span>
                         <Badge variant='gray' className='text-xs'>
-                          member
+                          成员
                         </Badge>
                       </div>
                     </div>
@@ -195,7 +195,7 @@ export function InboxSettingsTab() {
                       <Chip
                         flush
                         leftIcon={Trash2}
-                        aria-label='Remove sender'
+                        aria-label='移除发送者'
                         onClick={() => handleRemoveSender(sender.id)}
                       />
                     </div>
@@ -204,7 +204,7 @@ export function InboxSettingsTab() {
                   {sendersData?.workspaceMembers.length === 0 &&
                     sendersData?.senders.length === 0 && (
                       <div className='px-3 py-2.5 text-[12px] text-[var(--text-muted)]'>
-                        No allowed senders configured.
+                        尚未配置允许的发送者。
                       </div>
                     )}
                 </>
@@ -227,7 +227,7 @@ export function InboxSettingsTab() {
                 setIsAddSenderOpen(true)
               }}
             >
-              Add sender
+              添加发送者
             </Chip>
           </div>
         </SettingsSection>
@@ -236,15 +236,15 @@ export function InboxSettingsTab() {
       <ChipModal
         open={isAddSenderOpen}
         onOpenChange={setIsAddSenderOpen}
-        srTitle='Add allowed sender'
+        srTitle='添加允许的发送者'
       >
         <ChipModalHeader onClose={() => setIsAddSenderOpen(false)}>
-          Add allowed sender
+          添加允许的发送者
         </ChipModalHeader>
         <ChipModalBody>
           <ChipModalField
             type='email'
-            title='Email address'
+            title='邮件地址'
             value={newSenderEmail}
             onChange={(v) => {
               setNewSenderEmail(v)
@@ -255,17 +255,17 @@ export function InboxSettingsTab() {
           />
           <ChipModalField
             type='input'
-            title='Label'
+            title='标签'
             value={newSenderLabel}
             onChange={setNewSenderLabel}
-            placeholder='e.g., John from Marketing'
+            placeholder='例如:市场部的 John'
           />
           <ChipModalError>{addSenderError}</ChipModalError>
         </ChipModalBody>
         <ChipModalFooter
           onCancel={() => setIsAddSenderOpen(false)}
           primaryAction={{
-            label: 'Add',
+            label: '添加',
             onClick: handleAddSender,
             disabled: !newSenderEmail.trim() || addSender.isPending,
           }}
@@ -275,28 +275,26 @@ export function InboxSettingsTab() {
       <ChipModal
         open={isEditAddressOpen}
         onOpenChange={setIsEditAddressOpen}
-        srTitle='Change email address'
+        srTitle='修改邮件地址'
       >
-        <ChipModalHeader onClose={() => setIsEditAddressOpen(false)}>
-          Change email address
-        </ChipModalHeader>
+        <ChipModalHeader onClose={() => setIsEditAddressOpen(false)}>修改邮件地址</ChipModalHeader>
         <ChipModalBody>
           <p className='px-2 text-[var(--text-secondary)] text-sm'>
-            Changing your email address will create a new inbox.{' '}
+            修改邮件地址将创建一个新的收件箱。{' '}
             <span className='font-medium text-[var(--text-primary)]'>
-              The old address will stop receiving emails immediately.
+              旧地址将立即停止接收邮件。
             </span>
           </p>
           <ChipModalField
             type='input'
-            title='New email prefix'
+            title='新邮件前缀'
             value={newUsername}
             onChange={(value) => {
               setNewUsername(value)
               if (editAddressError) setEditAddressError(null)
             }}
             onSubmit={handleEditAddress}
-            placeholder='e.g., new-acme'
+            placeholder='例如:new-acme'
             error={editAddressError}
           />
         </ChipModalBody>
@@ -304,7 +302,7 @@ export function InboxSettingsTab() {
           onCancel={() => setIsEditAddressOpen(false)}
           cancelDisabled={updateAddress.isPending}
           primaryAction={{
-            label: updateAddress.isPending ? 'Updating...' : 'Change address',
+            label: updateAddress.isPending ? '更新中...' : '修改地址',
             onClick: handleEditAddress,
             disabled: !newUsername.trim() || updateAddress.isPending,
             variant: 'destructive',

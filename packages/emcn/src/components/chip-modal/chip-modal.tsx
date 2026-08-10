@@ -115,7 +115,7 @@ export interface ChipModalProps {
 function ChipModal({
   open,
   onOpenChange,
-  srTitle = 'Dialog',
+  srTitle = '对话框',
   size = 'md',
   className,
   children,
@@ -155,7 +155,7 @@ export interface ChipModalHeaderProps extends React.HTMLAttributes<HTMLDivElemen
  */
 const ChipModalHeader = React.forwardRef<HTMLDivElement, ChipModalHeaderProps>(
   (
-    { className, children, icon: Icon = null, onClose, closeAriaLabel = 'Close', ...props },
+    { className, children, icon: Icon = null, onClose, closeAriaLabel = '关闭', ...props },
     ref
   ) => (
     <div ref={ref} className={cn('flex flex-col', className)} {...props}>
@@ -676,7 +676,7 @@ function renderChipModalControl(
 function derivePlaceholderWithTags(placeholder: string): string {
   const match = placeholder.match(/^Enter\s+(.+?)s?$/i)
   if (match) return `Add ${match[1]}`
-  return 'Add another'
+  return '再添加一个'
 }
 
 /**
@@ -693,7 +693,7 @@ function ChipModalEmailsControl({
   validate,
   error,
   autoFocus,
-  placeholder = 'Enter emails',
+  placeholder = '输入邮箱',
   disabled,
   id,
   errorId,
@@ -738,7 +738,7 @@ function ChipModalEmailsControl({
       if (current.some((item) => item.value === email)) return false
 
       if (!isValidEmailSyntax(email)) {
-        commitItems([...current, { value: email, isValid: false, error: 'Invalid email format' }])
+        commitItems([...current, { value: email, isValid: false, error: '邮箱格式无效' }])
         return false
       }
 
@@ -804,7 +804,7 @@ function ChipModalFileControl({
   onChange,
   accept,
   multiple = false,
-  label = 'Drop files here or click to browse',
+  label = '将文件拖放到此处,或点击浏览',
   description,
   loading = false,
   disabled,
@@ -874,7 +874,7 @@ function ChipModalFileControl({
       />
       {loading ? <Loader animate className='size-[14px] text-[var(--text-tertiary)]' /> : null}
       <span className='text-[var(--text-primary)] text-caption'>
-        {isDragging ? 'Drop files here' : label}
+        {isDragging ? '将文件拖放到此处' : label}
       </span>
       {description ? (
         <span className='text-[var(--text-tertiary)] text-xs'>{description}</span>
@@ -944,6 +944,12 @@ export interface ChipModalFooterProps {
    * @default false
    */
   cancelDisabled?: boolean
+  /**
+   * Label for the structural cancel button. Defaults to zh-CN '取消'; consumers
+   * needing English (e.g. the public landing page) can pass 'Cancel'.
+   * @default '取消'
+   */
+  cancelLabel?: string
   /**
    * Suppresses the Cancel button entirely. Reserve for multi-step/wizard footers
    * where the in-footer Back navigation plus the header close (X) already provide
@@ -1037,6 +1043,7 @@ function renderFooterSlotAction(action: ChipModalFooterSlotAction): React.ReactN
 function ChipModalFooter({
   onCancel,
   cancelDisabled,
+  cancelLabel = '取消',
   hideCancel = false,
   primaryAction,
   primaryAdjacentAction,
@@ -1069,7 +1076,7 @@ function ChipModalFooter({
     >
       {hideCancel ? null : (
         <Chip flush onClick={onCancel} disabled={cancelDisabled}>
-          Cancel
+          {cancelLabel}
         </Chip>
       )}
       {primaryAdjacentAction ? renderFooterSlotAction(primaryAdjacentAction) : null}
@@ -1279,7 +1286,7 @@ function ChipConfirmModal({
   text,
   children,
   confirm,
-  dismissLabel = 'Cancel',
+  dismissLabel = '取消',
   size = 'sm',
   srTitle,
 }: ChipConfirmModalProps) {
@@ -1291,7 +1298,7 @@ function ChipConfirmModal({
       open={open}
       onOpenChange={onOpenChange}
       size={size}
-      srTitle={srTitle ?? (typeof title === 'string' ? title : 'Confirm')}
+      srTitle={srTitle ?? (typeof title === 'string' ? title : '确认')}
     >
       <ChipModalHeader icon={icon} onClose={dismiss}>
         {title}

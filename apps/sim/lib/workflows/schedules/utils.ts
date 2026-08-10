@@ -485,7 +485,7 @@ function getTimezoneAbbreviation(timezone: string): string {
   if (timezone === 'UTC') return 'UTC'
 
   try {
-    const formatter = new Intl.DateTimeFormat('en-US', {
+    const formatter = new Intl.DateTimeFormat('zh-CN', {
       timeZone: timezone,
       timeZoneName: 'short',
     })

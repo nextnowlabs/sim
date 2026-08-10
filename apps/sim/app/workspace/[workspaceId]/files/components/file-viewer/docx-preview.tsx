@@ -215,7 +215,7 @@ export const DocxPreview = memo(function DocxPreview({
         }
       } catch (err) {
         if (!cancelled) {
-          const msg = toError(err).message || 'Failed to render document'
+          const msg = toError(err).message || '无法渲染文档'
           logger.error('DOCX render failed', { error: msg })
           setRenderError(msg)
         }
@@ -233,7 +233,7 @@ export const DocxPreview = memo(function DocxPreview({
   }, [fileData, applyPostRenderStyling])
 
   const error = resolvePreviewError(preview.error, renderError)
-  if (error) return <PreviewError label='document' error={error} />
+  if (error) return <PreviewError label='文档' error={error} />
 
   const showLoadingFrame = !hasRenderedPreview && (!fileData || rendering)
 
@@ -260,7 +260,7 @@ export const DocxPreview = memo(function DocxPreview({
         navigation={{
           current: currentPage,
           total: pageCount,
-          label: 'page',
+          label: '页',
           canPrevious: pageCount > 0 && currentPage > 1,
           canNext: pageCount > 0 && currentPage < pageCount,
           onPrevious: () => {

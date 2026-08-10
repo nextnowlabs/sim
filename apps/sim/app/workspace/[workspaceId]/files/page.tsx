@@ -7,7 +7,7 @@ import { Files } from './files'
 import FilesLoading from './loading'
 
 export const metadata: Metadata = {
-  title: 'Files',
+  title: '文件',
   robots: { index: false },
 }
 

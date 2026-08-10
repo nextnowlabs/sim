@@ -260,7 +260,7 @@ export function ZoomablePreview({
       <div
         ref={viewportRef}
         role='application'
-        aria-label='Zoomable preview'
+        aria-label='可缩放预览'
         className='relative min-h-0 flex-1 cursor-grab overflow-hidden'
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}

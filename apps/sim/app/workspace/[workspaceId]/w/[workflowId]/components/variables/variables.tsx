@@ -43,11 +43,11 @@ import { useWorkflowRegistry } from '@/stores/workflows/registry/store'
  * Type options for variable type selection
  */
 const TYPE_OPTIONS: ComboboxOption[] = [
-  { label: 'Plain', value: 'plain' },
-  { label: 'Number', value: 'number' },
-  { label: 'Boolean', value: 'boolean' },
-  { label: 'Object', value: 'object' },
-  { label: 'Array', value: 'array' },
+  { label: '纯文本', value: 'plain' },
+  { label: '数字', value: 'number' },
+  { label: '布尔', value: 'boolean' },
+  { label: '对象', value: 'object' },
+  { label: '数组', value: 'array' },
 ]
 
 /**
@@ -65,23 +65,23 @@ const MIN_EDITOR_HEIGHT = 120
  */
 const STRINGS = {
   errors: {
-    emptyName: 'Variable name cannot be empty',
-    duplicateName: 'Two variables cannot have the same name',
+    emptyName: '变量名不能为空',
+    duplicateName: '两个变量不能同名',
   },
   labels: {
-    name: 'Name',
-    type: 'Type',
-    value: 'Value',
+    name: '名称',
+    type: '类型',
+    value: '值',
   },
   placeholders: {
     name: 'variableName',
     number: '42',
     boolean: 'true',
-    plain: 'Plain text value',
+    plain: '纯文本值',
     object: '{\n  "key": "value"\n}',
     array: '[\n  1, 2, 3\n]',
   },
-  emptyState: 'No variables yet',
+  emptyState: '暂无变量',
 }
 
 interface VariableHeaderProps {
@@ -120,7 +120,7 @@ function VariableHeader({
     >
       <div className='flex min-w-0 flex-1 items-center gap-2'>
         <span className='block truncate font-medium text-[var(--text-tertiary)] text-sm'>
-          {variable.name || `Variable ${index + 1}`}
+          {variable.name || `变量 ${index + 1}`}
         </span>
         {variable.name && (
           <Badge variant='type' size='sm'>
@@ -136,10 +136,10 @@ function VariableHeader({
         }}
         className='h-auto p-0 text-[var(--text-error)] hover-hover:text-[var(--text-error)]'
         disabled={readOnly}
-        aria-label={`Delete ${variable.name || `variable ${index + 1}`}`}
+        aria-label={`删除 ${variable.name || `变量 ${index + 1}`}`}
       >
         <Trash style={{ width: `${ICON_SIZE}px`, height: `${ICON_SIZE}px` }} />
-        <span className='sr-only'>Delete Variable</span>
+        <span className='sr-only'>删除变量</span>
       </Button>
     </div>
   )
@@ -434,7 +434,7 @@ export function Variables({ readOnly = false }: VariablesProps) {
     <div
       ref={preventZoomRef}
       role='dialog'
-      aria-label='Variables'
+      aria-label='变量'
       className='fixed z-30 flex flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-1)] px-2.5 pt-0.5 pb-2'
       style={{
         left: `${actualPosition.x}px`,
@@ -455,7 +455,7 @@ export function Variables({ readOnly = false }: VariablesProps) {
       >
         <div className='flex items-center'>
           <span className='flex-shrink-0 font-medium text-[var(--text-primary)] text-sm'>
-            Variables
+            变量
           </span>
         </div>
         <div className='flex items-center gap-2'>
@@ -467,7 +467,7 @@ export function Variables({ readOnly = false }: VariablesProps) {
               handleAddVariable()
             }}
             disabled={readOnly}
-            aria-label='Add new variable'
+            aria-label='添加新变量'
           >
             <Plus style={{ width: `${HEADER_ICON_SIZE}px`, height: `${HEADER_ICON_SIZE}px` }} />
           </Button>
@@ -475,7 +475,7 @@ export function Variables({ readOnly = false }: VariablesProps) {
             variant='ghost'
             className='!p-1.5 -m-1.5'
             onClick={handleClose}
-            aria-label='Close variables panel'
+            aria-label='关闭变量面板'
           >
             <X style={{ width: `${HEADER_ICON_SIZE}px`, height: `${HEADER_ICON_SIZE}px` }} />
           </Button>

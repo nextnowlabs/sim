@@ -413,7 +413,7 @@ export function ChatDeploy({
         open={showDeleteConfirmation}
         onOpenChange={setShowDeleteConfirmation}
         srTitle='Delete Chat'
-        title='Delete Chat'
+        title='删除对话'
         text={[
           'Are you sure you want to delete ',
           { text: existingChat?.title || 'this chat', bold: true },
@@ -551,7 +551,7 @@ function IdentifierInput({
                   </div>
                 </Tooltip.Trigger>
                 <Tooltip.Content>
-                  <span>Name is available</span>
+                  <span>名称可用</span>
                 </Tooltip.Content>
               </Tooltip.Root>
             )

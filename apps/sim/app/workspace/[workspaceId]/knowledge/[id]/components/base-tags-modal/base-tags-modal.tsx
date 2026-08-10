@@ -238,10 +238,10 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
 
   return (
     <>
-      <ChipModal open={open} onOpenChange={handleClose} srTitle='Tags' size='sm'>
+      <ChipModal open={open} onOpenChange={handleClose} srTitle='标签' size='sm'>
         <ChipModalHeader onClose={() => handleClose(false)}>
           <div className='flex items-center justify-between'>
-            <span>Tags</span>
+            <span>标签</span>
           </div>
         </ChipModalHeader>
 
@@ -250,9 +250,9 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
             type='custom'
             title={
               <>
-                Tags:{' '}
+                标签:{' '}
                 <span className='pl-1.5 text-[var(--text-tertiary)]'>
-                  {kbTagDefinitions.length} defined
+                  {kbTagDefinitions.length} 个已定义
                 </span>
               </>
             }
@@ -261,7 +261,7 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
               {kbTagDefinitions.length === 0 && !isCreatingTag && (
                 <div className='rounded-md border p-4 text-center'>
                   <p className='text-[var(--text-tertiary)] text-caption'>
-                    No tag definitions yet. Create your first tag to organize documents.
+                    还没有标签定义。创建你的第一个标签来组织文档。
                   </p>
                 </div>
               )}
@@ -288,7 +288,7 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
                     </span>
                     <div className='mb-[-1.5px] h-[14px] w-[1.25px] flex-shrink-0 rounded-full bg-[var(--border-1)]' />
                     <span className='min-w-0 flex-1 text-[var(--text-muted)] text-caption'>
-                      {usage.documentCount} document{usage.documentCount !== 1 ? 's' : ''}
+                      {usage.documentCount} 个文档
                     </span>
                     <div className='flex flex-shrink-0 items-center gap-1'>
                       <Button
@@ -313,7 +313,7 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
                   disabled={!SUPPORTED_FIELD_TYPES.some((type) => hasAvailableSlots(type))}
                   className='w-full'
                 >
-                  Add Tag
+                  添加标签
                 </Button>
               )}
 
@@ -321,16 +321,16 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
                 <div className='space-y-2 rounded-md border p-3'>
                   <ChipModalField
                     type='custom'
-                    title='Tag Name'
+                    title='标签名称'
                     flush
-                    error={tagNameConflict ? 'A tag with this name already exists' : undefined}
+                    error={tagNameConflict ? '已存在同名标签' : undefined}
                   >
                     <ChipInput
                       value={createTagForm.displayName}
                       onChange={(e) =>
                         setCreateTagForm({ ...createTagForm, displayName: e.target.value })
                       }
-                      placeholder='Enter tag name'
+                      placeholder='输入标签名称'
                       error={Boolean(tagNameConflict)}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' && canSaveTag()) {
@@ -347,11 +347,11 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
 
                   <ChipModalField
                     type='custom'
-                    title='Type'
+                    title='类型'
                     flush
                     error={
                       !hasAvailableSlots(createTagForm.fieldType)
-                        ? 'No available slots for this type. Choose a different type.'
+                        ? '此类型没有可用槽位,请选择其他类型。'
                         : undefined
                     }
                   >
@@ -359,13 +359,13 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
                       options={fieldTypeOptions}
                       value={createTagForm.fieldType}
                       onChange={(value) => setCreateTagForm({ ...createTagForm, fieldType: value })}
-                      placeholder='Select type'
+                      placeholder='选择类型'
                     />
                   </ChipModalField>
 
                   <div className='flex gap-2'>
                     <Button variant='default' onClick={cancelCreatingTag} className='flex-1'>
-                      Cancel
+                      取消
                     </Button>
                     <Button
                       variant='primary'
@@ -377,7 +377,7 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
                         !hasAvailableSlots(createTagForm.fieldType)
                       }
                     >
-                      {createTagMutation.isPending ? 'Creating...' : 'Create Tag'}
+                      {createTagMutation.isPending ? '创建中…' : '创建标签'}
                     </Button>
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
 
         <ChipModalFooter
           onCancel={() => handleClose(false)}
-          primaryAction={{ label: 'Close', onClick: () => handleClose(false) }}
+          primaryAction={{ label: '关闭', onClick: () => handleClose(false) }}
         />
       </ChipModal>
 
@@ -402,27 +402,27 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
             closeDeleteTagDialog()
           }
         }}
-        srTitle='Delete Tag'
-        title='Delete Tag'
+        srTitle='删除标签'
+        title='删除标签'
         text={[
-          'Are you sure you want to delete the ',
-          { text: selectedTag?.displayName ?? 'selected', bold: true },
-          ' tag? ',
+          '确定要删除 ',
+          { text: selectedTag?.displayName ?? '所选', bold: true },
+          ' 标签吗?',
           {
-            text: `This will remove this tag from ${selectedTagUsage?.documentCount || 0} document${selectedTagUsage?.documentCount !== 1 ? 's' : ''}.`,
+            text: `这将从 ${selectedTagUsage?.documentCount || 0} 个文档中移除该标签。`,
             error: true,
           },
-          ' This action cannot be undone.',
+          ' 此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Delete Tag',
+          label: '删除标签',
           onClick: confirmDeleteTag,
           pending: deleteTagMutation.isPending,
-          pendingLabel: 'Deleting...',
+          pendingLabel: '删除中…',
         }}
       >
         {selectedTagUsage && selectedTagUsage.documentCount > 0 && (
-          <ChipModalField type='custom' title='Affected documents'>
+          <ChipModalField type='custom' title='受影响的文档'>
             <DocumentList
               documents={selectedTagUsage.documents}
               totalCount={selectedTagUsage.documentCount}
@@ -435,25 +435,22 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
       <ChipModal
         open={viewDocumentsDialogOpen}
         onOpenChange={setViewDocumentsDialogOpen}
-        srTitle={`Documents using "${selectedTag?.displayName}"`}
+        srTitle={`使用 "${selectedTag?.displayName}" 的文档`}
         size='sm'
       >
         <ChipModalHeader onClose={() => setViewDocumentsDialogOpen(false)}>
-          Documents using "{selectedTag?.displayName}"
+          使用 "{selectedTag?.displayName}" 的文档
         </ChipModalHeader>
         <ChipModalBody>
           <div className='flex flex-col gap-2 px-2'>
             <p className='text-[var(--text-secondary)]'>
-              {selectedTagUsage?.documentCount || 0} document
-              {selectedTagUsage?.documentCount !== 1 ? 's are' : ' is'} currently using this tag
-              definition.
+              {selectedTagUsage?.documentCount || 0} 个文档正在使用此标签定义。
             </p>
 
             {selectedTagUsage?.documentCount === 0 ? (
               <div className='rounded-md border p-4 text-center'>
                 <p className='text-[var(--text-secondary)]'>
-                  This tag definition is not being used by any documents. You can safely delete it
-                  to free up the tag slot.
+                  此标签定义未被任何文档使用。你可以安全删除它以释放标签槽位。
                 </p>
               </div>
             ) : (
@@ -466,7 +463,7 @@ export function BaseTagsModal({ open, onOpenChange, knowledgeBaseId }: BaseTagsM
         </ChipModalBody>
         <ChipModalFooter
           onCancel={() => setViewDocumentsDialogOpen(false)}
-          primaryAction={{ label: 'Close', onClick: () => setViewDocumentsDialogOpen(false) }}
+          primaryAction={{ label: '关闭', onClick: () => setViewDocumentsDialogOpen(false) }}
         />
       </ChipModal>
     </>

@@ -20,7 +20,7 @@ export const ToggleButton = memo(function ToggleButton({ isExpanded, onClick }: 
       variant='ghost'
       className='!p-1.5 -m-1.5'
       onClick={onClick}
-      aria-label='Toggle terminal'
+      aria-label='切换终端'
     >
       <ChevronDown
         className={clsx(

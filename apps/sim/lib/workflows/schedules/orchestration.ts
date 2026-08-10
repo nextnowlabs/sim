@@ -103,7 +103,7 @@ function parseOneTimeRun(time: string, timezone: string): Date | null {
   const hasOffset = /[Zz]|[+-]\d{2}(:\d{2})?$/.test(timeStr)
   if (!hasOffset && timezone !== 'UTC') {
     try {
-      const formatter = new Intl.DateTimeFormat('en-US', {
+      const formatter = new Intl.DateTimeFormat('zh-CN', {
         timeZone: timezone,
         timeZoneName: 'shortOffset',
       })

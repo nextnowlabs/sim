@@ -132,7 +132,7 @@ export function CanvasMenu({
             onClose()
           }}
         >
-          <span>Add Block</span>
+          <span>添加节点</span>
           <span className='ml-auto opacity-70 group-hover:opacity-100'>⌘K</span>
         </PopoverItem>
         <PopoverItem
@@ -142,9 +142,9 @@ export function CanvasMenu({
             onAutoLayout()
             onClose()
           }}
-          title={hasLockedBlocks ? 'Unlock blocks to use auto-layout' : undefined}
+          title={hasLockedBlocks ? '解锁节点后方可使用自动布局' : undefined}
         >
-          <span>Auto-layout</span>
+          <span>自动布局</span>
           <span className='ml-auto opacity-70 group-hover:opacity-100'>⇧L</span>
         </PopoverItem>
         {canAdmin && onToggleWorkflowLock && (
@@ -155,7 +155,7 @@ export function CanvasMenu({
               onClose()
             }}
           >
-            <span>{allBlocksLocked ? 'Unlock workflow' : 'Lock workflow'}</span>
+            <span>{allBlocksLocked ? '解锁工作流' : '锁定工作流'}</span>
           </PopoverItem>
         )}
         <PopoverItem
@@ -164,7 +164,7 @@ export function CanvasMenu({
             onClose()
           }}
         >
-          Fit to View
+          适应视图
         </PopoverItem>
 
         {/* Navigation actions */}
@@ -176,7 +176,7 @@ export function CanvasMenu({
             onClose()
           }}
         >
-          <span>Search and replace</span>
+          <span>查找与替换</span>
           <span className='ml-auto opacity-70 group-hover:opacity-100'>⌘F</span>
         </PopoverItem>
         <PopoverItem
@@ -186,7 +186,7 @@ export function CanvasMenu({
             onClose()
           }}
         >
-          <span>Open Logs</span>
+          <span>打开日志</span>
           <span className='ml-auto opacity-70 group-hover:opacity-100'>⌘L</span>
         </PopoverItem>
         <PopoverItem
@@ -195,7 +195,7 @@ export function CanvasMenu({
             onClose()
           }}
         >
-          {isVariablesOpen ? 'Close Variables' : 'Open Variables'}
+          {isVariablesOpen ? '关闭变量' : '打开变量'}
         </PopoverItem>
         <PopoverItem
           onClick={() => {
@@ -203,7 +203,7 @@ export function CanvasMenu({
             onClose()
           }}
         >
-          {isChatOpen ? 'Close Chat' : 'Open Chat'}
+          {isChatOpen ? '关闭对话' : '打开对话'}
         </PopoverItem>
       </PopoverContent>
     </Popover>

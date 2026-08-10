@@ -297,7 +297,7 @@ function WorkspaceHeaderImpl({
       {isMounted && isCollapsed ? (
         <button
           type='button'
-          aria-label='Expand sidebar'
+          aria-label='展开侧边栏'
           onClick={onExpandSidebar}
           className={chipVariants({ fullWidth: true })}
         >
@@ -309,7 +309,7 @@ function WorkspaceHeaderImpl({
                 {activeWorkspaceFull.logoUrl ? (
                   <img
                     src={activeWorkspaceFull.logoUrl}
-                    alt={activeWorkspaceFull.name || 'Workspace logo'}
+                    alt={activeWorkspaceFull.name || '工作区徽标'}
                     className='size-[16px] rounded-sm object-cover group-hover:invisible'
                   />
                 ) : (
@@ -346,7 +346,7 @@ function WorkspaceHeaderImpl({
           <DropdownMenuTrigger asChild>
             <button
               type='button'
-              aria-label='Switch workspace'
+              aria-label='切换工作区'
               className={cn(chipVariants(), 'min-w-0 max-w-full')}
               title={activeWorkspace?.name}
               onContextMenu={(e) => {
@@ -359,7 +359,7 @@ function WorkspaceHeaderImpl({
                 activeWorkspaceFull.logoUrl ? (
                   <img
                     src={activeWorkspaceFull.logoUrl}
-                    alt={activeWorkspaceFull.name || 'Workspace logo'}
+                    alt={activeWorkspaceFull.name || '工作区徽标'}
                     className='size-[16px] flex-shrink-0 rounded-sm object-cover'
                   />
                 ) : (
@@ -398,7 +398,7 @@ function WorkspaceHeaderImpl({
           >
             {isWorkspacesLoading ? (
               <div className='px-2 py-[5px] font-medium text-[var(--text-secondary)] text-caption'>
-                Loading workspaces...
+                加载工作区中...
               </div>
             ) : (
               <>
@@ -418,7 +418,7 @@ function WorkspaceHeaderImpl({
                             {workspace.logoUrl ? (
                               <img
                                 src={workspace.logoUrl}
-                                alt={workspace.name || 'Workspace logo'}
+                                alt={workspace.name || '工作区徽标'}
                                 className='size-[16px] flex-shrink-0 rounded-sm object-cover'
                               />
                             ) : (
@@ -510,7 +510,7 @@ function WorkspaceHeaderImpl({
                             {workspace.logoUrl ? (
                               <img
                                 src={workspace.logoUrl}
-                                alt={workspace.name || 'Workspace logo'}
+                                alt={workspace.name || '工作区徽标'}
                                 className='size-[16px] flex-shrink-0 rounded-sm object-cover'
                               />
                             ) : (
@@ -528,7 +528,7 @@ function WorkspaceHeaderImpl({
                             </span>
                             <button
                               type='button'
-                              aria-label='Workspace options'
+                              aria-label='工作区选项'
                               onMouseDown={() => {
                                 isContextMenuOpeningRef.current = true
                               }}
@@ -572,7 +572,7 @@ function WorkspaceHeaderImpl({
                     flush
                     className='w-full select-none disabled:pointer-events-none disabled:opacity-50'
                   >
-                    New workspace
+                    新建工作区
                   </Chip>
                 </div>
 
@@ -592,7 +592,7 @@ function WorkspaceHeaderImpl({
                   flush
                   className='w-full select-none'
                 >
-                  Invite teammates
+                  邀请团队成员
                 </Chip>
                 <Chip
                   leftIcon={ManageWorkspace}
@@ -609,7 +609,7 @@ function WorkspaceHeaderImpl({
                   flush
                   className='w-full select-none'
                 >
-                  Manage workspace
+                  管理工作区
                 </Chip>
               </>
             )}
@@ -618,7 +618,7 @@ function WorkspaceHeaderImpl({
       ) : (
         <button
           type='button'
-          aria-label='Switch workspace'
+          aria-label='切换工作区'
           className={cn(
             'mx-0.5 h-[30px] items-center gap-2 rounded-lg px-2',
             isCollapsed ? 'flex' : 'inline-flex min-w-0 max-w-full'
@@ -630,7 +630,7 @@ function WorkspaceHeaderImpl({
             activeWorkspaceFull.logoUrl ? (
               <img
                 src={activeWorkspaceFull.logoUrl}
-                alt={activeWorkspaceFull.name || 'Workspace logo'}
+                alt={activeWorkspaceFull.name || '工作区徽标'}
                 className='size-[16px] flex-shrink-0 rounded-sm object-cover'
               />
             ) : (
@@ -701,7 +701,7 @@ function WorkspaceHeaderImpl({
       <InviteModal
         open={isInviteModalOpen}
         onOpenChange={setIsInviteModalOpen}
-        workspaceName={activeWorkspace?.name || 'Workspace'}
+        workspaceName={activeWorkspace?.name || '工作区'}
         inviteDisabledReason={inviteDisabledReason}
         organizationId={activeWorkspaceFull?.organizationId ?? null}
       />
@@ -709,7 +709,7 @@ function WorkspaceHeaderImpl({
         open={isForkModalOpen}
         onOpenChange={setIsForkModalOpen}
         sourceWorkspaceId={workspaceId}
-        sourceWorkspaceName={activeWorkspace?.name || 'Workspace'}
+        sourceWorkspaceName={activeWorkspace?.name || '工作区'}
         undoableRun={forkLineage?.undoableRun ?? null}
         canFork={canCreateWorkspace}
         onUpgrade={() => {
@@ -733,18 +733,18 @@ function WorkspaceHeaderImpl({
       <ChipConfirmModal
         open={isLeaveModalOpen}
         onOpenChange={() => setIsLeaveModalOpen(false)}
-        srTitle='Leave workspace'
-        title='Leave workspace'
+        srTitle='退出工作区'
+        title='退出工作区'
         text={[
-          'Are you sure you want to leave ',
-          { text: leaveTarget?.name ?? 'this workspace', bold: true },
-          '? You will lose access to all workflows and data in this workspace. This action cannot be undone.',
+          '确定要退出 ',
+          { text: leaveTarget?.name ?? '此工作区', bold: true },
+          ' 吗？你将失去对该工作区中所有工作流和数据的访问权限。此操作无法撤销。',
         ]}
         confirm={{
-          label: 'Leave workspace',
+          label: '退出工作区',
           onClick: handleLeaveWorkspace,
           pending: isLeavingWorkspace,
-          pendingLabel: 'Leaving...',
+          pendingLabel: '退出中...',
         }}
       />
     </div>

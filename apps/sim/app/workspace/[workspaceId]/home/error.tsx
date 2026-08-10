@@ -7,8 +7,8 @@ export default function HomeError({ error, reset }: ErrorBoundaryProps) {
     <ErrorState
       error={error}
       reset={reset}
-      title='Failed to load home'
-      description='Something went wrong while loading your workspace home. Please try again.'
+      title='无法加载首页'
+      description='加载工作区首页时出错,请重试。'
       loggerName='HomeError'
     />
   )

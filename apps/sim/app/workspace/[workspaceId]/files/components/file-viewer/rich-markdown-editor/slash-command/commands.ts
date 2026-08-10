@@ -48,15 +48,15 @@ export interface SlashCommandItem {
  */
 export const SLASH_COMMANDS: readonly SlashCommandItem[] = [
   {
-    title: 'Text',
-    group: 'Basic',
+    title: '文本',
+    group: '基础',
     icon: Pilcrow,
     aliases: ['paragraph', 'body'],
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).setParagraph().run(),
   },
   {
-    title: 'Heading 1',
-    group: 'Basic',
+    title: '标题 1',
+    group: '基础',
     icon: Heading1,
     aliases: ['h1', 'title'],
     shortcut: '⌘⌥1',
@@ -64,8 +64,8 @@ export const SLASH_COMMANDS: readonly SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).setHeading({ level: 1 }).run(),
   },
   {
-    title: 'Heading 2',
-    group: 'Basic',
+    title: '标题 2',
+    group: '基础',
     icon: Heading2,
     aliases: ['h2', 'subtitle'],
     shortcut: '⌘⌥2',
@@ -73,8 +73,8 @@ export const SLASH_COMMANDS: readonly SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).setHeading({ level: 2 }).run(),
   },
   {
-    title: 'Heading 3',
-    group: 'Basic',
+    title: '标题 3',
+    group: '基础',
     icon: Heading3,
     aliases: ['h3'],
     shortcut: '⌘⌥3',
@@ -82,48 +82,48 @@ export const SLASH_COMMANDS: readonly SlashCommandItem[] = [
       editor.chain().focus().deleteRange(range).setHeading({ level: 3 }).run(),
   },
   {
-    title: 'Bulleted list',
-    group: 'Lists',
+    title: '无序列表',
+    group: '列表',
     icon: List,
     aliases: ['unordered', 'ul', 'bullet'],
     shortcut: '⌘⇧8',
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBulletList().run(),
   },
   {
-    title: 'Numbered list',
-    group: 'Lists',
+    title: '有序列表',
+    group: '列表',
     icon: ListOrdered,
     aliases: ['ordered', 'ol'],
     shortcut: '⌘⇧7',
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleOrderedList().run(),
   },
   {
-    title: 'Checklist',
-    group: 'Lists',
+    title: '任务清单',
+    group: '列表',
     icon: ListChecks,
     aliases: ['todo', 'task', 'checkbox'],
     shortcut: '⌘⇧9',
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleTaskList().run(),
   },
   {
-    title: 'Quote',
-    group: 'Blocks',
+    title: '引用',
+    group: '块',
     icon: TextQuote,
     aliases: ['blockquote', 'citation'],
     shortcut: '⌘⇧B',
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
   },
   {
-    title: 'Code block',
-    group: 'Blocks',
+    title: '代码块',
+    group: '块',
     icon: Code2,
     aliases: ['codeblock', 'snippet', 'fence'],
     shortcut: '⌘⌥C',
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleCodeBlock().run(),
   },
   {
-    title: 'Table',
-    group: 'Blocks',
+    title: '表格',
+    group: '块',
     icon: TableIcon,
     aliases: ['grid', 'rows', 'columns'],
     run: ({ editor, range }) =>
@@ -135,15 +135,15 @@ export const SLASH_COMMANDS: readonly SlashCommandItem[] = [
         .run(),
   },
   {
-    title: 'Divider',
-    group: 'Blocks',
+    title: '分隔线',
+    group: '块',
     icon: Minus,
     aliases: ['hr', 'horizontal rule', 'separator'],
     run: ({ editor, range }) => editor.chain().focus().deleteRange(range).setHorizontalRule().run(),
   },
   {
-    title: 'Image',
-    group: 'Media',
+    title: '图片',
+    group: '媒体',
     icon: ImageIcon,
     aliases: ['picture', 'photo', 'upload', 'img'],
     run: ({ editor, range }) => {
@@ -163,7 +163,7 @@ export function filterSlashCommands(
   options?: { allowImages?: boolean }
 ): SlashCommandItem[] {
   const allowImages = options?.allowImages ?? true
-  const available = allowImages ? SLASH_COMMANDS : SLASH_COMMANDS.filter((c) => c.title !== 'Image')
+  const available = allowImages ? SLASH_COMMANDS : SLASH_COMMANDS.filter((c) => c.title !== '图片')
   const q = query.trim().toLowerCase()
   if (!q) return [...available]
   return available.filter(

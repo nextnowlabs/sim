@@ -115,7 +115,7 @@ export function useProfilePictureUpload({
         setPreviewUrl(serverUrl)
         onUploadRef.current?.(serverUrl)
       } catch (error) {
-        const errorMessage = getErrorMessage(error, 'Failed to upload profile picture')
+        const errorMessage = getErrorMessage(error, '更换头像失败')
         onErrorRef.current?.(errorMessage)
         URL.revokeObjectURL(newPreviewUrl)
         previewRef.current = null

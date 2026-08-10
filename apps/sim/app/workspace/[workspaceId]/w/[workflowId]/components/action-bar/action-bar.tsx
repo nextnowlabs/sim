@@ -146,7 +146,7 @@ export const ActionBar = memo(
      */
     const getTooltipMessage = (defaultMessage: string) => {
       if (disabled) {
-        return userPermissions.isOfflineMode ? 'Connection lost - please refresh' : 'Read-only mode'
+        return userPermissions.isOfflineMode ? '连接已断开 - 请刷新页面' : '只读模式'
       }
       return defaultMessage
     }
@@ -183,10 +183,10 @@ export const ActionBar = memo(
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
               {(() => {
-                if (disabled) return getTooltipMessage('Run from block')
-                if (isExecuting) return 'Running...'
-                if (!dependenciesSatisfied) return 'Run previous blocks first'
-                return 'Run from block'
+                if (disabled) return getTooltipMessage('从此节点运行')
+                if (isExecuting) return '运行中…'
+                if (!dependenciesSatisfied) return '请先运行前置节点'
+                return '从此节点运行'
               })()}
             </Tooltip.Content>
           </Tooltip.Root>
@@ -215,10 +215,10 @@ export const ActionBar = memo(
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
               {isLocked || isParentLocked
-                ? 'Block is locked'
+                ? '节点已锁定'
                 : !isEnabled && isParentDisabled
-                  ? 'Parent container is disabled'
-                  : getTooltipMessage(isEnabled ? 'Disable Block' : 'Enable Block')}
+                  ? '父容器已禁用'
+                  : getTooltipMessage(isEnabled ? '禁用节点' : '启用节点')}
             </Tooltip.Content>
           </Tooltip.Root>
         )}
@@ -243,10 +243,10 @@ export const ActionBar = memo(
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
               {isLocked && isParentLocked
-                ? 'Parent container is locked'
+                ? '父容器已锁定'
                 : isLocked
-                  ? 'Unlock Block'
-                  : 'Lock Block'}
+                  ? '解锁节点'
+                  : '锁定节点'}
             </Tooltip.Content>
           </Tooltip.Root>
         )}
@@ -270,8 +270,8 @@ export const ActionBar = memo(
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
               {isLocked || isParentLocked
-                ? 'Block is locked'
-                : getTooltipMessage('Duplicate Block')}
+                ? '节点已锁定'
+                : getTooltipMessage('复制节点')}
             </Tooltip.Content>
           </Tooltip.Root>
         )}
@@ -299,8 +299,8 @@ export const ActionBar = memo(
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
               {isLocked || isParentLocked
-                ? 'Block is locked'
-                : getTooltipMessage(horizontalHandles ? 'Vertical Ports' : 'Horizontal Ports')}
+                ? '节点已锁定'
+                : getTooltipMessage(horizontalHandles ? '垂直端口' : '水平端口')}
             </Tooltip.Content>
           </Tooltip.Root>
         )}
@@ -326,8 +326,8 @@ export const ActionBar = memo(
             </Tooltip.Trigger>
             <Tooltip.Content side='top'>
               {isLocked || isParentLocked
-                ? 'Block is locked'
-                : getTooltipMessage('Remove from Subflow')}
+                ? '节点已锁定'
+                : getTooltipMessage('移出子流程')}
             </Tooltip.Content>
           </Tooltip.Root>
         )}
@@ -349,7 +349,7 @@ export const ActionBar = memo(
             </Button>
           </Tooltip.Trigger>
           <Tooltip.Content side='top'>
-            {isLocked || isParentLocked ? 'Block is locked' : getTooltipMessage('Delete Block')}
+            {isLocked || isParentLocked ? '节点已锁定' : getTooltipMessage('删除节点')}
           </Tooltip.Content>
         </Tooltip.Root>
       </div>
