@@ -155,7 +155,7 @@ func (a *Agent) RunFromCheckpoint(ctx context.Context, req *ChatRequest, sw *str
 	}
 	logger.Infof("[agent] IntegrationTools received: %d", len(req.IntegrationTools))
 	for _, t := range req.IntegrationTools {
-		logger.Infof("[agent]   tool: name=%s service=%s executor=%s deferLoading=%v", t.Name, t.Service, t.Executor, t.DeferLoading)
+		logger.Debugf("[agent]   tool: name=%s service=%s executor=%s deferLoading=%v", t.Name, t.Service, t.Executor, t.DeferLoading)
 	}
 	logger.Infof("[agent] MothershipTools received: %d", len(req.MothershipTools))
 	for _, t := range req.MothershipTools {
