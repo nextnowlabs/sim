@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
 	"sim/copilot/internal/history"
 	"sim/copilot/internal/logger"
 	"sim/copilot/internal/prompt"
@@ -14,6 +15,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 
 	"github.com/google/uuid"
 )
@@ -26,12 +28,12 @@ const (
 )
 
 type Agent struct {
-	adapter      provider.ProviderAdapter
-	executor     *tools.ToolExecutor
-	prompt       *prompt.PromptBuilder
+	adapter       provider.ProviderAdapter
+	executor      *tools.ToolExecutor
+	prompt        *prompt.PromptBuilder
 	historyLoader history.Loader
-	defaultModel string
-	timeout      time.Duration
+	defaultModel  string
+	timeout       time.Duration
 }
 
 func NewAgent(adapter provider.ProviderAdapter, executor *tools.ToolExecutor, promptBuilder *prompt.PromptBuilder, defaultModel string, historyLoader history.Loader) *Agent {
@@ -258,6 +260,14 @@ func (a *Agent) runLoop(ctx context.Context, sw *stream.StreamWriter, model stri
 					if tc.Function.Name == "edit_workflow" && executor == protocol.ExecutorSim {
 						// Translate LLM format to Sim format before sending
 						args = translateEditWorkflowArgs(args, toolToBlockType)
+					} else if executor == protocol.ExecutorSim {
+						switch tc.Function.Name {
+						case "read", "glob", "grep":
+							// VFS paths are percent-encoded per segment; encode
+							// non-ASCII (e.g. Chinese) characters in paths the LLM
+							// built itself so reads of non-English resources work.
+							normalizeVfsToolArgs(tc.Function.Name, args)
+						}
 					}
 
 					_ = sw.Write(protocol.EventTypeTool, &protocol.ToolCallDescriptor{
@@ -552,6 +562,7 @@ func (a *Agent) buildToolDefs(req *ChatRequest, mode string) []provider.ToolDefi
 				"Each element in the \"operations\" array MUST have an \"op\" field (add | edit | delete). " +
 				"Use block types from the Available Blocks list in the system prompt. " +
 				"References to other blocks' outputs use the form <blockname.output> where blockname is the block's name lowercased with all spaces and dots removed (e.g. name \"Web Search\" -> <websearch.results>, NOT <search.results>). " +
+				"Non-ASCII names keep their characters (e.g. name \"数据抓取\" -> <数据抓取.results>). " +
 				"To connect two blocks, nest a \"connections\" object inside the source block's add operation (inside the \"block\" object) as a handle-keyed map: " +
 				"\"connections\": {\"source\": \"targetBlockId\"}. The key is the output handle (default \"source\"), the value is the target block ID string or array of strings. " +
 				"Do NOT create separate operation items just for connections, and do NOT use an array of {source, target} pairs. " +
@@ -635,7 +646,9 @@ func (a *Agent) buildToolDefs(req *ChatRequest, mode string) []provider.ToolDefi
 			Description: "Read a VFS resource, e.g. 'workflows/My%20Workflow/state.json' (the current_workflow " +
 				"context pointer — use this to see the live workflow state before editing), " +
 				"'files/Q4%20Report.pdf/content' for file bytes/parsed text, or 'uploads/data.csv' for a chat upload. " +
-				"Copy paths verbatim from glob/grep/read output.",
+				"Paths are percent-encoded per segment — copy them verbatim from glob/grep/read output; when " +
+				"building a path from a workflow name, URL-encode non-ASCII characters " +
+				"(e.g. workflows/%E6%95%B0%E6%8D%AE/state.json for 数据).",
 			Parameters: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
@@ -869,6 +882,7 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 
 	translated := make([]interface{}, 0, len(ops))
 	edgeOps := make(map[string][]string) // source block ID -> target IDs
+	refIndex := newBlockRefIndex()       // name variants -> canonical names / block IDs
 
 	for i, rawOp := range ops {
 		opMap, ok := rawOp.(map[string]interface{})
@@ -971,6 +985,9 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 					blockID = fmt.Sprintf("block_%d", i)
 				}
 			}
+			if name, _ := block["name"].(string); name != "" {
+				refIndex.add(name, blockID)
+			}
 		} else {
 			// Flat format
 			for k, v := range opMap {
@@ -1014,6 +1031,9 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 					blockID = fmt.Sprintf("block_%d", i)
 				}
 			}
+			if name, _ := opMap["name"].(string); name != "" {
+				refIndex.add(name, blockID)
+			}
 		}
 
 		translated = append(translated, map[string]interface{}{
@@ -1021,6 +1041,17 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 			"block_id":       blockID,
 			"params":         params,
 		})
+	}
+
+	// Rewrite edge targets (name variants -> block IDs) before merging, so
+	// connections written as names (e.g. "数据抓取") resolve to real IDs.
+	for source, targets := range edgeOps {
+		for i, t := range targets {
+			if id := refIndex.blockID(t); id != "" {
+				targets[i] = id
+			}
+		}
+		edgeOps[source] = targets
 	}
 
 	// Apply edge connections to the source block's params
@@ -1068,18 +1099,44 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 		translated[i] = opMap
 	}
 
+	// Rewrite <blockname.path> references and connection targets so LLM name
+	// variants (ids, stripped forms) resolve against the blocks of this call.
+	for i, op := range translated {
+		opMap, ok := op.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		params, _ := opMap["params"].(map[string]interface{})
+		if params == nil {
+			continue
+		}
+		if conns, ok := params["connections"].(map[string]interface{}); ok {
+			rewriteConnectionTargets(conns, refIndex)
+		}
+		if rewritten, ok := rewriteReferencesInValue(params, refIndex).(map[string]interface{}); ok {
+			opMap["params"] = rewritten
+		}
+		translated[i] = opMap
+	}
+
 	return protocol.AdditionalPropertiesMap{"operations": translated}
 }
 
-// sanitizeID converts a name to a valid block ID.
+// sanitizeID converts a name to a valid block ID. Spaces and dashes become
+// underscores; dots and other punctuation are dropped; all letters and digits
+// are kept, including non-ASCII ones (CJK, accented, etc.) — Sim accepts any
+// non-empty string as a block ID, and keeping the original characters makes
+// IDs deterministic and guessable from the name, so connections and
+// cross-turn edits work for non-English names too.
 func sanitizeID(name string) string {
 	id := strings.ToLower(name)
 	id = strings.ReplaceAll(id, " ", "_")
 	id = strings.ReplaceAll(id, "-", "_")
-	// Remove non-alphanumeric chars except underscore
+	// Keep letters, digits, and underscore; drop everything else (dots,
+	// punctuation, symbols).
 	var result strings.Builder
 	for _, c := range id {
-		if (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == '_' {
+		if unicode.IsLetter(c) || unicode.IsDigit(c) || c == '_' {
 			result.WriteRune(c)
 		}
 	}
@@ -1095,6 +1152,193 @@ func sanitizeIDWithFallback(name string, index int) string {
 		return fmt.Sprintf("block_%d", index)
 	}
 	return id
+}
+
+// simNormalizeName mirrors Sim's normalizeName (apps/sim/executor/constants.ts):
+// lowercase, strip all spaces and dots, keep every other character (including
+// underscores and CJK). This is the key Sim uses to resolve <blockname.output>
+// references.
+func simNormalizeName(name string) string {
+	return strings.NewReplacer(" ", "", ".", "").Replace(strings.ToLower(name))
+}
+
+// llmStrippedName is the loosest name variant an LLM may produce when told to
+// remove "spaces and dots" — it also removes underscores. Used as a lookup
+// key when rewriting references.
+func llmStrippedName(name string) string {
+	return strings.NewReplacer(" ", "", ".", "", "_", "").Replace(strings.ToLower(name))
+}
+
+// blockRefIndex maps LLM-generated name variants to the canonical
+// Sim-resolvable block name and the final block ID for the blocks created or
+// renamed in the current edit_workflow call.
+type blockRefIndex struct {
+	canonicalByVariant map[string]string // variant -> Sim-normalized name
+	idByCanonical      map[string]string // Sim-normalized name -> block ID
+}
+
+func newBlockRefIndex() *blockRefIndex {
+	return &blockRefIndex{
+		canonicalByVariant: make(map[string]string),
+		idByCanonical:      make(map[string]string),
+	}
+}
+
+// add registers the variants of one block. Ambiguous variants (two blocks
+// sharing the same form) are dropped so references are never rewritten to the
+// wrong block.
+func (idx *blockRefIndex) add(name string, blockID string) {
+	if name == "" || blockID == "" {
+		return
+	}
+	canonical := simNormalizeName(name)
+	if canonical == "" {
+		return
+	}
+	variants := []string{name, canonical, llmStrippedName(name), sanitizeID(name), blockID}
+	for _, v := range variants {
+		if v == "" {
+			continue
+		}
+		if existing, ok := idx.canonicalByVariant[v]; ok && existing != canonical {
+			delete(idx.canonicalByVariant, v)
+			continue
+		}
+		idx.canonicalByVariant[v] = canonical
+	}
+	if existing, ok := idx.idByCanonical[canonical]; !ok || existing == blockID {
+		idx.idByCanonical[canonical] = blockID
+	}
+}
+
+// canonicalName resolves a reference blockname to Sim's normalized form, or
+// "" when the name is unknown to this call.
+func (idx *blockRefIndex) canonicalName(variant string) string {
+	return idx.canonicalByVariant[variant]
+}
+
+// blockID resolves a connection target (name variant or id) to the block's
+// final ID, or "" when unknown.
+func (idx *blockRefIndex) blockID(variant string) string {
+	canonical := idx.canonicalByVariant[variant]
+	if canonical == "" {
+		return ""
+	}
+	return idx.idByCanonical[canonical]
+}
+
+// referencePattern matches <blockname.path> references; blockname must not
+// contain dots (the dot is the path delimiter).
+var referencePattern = regexp.MustCompile(`<([^<>.]+)\.[^<>]+>`)
+
+// rewriteReferencesInValue replaces <blockname.path> references inside any
+// string value (recursing into maps and arrays) using the current call's
+// block index, so LLM name variants (ids, stripped forms) resolve in Sim.
+func rewriteReferencesInValue(value interface{}, idx *blockRefIndex) interface{} {
+	switch v := value.(type) {
+	case string:
+		if !strings.Contains(v, "<") {
+			return v
+		}
+		return referencePattern.ReplaceAllStringFunc(v, func(m string) string {
+			sub := referencePattern.FindStringSubmatch(m)
+			canonical, ok := idx.canonicalByVariant[sub[1]]
+			if !ok {
+				return m
+			}
+			return "<" + canonical + m[len("<"+sub[1]):]
+		})
+	case []interface{}:
+		for i := range v {
+			v[i] = rewriteReferencesInValue(v[i], idx)
+		}
+	case map[string]interface{}:
+		for k, val := range v {
+			v[k] = rewriteReferencesInValue(val, idx)
+		}
+	}
+	return value
+}
+
+// rewriteConnectionTargets replaces connection targets (which Sim matches by
+// block ID) with the actual block IDs for any name variant of a block in the
+// current call.
+func rewriteConnectionTargets(connections map[string]interface{}, idx *blockRefIndex) {
+	for handle, target := range connections {
+		switch t := target.(type) {
+		case string:
+			if id := idx.blockID(t); id != "" {
+				connections[handle] = id
+			}
+		case []interface{}:
+			for i, item := range t {
+				if s, ok := item.(string); ok {
+					if id := idx.blockID(s); id != "" {
+						t[i] = id
+					}
+				}
+			}
+		case []string:
+			for i, s := range t {
+				if id := idx.blockID(s); id != "" {
+					t[i] = id
+				}
+			}
+		}
+	}
+}
+
+// normalizeVfsToolArgs percent-encodes non-ASCII characters in the path-like
+// arguments of the read/glob/grep tools. Sim's VFS paths are percent-encoded
+// per segment, so a raw Chinese workflow name in a read path 404s. Existing
+// %XX sequences are left untouched (no double-encoding); glob metacharacters
+// (*, **, ?) are preserved.
+func normalizeVfsToolArgs(toolName string, args protocol.AdditionalPropertiesMap) {
+	encodeField := func(key string, keepGlobMeta bool) {
+		raw, ok := args[key].(string)
+		if !ok || raw == "" {
+			return
+		}
+		args[key] = encodeVfsPath(raw, keepGlobMeta)
+	}
+	switch toolName {
+	case "read":
+		encodeField("path", false)
+	case "glob":
+		encodeField("pattern", true)
+	case "grep":
+		encodeField("path", false)
+	}
+}
+
+// encodeVfsPath percent-encodes every byte outside the VFS-safe set
+// (A-Za-z0-9 - _ . ~ /) plus existing %XX sequences and, when keepGlobMeta is
+// set, the glob metacharacters * and ?.
+func encodeVfsPath(path string, keepGlobMeta bool) string {
+	var b strings.Builder
+	b.Grow(len(path) + 16)
+	for i := 0; i < len(path); i++ {
+		c := path[i]
+		if c == '%' && i+2 < len(path) && isHexByte(path[i+1]) && isHexByte(path[i+2]) {
+			b.WriteByte(c)
+			continue
+		}
+		if isVfsUnreserved(c) || c == '/' || (keepGlobMeta && (c == '*' || c == '?')) {
+			b.WriteByte(c)
+			continue
+		}
+		fmt.Fprintf(&b, "%%%02X", c)
+	}
+	return b.String()
+}
+
+func isVfsUnreserved(c byte) bool {
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') ||
+		c == '-' || c == '_' || c == '.' || c == '~'
+}
+
+func isHexByte(c byte) bool {
+	return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')
 }
 
 // hasConnectionsArray reports whether the operation map has a non-empty

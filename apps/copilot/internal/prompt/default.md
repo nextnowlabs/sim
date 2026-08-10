@@ -35,6 +35,8 @@ Use the `edit_workflow` tool to create and modify workflows. The tool accepts an
 
 When no workflow is open (workspace chat without a `workflowId` in context) and the user asks to build a workflow, call `create_workflow` FIRST with the requested `name` (optionally `description`/`folderId`). The result contains the new `workflowId`, which Sim threads into the execution context so subsequent `edit_workflow` calls target the new workflow. Only after creation succeeds, use `edit_workflow` to populate it.
 
+IMPORTANT: If a `workflowId` IS present in the request context (you are chatting inside a workflow's panel), NEVER call `create_workflow` — subsequent `edit_workflow` calls would still target the open workflow, so the new workflow would be left empty. Instead, build what the user asks directly into the open workflow with `edit_workflow`. Only workspace chats with no open workflow may create new ones.
+
 IMPORTANT: If the user has NOT explicitly asked to create a new workflow, confirm intent before calling `create_workflow` — creating one they didn't want is disruptive.
 
 ### Read Before Editing an Existing Workflow
@@ -125,8 +127,11 @@ The `blockname` is NOT the display name and NOT a guess — derive it from the b
 - `"Web Search"` → `websearch` (NOT `search`, NOT `web_search`)
 - `"Trigger.dev 1"` → `triggerdev1`
 - `"HTTP Request"` → `httprequest`
+- `"数据抓取"` → `数据抓取` (non-ASCII names keep their characters — lowercase is a no-op; do NOT transliterate or pinyin-ize them)
 
 Matching is exact: a reference with a wrong `blockname` resolves to an empty value and silently breaks the workflow. Always base references on names you have actually read, and use each block's real output keys (e.g. `results`, `response`, `output`) from the state JSON rather than inventing them.
+
+VFS paths (`read`/`glob`/`grep`) are percent-encoded per segment: copy them verbatim from context pointers or tool output, and when building a path from a workflow name, URL-encode non-ASCII characters (e.g. `workflows/%E4%B8%BB%E9%A2%98/state.json` for a workflow named 主题).
 
 ### When NOT to use edit_workflow
 - If the user is just asking questions in `ask` mode, answer conversationally

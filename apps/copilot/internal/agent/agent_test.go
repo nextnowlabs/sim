@@ -346,7 +346,7 @@ func indexOf(s, substr string) int {
 }
 
 // TestSanitizeID_ChineseOnlyNameFallback verifies an all-Chinese block name
-// still produces a non-empty block_id.
+// produces a stable, name-derived block_id (CJK characters are kept).
 func TestSanitizeID_ChineseOnlyNameFallback(t *testing.T) {
 	input := mustDecodeJSON(t, `{"operations":[{"op":"add","block":{"type":"llm_chat","name":"客户服务机器人"}}]}`)
 
@@ -361,8 +361,8 @@ func TestSanitizeID_ChineseOnlyNameFallback(t *testing.T) {
 	if blockID == "" {
 		t.Fatal("block_id must not be empty for an all-Chinese block name")
 	}
-	if blockID != "block_0" {
-		t.Errorf("block_id = %q, want fallback \"block_0\"", blockID)
+	if blockID != "客户服务机器人" {
+		t.Errorf("block_id = %q, want CJK name kept \"客户服务机器人\"", blockID)
 	}
 }
 
@@ -379,8 +379,8 @@ func TestSanitizeID_ChineseOnlyNameFallbackFlat(t *testing.T) {
 
 	opMap := getOpMap(t, ops[0])
 	blockID, _ := opMap["block_id"].(string)
-	if blockID != "block_0" {
-		t.Errorf("block_id = %q, want fallback \"block_0\"", blockID)
+	if blockID != "数据导入" {
+		t.Errorf("block_id = %q, want CJK name kept \"数据导入\"", blockID)
 	}
 }
 

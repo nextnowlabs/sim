@@ -355,3 +355,153 @@ func TestParseArguments_UnparseableFallback(t *testing.T) {
 		t.Error("result should not have operations key for unparseable input")
 	}
 }
+
+func TestSanitizeID_KeepsCJK(t *testing.T) {
+	cases := []struct{ in, want string }{
+		{"数据抓取", "数据抓取"},
+		{"Web Search", "web_search"},
+		{"AI 内容生成器", "ai_内容生成器"},
+		{"HTTP Request", "http_request"},
+		{"Trigger.dev 1", "triggerdev_1"},
+		{"!!!", ""},
+	}
+	for _, c := range cases {
+		if got := sanitizeID(c.in); got != c.want {
+			t.Errorf("sanitizeID(%q) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+
+func TestSanitizeIDWithFallback_ChineseName(t *testing.T) {
+	if got := sanitizeIDWithFallback("数据抓取", 3); got != "数据抓取" {
+		t.Errorf("expected CJK id kept, got %q", got)
+	}
+	if got := sanitizeIDWithFallback("!!!", 3); got != "block_3" {
+		t.Errorf("expected block_3 fallback for punctuation-only name, got %q", got)
+	}
+}
+
+func TestTranslate_ChineseBlockConnectionsAndReferences(t *testing.T) {
+	input := mustDecodeJSON(t, `{
+		"operations": [
+			{"op": "add", "block": {"type": "http", "id": "数据抓取", "name": "数据抓取", "subBlocks": {"url": "https://x"}}},
+			{"op": "add", "block": {"type": "function", "id": "处理结果", "name": "处理结果", "subBlocks": {"code": "return <数据抓取.response>"}, "connections": {"source": "数据抓取"}}}
+		]
+	}`)
+
+	result := translateEditWorkflowArgs(input, nil)
+	ops := getOperations(t, result)
+
+	first := getOpMap(t, ops[0])
+	firstParams := getParams(t, first)
+	if first["block_id"] != "数据抓取" {
+		t.Errorf("expected block_id 数据抓取, got %v", first["block_id"])
+	}
+	if firstParams["id"] != "数据抓取" {
+		t.Errorf("expected params.id 数据抓取, got %v", firstParams["id"])
+	}
+
+	second := getOpMap(t, ops[1])
+	secondParams := getParams(t, second)
+	inputs, ok := secondParams["inputs"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected inputs map, got %T", secondParams["inputs"])
+	}
+	code, _ := inputs["code"].(string)
+	if code != "return <数据抓取.response>" {
+		t.Errorf("CJK reference should be preserved verbatim, got %q", code)
+	}
+	conns := getConnections(t, secondParams)
+	source, _ := conns["source"].(string)
+	if source != "数据抓取" {
+		t.Errorf("connection target should resolve to block id 数据抓取, got %q", source)
+	}
+}
+
+func TestTranslate_ReferenceVariantsRewritten(t *testing.T) {
+	input := mustDecodeJSON(t, `{
+		"operations": [
+			{"op": "add", "block": {"type": "tavily", "id": "web_search", "name": "Web Search", "subBlocks": {}}},
+			{"op": "add", "block": {"type": "agent", "id": "ai_analysis", "name": "AI Analysis", "subBlocks": {"messages": [{"role": "user", "content": "主题：<start.topic>\n结果：<websearch.results> <ai_analysis.x> <aianalysis.y>"}]}, "connections": {"source": "websearch"}}}
+		]
+	}`)
+
+	result := translateEditWorkflowArgs(input, nil)
+	ops := getOperations(t, result)
+	second := getOpMap(t, ops[1])
+	secondParams := getParams(t, second)
+	inputs, ok := secondParams["inputs"].(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected inputs map, got %T", secondParams["inputs"])
+	}
+	messages, _ := inputs["messages"].([]interface{})
+	msg, _ := messages[0].(map[string]interface{})
+	content, _ := msg["content"].(string)
+
+	// <websearch.results> is already Sim-canonical; <ai_analysis.x> (id form)
+	// and <aianalysis.y> (stripped form) must be rewritten to the canonical
+	// normalized name "aianalysis". <start.topic> is not part of this call and
+	// must be left untouched.
+	want := "主题：<start.topic>\n结果：<websearch.results> <aianalysis.x> <aianalysis.y>"
+	if content != want {
+		t.Errorf("references not rewritten correctly:\n got %q\nwant %q", content, want)
+	}
+
+	conns := getConnections(t, secondParams)
+	source, _ := conns["source"].(string)
+	if source != "web_search" {
+		t.Errorf("connection target should resolve to block id web_search, got %q", source)
+	}
+}
+
+func TestTranslate_ChineseStartFieldReference(t *testing.T) {
+	input := mustDecodeJSON(t, `{
+		"operations": [
+			{"op": "add", "block": {"type": "start_trigger", "id": "start", "name": "Start", "subBlocks": {"inputFormat": [{"id": "name", "name": "你的名字", "type": "string"}]}}},
+			{"op": "add", "block": {"type": "agent", "id": "gen", "name": "生成器", "subBlocks": {"messages": [{"role": "user", "content": "你好 <start.你的名字>"}]}}}
+		]
+	}`)
+
+	result := translateEditWorkflowArgs(input, nil)
+	ops := getOperations(t, result)
+	second := getOpMap(t, ops[1])
+	secondParams := getParams(t, second)
+	inputs, _ := secondParams["inputs"].(map[string]interface{})
+	messages, _ := inputs["messages"].([]interface{})
+	msg, _ := messages[0].(map[string]interface{})
+	content, _ := msg["content"].(string)
+	if content != "你好 <start.你的名字>" {
+		t.Errorf("Chinese path segment in reference must be preserved, got %q", content)
+	}
+}
+
+func TestEncodeVfsPath(t *testing.T) {
+	cases := []struct {
+		in, want string
+	}{
+		{"workflows/主题搜索分析/state.json", "workflows/%E4%B8%BB%E9%A2%98%E6%90%9C%E7%B4%A2%E5%88%86%E6%9E%90/state.json"},
+		{"workflows/My Workflow/state.json", "workflows/My%20Workflow/state.json"},
+		{"workflows/%E4%B8%BB%E9%A2%98/state.json", "workflows/%E4%B8%BB%E9%A2%98/state.json"},
+		{"workflows/**", "workflows/**"},
+		{"workflows/*/state.json", "workflows/*/state.json"},
+	}
+	for _, c := range cases {
+		if got := encodeVfsPath(c.in, true); got != c.want {
+			t.Errorf("encodeVfsPath(%q, true) = %q, want %q", c.in, got, c.want)
+		}
+	}
+}
+
+func TestNormalizeVfsToolArgs(t *testing.T) {
+	args := mustDecodeJSON(t, `{"path": "workflows/主题/state.json"}`)
+	normalizeVfsToolArgs("read", args)
+	if got, _ := args["path"].(string); got != "workflows/%E4%B8%BB%E9%A2%98/state.json" {
+		t.Errorf("read path not encoded, got %q", got)
+	}
+
+	pattern := mustDecodeJSON(t, `{"pattern": "workflows/主题/**"}`)
+	normalizeVfsToolArgs("glob", pattern)
+	if got, _ := pattern["pattern"].(string); got != "workflows/%E4%B8%BB%E9%A2%98/**" {
+		t.Errorf("glob pattern not encoded, got %q", got)
+	}
+}
