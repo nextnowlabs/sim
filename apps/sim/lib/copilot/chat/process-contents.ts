@@ -396,8 +396,19 @@ async function processWorkflowFromDb(
       workflowRecord.folderId
     )
     const dir = canonicalWorkflowVfsDir({ name: workflowRecord.name, folderPath })
-    const path = kind === 'current_workflow' ? `${dir}/state.json` : `${dir}/meta.json`
-    return { type: kind, tag, content: '', path }
+    const statePath = `${dir}/state.json`
+    if (kind === 'current_workflow') {
+      return {
+        type: kind,
+        tag,
+        content:
+          `Selected workflow: "${workflowRecord.name}" (workflowId: ${workflowId}). ` +
+          `Read its live state at "${statePath}" before editing. ` +
+          `Do NOT call create_workflow — apply all create/modify requests to this workflow with edit_workflow.`,
+        path: statePath,
+      }
+    }
+    return { type: kind, tag, content: '', path: `${dir}/meta.json` }
   } catch (error) {
     logger.error('Error processing workflow context', { workflowId, error })
     return null
