@@ -2,6 +2,7 @@ import { db } from '@sim/db'
 import {
   apiKey,
   chat,
+  copilotChats,
   webhook,
   workflow,
   workflowDeploymentVersion,
@@ -11,7 +12,7 @@ import {
   workspace,
 } from '@sim/db/schema'
 import { createLogger } from '@sim/logger'
-import { and, eq, inArray, isNull } from 'drizzle-orm'
+import { and, eq, inArray, isNull, sql } from 'drizzle-orm'
 import { cleanupWorkflowAliasBacking } from '@/lib/copilot/vfs/workflow-alias-backing'
 import { env } from '@/lib/core/config/env'
 import { PlatformEvents } from '@/lib/core/telemetry'
@@ -159,6 +160,22 @@ export async function archiveWorkflow(
         isPublicApi: false,
       })
       .where(and(eq(workflow.id, workflowId), isNull(workflow.archivedAt)))
+
+    // Strip references to the archived workflow from copilot chat resources so
+    // chat hydration can never re-inject it into the active workflow list.
+    await tx
+      .update(copilotChats)
+      .set({
+        resources: sql`COALESCE((
+          SELECT jsonb_agg(elem)
+          FROM jsonb_array_elements(${copilotChats.resources}) AS elem
+          WHERE NOT (elem->>'id' = ${workflowId} AND elem->>'type' = 'workflow')
+        ), '[]'::jsonb)`,
+        updatedAt: now,
+      })
+      .where(
+        sql`${copilotChats.resources} @> ${JSON.stringify([{ id: workflowId, type: 'workflow' }])}::jsonb`
+      )
   })
 
   try {

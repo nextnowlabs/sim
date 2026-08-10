@@ -958,6 +958,10 @@ function buildReplayStream(events: StreamBatchEvent[]): ReadableStream<Uint8Arra
 function ensureWorkflowInRegistry(resourceId: string, title: string, workspaceId: string): boolean {
   const workflows = getWorkflows(workspaceId)
   if (workflows.some((w) => w.id === resourceId)) return false
+  // Never re-inject workflows the server has already archived (soft-deleted):
+  // chat resources can reference workflows that were deleted after the chat
+  // was created, and injecting them would resurrect ghosts in the sidebar.
+  if (getWorkflows(workspaceId, 'archived').some((w) => w.id === resourceId)) return false
   const sortOrder = getTopInsertionSortOrder(
     Object.fromEntries(workflows.map((w) => [w.id, w])),
     getFolderMap(workspaceId),
