@@ -155,10 +155,6 @@ func handleChat(w http.ResponseWriter, r *http.Request, ag *agent.Agent, promptB
 		http.Error(w, "message is required", http.StatusBadRequest)
 		return
 	}
-	if req.Model == "" {
-		http.Error(w, "model is required", http.StatusBadRequest)
-		return
-	}
 
 	requestID := uuid.New().String()
 	streamID := uuid.New().String()
