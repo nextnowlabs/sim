@@ -8,6 +8,14 @@ import (
 	"strings"
 )
 
+const (
+	// ContextItemsBudgetChars bounds the total size of the rendered context
+	// section so multi-message conversations cannot exhaust the prompt budget.
+	ContextItemsBudgetChars = 32000
+	// ContextItemMaxChars bounds each individual context item.
+	ContextItemMaxChars = 6000
+)
+
 //go:embed default.md
 var defaultPromptFS embed.FS
 
@@ -49,7 +57,7 @@ func NewPromptBuilder(customPath string) (*PromptBuilder, error) {
 	}, nil
 }
 
-func (pb *PromptBuilder) Build(mode string, hasWorkflow bool, vfs interface{}, workspaceContext string, integrationTools []ToolInfo) string {
+func (pb *PromptBuilder) Build(mode string, hasWorkflow bool, vfs interface{}, workspaceContext string, contextItems []map[string]interface{}, integrationTools []ToolInfo) string {
 	result := strings.Clone(pb.template)
 
 	result = strings.ReplaceAll(result, "{{mode}}", mode)
@@ -57,7 +65,7 @@ func (pb *PromptBuilder) Build(mode string, hasWorkflow bool, vfs interface{}, w
 	if hasWorkflow {
 		result = strings.ReplaceAll(result, "{{#workflow_state}}", "")
 		result = strings.ReplaceAll(result, "{{/workflow_state}}", "")
-		result = strings.ReplaceAll(result, "{{workflow_state}}", "(The current workflow state is not available in this context. Use edit_workflow to add blocks as needed.)")
+		result = strings.ReplaceAll(result, "{{workflow_state}}", "(The current workflow state is not available in this context. Use read(\"workflows/<name>/state.json\") to fetch it, then edit_workflow to make changes.)")
 	} else {
 		result = removeSection(result, "{{#workflow_state}}", "{{/workflow_state}}")
 	}
@@ -81,6 +89,16 @@ func (pb *PromptBuilder) Build(mode string, hasWorkflow bool, vfs interface{}, w
 		result = strings.ReplaceAll(result, "{{workspace_context}}", "")
 	}
 
+	if len(contextItems) > 0 {
+		items := formatContextItems(contextItems)
+		result = strings.ReplaceAll(result, "{{#context_items}}", "")
+		result = strings.ReplaceAll(result, "{{/context_items}}", "")
+		result = strings.ReplaceAll(result, "{{context_items}}", items)
+	} else {
+		result = removeSection(result, "{{#context_items}}", "{{/context_items}}")
+		result = strings.ReplaceAll(result, "{{context_items}}", "")
+	}
+
 	result = strings.ReplaceAll(result, "{{builtin_blocks}}", formatBuiltinBlocks())
 
 	if pb.hasCatalog && len(integrationTools) > 0 {
@@ -91,6 +109,59 @@ func (pb *PromptBuilder) Build(mode string, hasWorkflow bool, vfs interface{}, w
 	}
 
 	return result
+}
+
+// formatContextItems renders the request's context items ({type, tag, content,
+// path}) as a "Conversation & Workspace Context" section, capped at a total
+// size budget with per-item truncation.
+func formatContextItems(items []map[string]interface{}) string {
+	var sb strings.Builder
+	remaining := ContextItemsBudgetChars
+
+	for _, item := range items {
+		if remaining <= 0 {
+			break
+		}
+
+		typ, _ := item["type"].(string)
+		tag, _ := item["tag"].(string)
+		content := ""
+		if raw, ok := item["content"]; ok && raw != nil {
+			content = fmt.Sprintf("%v", raw)
+		} else if p, ok := item["path"].(string); ok && p != "" {
+			content = "path: " + p
+		}
+		if content == "" {
+			content = "(no content)"
+		}
+
+		title := typ
+		if tag != "" {
+			title = fmt.Sprintf("%s (%s)", typ, tag)
+		}
+		if title == "" {
+			title = "context item"
+		}
+
+		truncated := truncateRunes(content, ContextItemMaxChars)
+		section := fmt.Sprintf("### %s\n%s\n\n", title, truncated)
+
+		if len(section) > remaining {
+			section = truncateRunes(section, remaining)
+		}
+		sb.WriteString(section)
+		remaining -= len(section)
+	}
+
+	return strings.TrimRight(sb.String(), "\n")
+}
+
+func truncateRunes(s string, max int) string {
+	runes := []rune(s)
+	if len(runes) <= max {
+		return s
+	}
+	return string(runes[:max]) + "\n... [truncated]"
 }
 
 func formatIntegrationTools(tools []ToolInfo) string {

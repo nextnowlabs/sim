@@ -6,10 +6,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"sim/copilot/internal/logger"
 	"net/http"
 	"os"
 	"os/signal"
+	"sim/copilot/internal/logger"
 	"strings"
 	"syscall"
 	"time"
@@ -58,7 +58,7 @@ func main() {
 	})
 
 	mux.HandleFunc("/api/tools/resume", func(w http.ResponseWriter, r *http.Request) {
-		handleResume(w, r, ag)
+		handleResume(w, r, ag, sm)
 	})
 
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -154,7 +154,17 @@ func handleChat(w http.ResponseWriter, r *http.Request, ag *agent.Agent, promptB
 
 	ctx, cancel := context.WithCancel(r.Context())
 	sm.Register(streamID, cancel)
-	defer sm.Unregister(streamID)
+	if req.MessageID != "" {
+		// Sim aborts by message ID; register the cancel under it too so
+		// /api/streams/explicit-abort can cancel this leg.
+		sm.Register(req.MessageID, cancel)
+	}
+	defer func() {
+		sm.Unregister(streamID)
+		if req.MessageID != "" {
+			sm.Unregister(req.MessageID)
+		}
+	}()
 
 	// Persist user message for chat history
 	_ = saveMessage(ctx, &req, req.MessageID, "user", req.Message)
@@ -174,10 +184,10 @@ func saveMessage(ctx context.Context, req *agent.ChatRequest, messageID, role, c
 	}
 
 	body := map[string]interface{}{
-		"chatId":   req.ChatID,
+		"chatId":    req.ChatID,
 		"messageId": messageID,
-		"role":     role,
-		"content":  content,
+		"role":      role,
+		"content":   content,
 	}
 
 	bodyBytes, err := json.Marshal(body)
@@ -214,26 +224,34 @@ func handleAbort(w http.ResponseWriter, r *http.Request, sm *streamManager) {
 	}
 
 	var req struct {
-		StreamID string `json:"streamId"`
+		StreamID  string `json:"streamId"`
+		MessageID string `json:"messageId"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	if req.StreamID == "" {
-		http.Error(w, "streamId is required", http.StatusBadRequest)
+	// Sim sends the chat message ID as messageId; keep streamId as a
+	// backward-compatible fallback.
+	id := req.MessageID
+	if id == "" {
+		id = req.StreamID
+	}
+
+	if id == "" {
+		http.Error(w, "messageId is required", http.StatusBadRequest)
 		return
 	}
 
-	sm.Cancel(req.StreamID)
+	sm.Cancel(id)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 }
 
-func handleResume(w http.ResponseWriter, r *http.Request, ag *agent.Agent) {
+func handleResume(w http.ResponseWriter, r *http.Request, ag *agent.Agent, sm *streamManager) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -261,22 +279,79 @@ func handleResume(w http.ResponseWriter, r *http.Request, ag *agent.Agent) {
 
 	logger.Infof("[resume] Received: streamID=%s checkpointID=%s results=%d", req.StreamID, req.CheckpointID, len(req.Results))
 
-	// Debug: log full result details
-	for i, r := range req.Results {
-		logger.Debugf("[resume] Result[%d]: full=%+v", i, r)
+	if req.CheckpointID == "" {
+		http.Error(w, "checkpointId is required", http.StatusBadRequest)
+		return
+	}
+	if len(req.Results) == 0 {
+		http.Error(w, "results must contain at least one tool result", http.StatusBadRequest)
+		return
 	}
 
 	cp := agent.GetCheckpoint(req.CheckpointID)
 	if cp == nil {
+		// The checkpoint was already consumed by a previous (failed) resume
+		// attempt. Sim retries 503 stream legs up to 3 times, so replay the
+		// leg from the saved checkpoint instead of 404ing.
+		cp = agent.ConsumedCheckpoint(req.CheckpointID)
+	}
+	if cp == nil {
 		logger.Infof("[resume] No checkpoint found for checkpointID=%s", req.CheckpointID)
-		http.Error(w, "no pending checkpoint found", http.StatusNotFound)
+		writeJSONError(w, http.StatusNotFound, "no pending checkpoint found")
 		return
 	}
 
-	// Process the first tool result
-	result := &agent.CheckpointResult{}
-	if len(req.Results) > 0 {
-		r0 := req.Results[0]
+	results := buildCheckpointResults(req.Results, cp.PendingToolCallIDs)
+
+	streamID := uuid.New().String()
+	requestID := uuid.New().String()
+
+	sw, err := stream.NewStreamWriter(w, streamID)
+	if err != nil {
+		http.Error(w, "streaming not supported", http.StatusInternalServerError)
+		return
+	}
+	defer sw.Close()
+
+	// Per-leg deadline: the resume request's own context bounds this leg.
+	ctx, cancel := context.WithCancel(r.Context())
+	sm.Register(streamID, cancel)
+	if req.StreamID != "" {
+		// req.StreamID is the chat message ID from Sim; register under it so
+		// /api/streams/explicit-abort can cancel this resume leg too.
+		sm.Register(req.StreamID, cancel)
+	}
+	defer func() {
+		sm.Unregister(streamID)
+		if req.StreamID != "" {
+			sm.Unregister(req.StreamID)
+		}
+	}()
+
+	chatReq := &agent.ChatRequest{
+		MessageID:   req.StreamID,
+		UserID:      req.UserID,
+		WorkspaceID: req.WorkspaceID,
+		Mode:        "build",
+	}
+
+	if err := ag.RunFromCheckpoint(ctx, chatReq, sw, requestID, cp, results); err != nil {
+		if ctx.Err() != nil {
+			logger.Infof("Resume %s cancelled or timed out: %v", requestID, ctx.Err())
+		} else {
+			logger.Infof("Resume agent error for %s: %v", requestID, err)
+		}
+	}
+}
+
+// buildCheckpointResults parses ALL results[] entries into CheckpointResults
+// ordered by the checkpoint's pendingToolCallIds, so every pending tool call
+// gets exactly one tool message. Error extraction keeps the existing
+// fallbacks: data.error (nested) then top-level error.
+func buildCheckpointResults(rawResults []map[string]interface{}, pendingToolCallIDs []string) []agent.CheckpointResult {
+	byCallID := make(map[string]agent.CheckpointResult, len(rawResults))
+	for _, r0 := range rawResults {
+		var result agent.CheckpointResult
 		if tcid, ok := r0["callId"].(string); ok {
 			result.ToolCallID = tcid
 		}
@@ -307,16 +382,39 @@ func handleResume(w http.ResponseWriter, r *http.Request, ag *agent.Agent) {
 				result.Error = errMsg
 			}
 		}
-	}
-	if result.ToolCallID == "" && result.ToolName == "" {
-		result.Success = false
-		result.Error = "no result data in resume callback"
+		if result.ToolCallID == "" && result.ToolName == "" {
+			result.Success = false
+			result.Error = "no result data in resume callback"
+		}
+		byCallID[result.ToolCallID] = result
 	}
 
-	logger.Infof("[resume] Processing result: tool=%s success=%v", result.ToolName, result.Success)
-	cp.ResumeCh <- result
+	ordered := make([]agent.CheckpointResult, 0, len(pendingToolCallIDs))
+	for _, id := range pendingToolCallIDs {
+		result, ok := byCallID[id]
+		if !ok {
+			// Defensive: a missing result still produces a tool message so the
+			// assistant tool_calls remain paired with tool messages.
+			ordered = append(ordered, agent.CheckpointResult{
+				ToolCallID: id,
+				ToolName:   "unknown",
+				Success:    false,
+				Error:      fmt.Sprintf("missing result for pending tool call %s", id),
+			})
+			continue
+		}
+		ordered = append(ordered, result)
+	}
+	if len(ordered) == 0 {
+		for _, result := range byCallID {
+			ordered = append(ordered, result)
+		}
+	}
+	return ordered
+}
 
+func writeJSONError(w http.ResponseWriter, status int, msg string) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]bool{"ok": true})
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(map[string]string{"error": msg})
 }

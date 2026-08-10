@@ -5,19 +5,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"sim/copilot/internal/logger"
+	"sim/copilot/internal/prompt"
 	"sim/copilot/internal/protocol"
 	"sim/copilot/internal/provider"
-	"sim/copilot/internal/prompt"
 	"sim/copilot/internal/stream"
 	"sim/copilot/internal/tools"
 	"strings"
+	"sync"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const (
-	MaxToolIterations         = 20
-	DefaultTimeout            = 120 * time.Second
+	MaxToolIterations          = 20
+	DefaultTimeout             = 120 * time.Second
 	TokenEstimateCharsPerToken = 4
+	MaxToolResultContentChars  = 8000
 )
 
 type Agent struct {
@@ -81,13 +85,13 @@ type ToolSchema struct {
 }
 
 type Checkpoint struct {
-	Messages        []provider.Message
-	SystemPrompt    string
-	ToolDefs        []provider.ToolDefinition
-	Model           string
-	Trace           *loopTrace
-	ResumeCh        chan *CheckpointResult
-	ToolToBlockType map[string]string
+	Messages           []provider.Message
+	SystemPrompt       string
+	ToolDefs           []provider.ToolDefinition
+	Model              string
+	Trace              *loopTrace
+	ToolToBlockType    map[string]string
+	PendingToolCallIDs []string
 }
 
 type CheckpointResult struct {
@@ -104,10 +108,10 @@ type loopTrace struct {
 }
 
 func (a *Agent) Run(ctx context.Context, req *ChatRequest, sw *stream.StreamWriter, requestID string) error {
-	return a.RunFromCheckpoint(ctx, req, sw, requestID, nil)
+	return a.RunFromCheckpoint(ctx, req, sw, requestID, nil, nil)
 }
 
-func (a *Agent) RunFromCheckpoint(ctx context.Context, req *ChatRequest, sw *stream.StreamWriter, requestID string, cp *Checkpoint) error {
+func (a *Agent) RunFromCheckpoint(ctx context.Context, req *ChatRequest, sw *stream.StreamWriter, requestID string, cp *Checkpoint, results []CheckpointResult) error {
 	ctx, cancel := context.WithTimeout(ctx, a.timeout)
 	defer cancel()
 
@@ -154,7 +158,7 @@ func (a *Agent) RunFromCheckpoint(ctx context.Context, req *ChatRequest, sw *str
 	}
 	logger.Infof("[agent] WorkspaceContext length: %d", len(req.WorkspaceContext))
 
-	systemPrompt := a.prompt.Build(mode, req.WorkflowID != "", req.VFS, req.WorkspaceContext, toolInfos)
+	systemPrompt := a.prompt.Build(mode, req.WorkflowID != "", req.VFS, req.WorkspaceContext, req.Context, toolInfos)
 	toolDefs := a.buildToolDefs(req, mode)
 
 	var trace *loopTrace
@@ -168,21 +172,24 @@ func (a *Agent) RunFromCheckpoint(ctx context.Context, req *ChatRequest, sw *str
 		model = cp.Model
 		toolToBlockType = cp.ToolToBlockType
 
-		// Wait for Sim to call back with the tool result
-		result := <-cp.ResumeCh
-		logger.Infof("[agent] Resumed: tool=%s success=%v", result.ToolName, result.Success)
-		messages = a.addToolResult(messages, result, sw, requestID)
+		logger.Infof("[agent] Resuming from checkpoint: pendingTools=%d results=%d", len(cp.PendingToolCallIDs), len(results))
+		for _, result := range results {
+			logger.Infof("[agent] Resumed: tool=%s success=%v", result.ToolName, result.Success)
+			messages = a.addToolResult(messages, &result, sw, requestID)
+		}
 	} else {
 		trace = &loopTrace{}
 		messages = a.buildMessages(req)
+	}
 
-		if err := sw.Write(protocol.EventTypeSession, &protocol.SessionStartPayload{
-			Kind: protocol.SessionStart,
-			Data: &protocol.SessionStartData{ResponseID: requestID},
-		}, &protocol.Trace{RequestID: requestID}, nil); err != nil {
-			return fmt.Errorf("emit session start: %w", err)
-		}
+	if err := sw.Write(protocol.EventTypeSession, &protocol.SessionStartPayload{
+		Kind: protocol.SessionStart,
+		Data: &protocol.SessionStartData{ResponseID: requestID},
+	}, &protocol.Trace{RequestID: requestID}, nil); err != nil {
+		return fmt.Errorf("emit session start: %w", err)
+	}
 
+	if cp == nil {
 		if req.ChatID != "" {
 			_ = sw.Write(protocol.EventTypeSession, &protocol.SessionChatPayload{
 				ChatID: req.ChatID,
@@ -244,10 +251,10 @@ func (a *Agent) runLoop(ctx context.Context, sw *stream.StreamWriter, model stri
 					args := parseArguments(tc.Function.Arguments)
 					logger.Debugf("[agent] LLM tool call: name=%s args=%s executor=%s", tc.Function.Name, tc.Function.Arguments, executor)
 
-				if tc.Function.Name == "edit_workflow" && executor == protocol.ExecutorSim {
-					// Translate LLM format to Sim format before sending
-					args = translateEditWorkflowArgs(args, toolToBlockType)
-				}
+					if tc.Function.Name == "edit_workflow" && executor == protocol.ExecutorSim {
+						// Translate LLM format to Sim format before sending
+						args = translateEditWorkflowArgs(args, toolToBlockType)
+					}
 
 					_ = sw.Write(protocol.EventTypeTool, &protocol.ToolCallDescriptor{
 						ToolCallID: tc.ID,
@@ -290,52 +297,61 @@ func (a *Agent) runLoop(ctx context.Context, sw *stream.StreamWriter, model stri
 			return nil
 		}
 
+		// Partition the turn's tool calls: Go-executor tools run locally, Sim-executor
+		// tools are checkpointed as a batch for execution by Sim.
+		var simCalls []provider.ToolCall
 		for _, tc := range completedToolCalls {
 			executor := detectExecutor(tc.Function.Name)
-			args := parseArguments(tc.Function.Arguments)
-
 			if executor == protocol.ExecutorSim {
-				logger.Infof("[agent] Checkpointing for sim tool: %s requestID=%s", tc.Function.Name, requestID)
-
-				// Emit checkpoint_pause event — tells Sim to call /api/tools/resume
-				_ = sw.Write(protocol.EventTypeRun, &protocol.CheckpointPausePayload{
-					Kind:               protocol.RunCheckpointPause,
-					CheckpointID:       requestID,
-					ExecutionID:        requestID,
-					RunID:              requestID,
-					PendingToolCallIDs: []string{tc.ID},
-					Frames: []protocol.CheckpointPauseFrame{{
-						ParentToolCallID: tc.ID,
-						ParentToolName:   tc.Function.Name,
-						PendingToolIDs:   []string{tc.ID},
-					}},
-				}, traceInfo, nil)
-
-				resumeCh := make(chan *CheckpointResult, 1)
-				SaveCheckpoint(requestID, &Checkpoint{
-					Messages:        allMessages,
-					SystemPrompt:    systemPrompt,
-					ToolDefs:        toolDefs,
-					Model:           model,
-					Trace:           trace,
-					ResumeCh:        resumeCh,
-					ToolToBlockType: toolToBlockType,
-				})
-
-				// Block until Sim calls back with the result
-				result := <-resumeCh
-				logger.Infof("[agent] Resumed: tool=%s success=%v", result.ToolName, result.Success)
-				allMessages = a.addToolResult(allMessages, result, sw, requestID)
-				// Continue the loop - LLM will process the tool result in next iteration
+				simCalls = append(simCalls, tc)
 				continue
 			}
 
-			// Go-executed tools: execute locally
+			// Go-executed tools: execute locally and append their tool messages first.
+			args := parseArguments(tc.Function.Arguments)
 			logger.Infof("[agent] Executing tool: %s", tc.Function.Name)
 			result := a.executor.Execute(ctx, tc.Function.Name, args)
 			logger.Infof("[agent] Tool %s result: success=%v error=%q", tc.Function.Name, result.Error == "", result.Error)
 
 			allMessages = a.emitToolResult(allMessages, tc.ID, tc.Function.Name, executor, result, traceInfo, sw)
+		}
+
+		if len(simCalls) > 0 {
+			// Emit ONE checkpoint_pause covering ALL Sim-executor tool calls of the
+			// turn with a fresh checkpoint ID, then end the leg without a terminal
+			// event — Sim executes the tools and resumes on a new stream leg.
+			pendingIDs := make([]string, 0, len(simCalls))
+			for _, tc := range simCalls {
+				pendingIDs = append(pendingIDs, tc.ID)
+			}
+			checkpointID := uuid.New().String()
+			logger.Infof("[agent] Checkpointing %d sim tool(s) for Sim execution: %v checkpointID=%s", len(simCalls), pendingIDs, checkpointID)
+
+			_ = sw.Write(protocol.EventTypeRun, &protocol.CheckpointPausePayload{
+				Kind:               protocol.RunCheckpointPause,
+				CheckpointID:       checkpointID,
+				ExecutionID:        requestID,
+				RunID:              requestID,
+				PendingToolCallIDs: pendingIDs,
+				Frames: []protocol.CheckpointPauseFrame{{
+					ParentToolCallID: simCalls[0].ID,
+					ParentToolName:   simCalls[0].Function.Name,
+					PendingToolIDs:   pendingIDs,
+				}},
+			}, traceInfo, nil)
+
+			SaveCheckpoint(checkpointID, &Checkpoint{
+				Messages:           allMessages,
+				SystemPrompt:       systemPrompt,
+				ToolDefs:           toolDefs,
+				Model:              model,
+				Trace:              trace,
+				ToolToBlockType:    toolToBlockType,
+				PendingToolCallIDs: pendingIDs,
+			})
+
+			// End the leg — Sim resumes the loop on a new stream via /api/tools/resume.
+			return nil
 		}
 	}
 
@@ -367,7 +383,7 @@ func (a *Agent) emitToolResult(messages []provider.Message, toolCallID, toolName
 	if result.Error != "" {
 		content = fmt.Sprintf("Tool %s error: %s", toolName, result.Error)
 	}
-	messages = append(messages, provider.Message{Role: "tool", Content: content, ToolCallID: toolCallID})
+	messages = append(messages, provider.Message{Role: "tool", Content: truncateToolResultContent(content), ToolCallID: toolCallID})
 	return messages
 }
 
@@ -392,21 +408,94 @@ func (a *Agent) addToolResult(messages []provider.Message, result *CheckpointRes
 	if result.Error != "" {
 		content = fmt.Sprintf("Tool %s error: %s", result.ToolName, result.Error)
 	}
-	messages = append(messages, provider.Message{Role: "tool", Content: content, ToolCallID: result.ToolCallID})
+	messages = append(messages, provider.Message{Role: "tool", Content: truncateToolResultContent(content), ToolCallID: result.ToolCallID})
 	return messages
 }
 
-// Global checkpoint store — keyed by requestID
-var checkpointStore = make(map[string]*Checkpoint)
-
-func SaveCheckpoint(requestID string, cp *Checkpoint) {
-	checkpointStore[requestID] = cp
+// truncateToolResultContent caps tool result content appended to the LLM
+// conversation so a single oversized output (file reads, workflow state JSON,
+// search results) cannot exhaust the conversation budget.
+func truncateToolResultContent(content string) string {
+	runes := []rune(content)
+	if len(runes) <= MaxToolResultContentChars {
+		return content
+	}
+	return string(runes[:MaxToolResultContentChars]) + "\n... [truncated]"
 }
 
+// Global checkpoint store — keyed by checkpoint ID (fresh UUID per pause).
+// Entries survive consumption for a retry window so Sim's automatic resume
+// retries (503 -> up to 3 attempts) can replay the leg instead of 404ing.
+var (
+	checkpointStore   = make(map[string]*checkpointEntry)
+	checkpointStoreMu sync.Mutex
+	checkpointTTL     = 10 * time.Minute
+	checkpointJanitor sync.Once
+)
+
+type checkpointEntry struct {
+	cp       *Checkpoint
+	consumed bool
+	savedAt  time.Time
+}
+
+func saveCheckpointLocked(id string, cp *Checkpoint, now time.Time) {
+	checkpointStore[id] = &checkpointEntry{cp: cp, savedAt: now}
+}
+
+func evictExpiredLocked(now time.Time) {
+	for id, entry := range checkpointStore {
+		if now.Sub(entry.savedAt) > checkpointTTL {
+			delete(checkpointStore, id)
+		}
+	}
+}
+
+func SaveCheckpoint(requestID string, cp *Checkpoint) {
+	checkpointStoreMu.Lock()
+	defer checkpointStoreMu.Unlock()
+	checkpointJanitor.Do(func() {
+		go func() {
+			ticker := time.NewTicker(checkpointTTL / 2)
+			defer ticker.Stop()
+			for range ticker.C {
+				checkpointStoreMu.Lock()
+				evictExpiredLocked(time.Now())
+				checkpointStoreMu.Unlock()
+			}
+		}()
+	})
+	evictExpiredLocked(time.Now())
+	saveCheckpointLocked(requestID, cp, time.Now())
+}
+
+// GetCheckpoint returns the checkpoint for id when it exists and has not been
+// consumed yet, marking it consumed on first read. It returns nil for
+// already-consumed or unknown IDs.
 func GetCheckpoint(requestID string) *Checkpoint {
-	cp := checkpointStore[requestID]
-	delete(checkpointStore, requestID)
-	return cp
+	checkpointStoreMu.Lock()
+	defer checkpointStoreMu.Unlock()
+	evictExpiredLocked(time.Now())
+	entry, ok := checkpointStore[requestID]
+	if !ok || entry.consumed {
+		return nil
+	}
+	entry.consumed = true
+	return entry.cp
+}
+
+// ConsumedCheckpoint returns the saved checkpoint for an already-consumed ID
+// during the retry window, and nil otherwise. Used by the resume handler to
+// replay a leg when Sim retries a resume after a failed stream attempt.
+func ConsumedCheckpoint(requestID string) *Checkpoint {
+	checkpointStoreMu.Lock()
+	defer checkpointStoreMu.Unlock()
+	evictExpiredLocked(time.Now())
+	entry, ok := checkpointStore[requestID]
+	if !ok || !entry.consumed {
+		return nil
+	}
+	return entry.cp
 }
 
 func (a *Agent) buildMessages(req *ChatRequest) []provider.Message {
@@ -435,6 +524,7 @@ func (a *Agent) buildToolDefs(req *ChatRequest, mode string) []provider.ToolDefi
 				"CRITICAL: The entire request MUST be a single JSON object with an \"operations\" array — never emit multiple top-level JSON objects. " +
 				"Each element in the \"operations\" array MUST have an \"op\" field (add | edit | delete). " +
 				"Use block types from the Available Blocks list in the system prompt. " +
+				"References to other blocks' outputs use the form <blockname.output> where blockname is the block's name lowercased with all spaces and dots removed (e.g. name \"Web Search\" -> <websearch.results>, NOT <search.results>). " +
 				"To connect two blocks, nest a \"connections\" object inside the source block's add operation (inside the \"block\" object) as a handle-keyed map: " +
 				"\"connections\": {\"source\": \"targetBlockId\"}. The key is the output handle (default \"source\"), the value is the target block ID string or array of strings. " +
 				"Do NOT create separate operation items just for connections, and do NOT use an array of {source, target} pairs. " +
@@ -447,11 +537,11 @@ func (a *Agent) buildToolDefs(req *ChatRequest, mode string) []provider.ToolDefi
 						"items": map[string]interface{}{
 							"type": "object",
 							"properties": map[string]interface{}{
-								"op":          map[string]interface{}{"type": "string", "description": "Operation type. Every operation item MUST include this field.", "enum": []string{"add", "edit", "delete"}},
-								"id":          map[string]interface{}{"type": "string", "description": "Block ID (required for edit, delete)"},
-								"type":        map[string]interface{}{"type": "string", "description": "Block type from the available blocks list (for add)"},
-								"name":        map[string]interface{}{"type": "string", "description": "Block display name (for add)"},
-								"subBlocks":   map[string]interface{}{"type": "object", "description": "Block configuration"},
+								"op":        map[string]interface{}{"type": "string", "description": "Operation type. Every operation item MUST include this field.", "enum": []string{"add", "edit", "delete"}},
+								"id":        map[string]interface{}{"type": "string", "description": "Block ID (required for edit, delete)"},
+								"type":      map[string]interface{}{"type": "string", "description": "Block type from the available blocks list (for add)"},
+								"name":      map[string]interface{}{"type": "string", "description": "Block display name (for add)"},
+								"subBlocks": map[string]interface{}{"type": "object", "description": "Block configuration"},
 								"connections": map[string]interface{}{
 									"type": "object", "description": "Handle-keyed map of connections FROM this block to target blocks. The key is the output handle (default \"source\"), the value is the target block ID string or an array of target block ID strings. Example: {\"source\": \"targetBlockId\"} or {\"source\": [\"id1\", \"id2\"]}. Nest inside the block object, not as a standalone operation.",
 									"additionalProperties": map[string]interface{}{},
@@ -487,6 +577,88 @@ func (a *Agent) buildToolDefs(req *ChatRequest, mode string) []provider.ToolDefi
 			})
 		}
 	}
+
+	// Workflow lifecycle + VFS tools (all Sim-executed). Schemas mirror
+	// apps/sim/lib/copilot/generated/tool-schemas-v1.ts.
+	tools = append(tools, provider.ToolDefinition{
+		Type: "function",
+		Function: provider.ToolFuncDef{
+			Name: "create_workflow",
+			Description: "Create a new workflow from chat. Call this FIRST when no workflow is open " +
+				"(workspace chat without a workflowId in context) and the user asks to build a workflow. " +
+				"The result contains the new workflowId, which Sim threads into the execution context " +
+				"so subsequent edit_workflow calls target the new workflow. Confirm intent with the user " +
+				"before creating unless they explicitly asked.",
+			Parameters: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"name":        map[string]interface{}{"type": "string", "description": "Workflow name."},
+					"description": map[string]interface{}{"type": "string", "description": "Optional workflow description."},
+					"folderId":    map[string]interface{}{"type": "string", "description": "Optional folder ID."},
+					"workspaceId": map[string]interface{}{"type": "string", "description": "Optional workspace ID."},
+				},
+				"required": []string{"name"},
+			},
+		},
+	})
+	tools = append(tools, provider.ToolDefinition{
+		Type: "function",
+		Function: provider.ToolFuncDef{
+			Name: "read",
+			Description: "Read a VFS resource, e.g. 'workflows/My%20Workflow/state.json' (the current_workflow " +
+				"context pointer — use this to see the live workflow state before editing), " +
+				"'files/Q4%20Report.pdf/content' for file bytes/parsed text, or 'uploads/data.csv' for a chat upload. " +
+				"Copy paths verbatim from glob/grep/read output.",
+			Parameters: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"path":        map[string]interface{}{"type": "string", "description": "Path to the VFS resource to read."},
+					"limit":       map[string]interface{}{"type": "number", "description": "Maximum number of lines to read."},
+					"offset":      map[string]interface{}{"type": "number", "description": "Line offset to start reading from (0-indexed)."},
+					"outputTable": map[string]interface{}{"type": "string", "description": "Table ID to import the file contents into (CSV/JSON)."},
+				},
+				"required": []string{"path"},
+			},
+		},
+	})
+	tools = append(tools, provider.ToolDefinition{
+		Type: "function",
+		Function: provider.ToolFuncDef{
+			Name: "glob",
+			Description: "Discover files and workflows in the workspace VFS. Use to find workflow names/paths " +
+				"before reading their state.json.",
+			Parameters: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"pattern":   map[string]interface{}{"type": "string", "description": "Glob pattern to match file paths. Supports * (any segment) and ** (any depth)."},
+					"toolTitle": map[string]interface{}{"type": "string", "description": "Optional target-only UI phrase for the search row."},
+				},
+				"required": []string{"pattern", "toolTitle"},
+			},
+		},
+	})
+	tools = append(tools, provider.ToolDefinition{
+		Type: "function",
+		Function: provider.ToolFuncDef{
+			Name: "grep",
+			Description: "Search the workspace VFS for a regex pattern. Searches workflow JSON, metadata, plans, " +
+				"and memories by default; searches a single file's extracted text when path is one files/ or uploads/ file leaf.",
+			Parameters: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"pattern":     map[string]interface{}{"type": "string", "description": "Regex pattern to search for."},
+					"toolTitle":   map[string]interface{}{"type": "string", "description": "Optional target-only UI phrase for the search row."},
+					"path":        map[string]interface{}{"type": "string", "description": "Optional scope: a prefix (e.g. 'workflows/') or an exact single-file path under files/ or uploads/."},
+					"output_mode": map[string]interface{}{"type": "string", "description": "Output mode: 'content' (default), 'files_with_matches', or 'count'.", "enum": []string{"content", "files_with_matches", "count"}},
+					"context":     map[string]interface{}{"type": "number", "description": "Number of lines to show before and after each match. Only applies to output_mode 'content'."},
+					"ignoreCase":  map[string]interface{}{"type": "boolean", "description": "Case insensitive search (default false)."},
+					"lineNumbers": map[string]interface{}{"type": "boolean", "description": "Include line numbers in output (default true)."},
+					"maxResults":  map[string]interface{}{"type": "number", "description": "Maximum number of matches to return (default 50)."},
+				},
+				"required": []string{"pattern", "toolTitle"},
+			},
+		},
+	})
 
 	return tools
 }
@@ -530,7 +702,7 @@ func truncateString(s string, maxLen int) string {
 
 func detectExecutor(toolName string) string {
 	switch toolName {
-	case "edit_workflow":
+	case "edit_workflow", "create_workflow", "read", "glob", "grep":
 		return protocol.ExecutorSim
 	case "read_file", "write_file", "list_directory", "execute_code":
 		return protocol.ExecutorGo
@@ -767,7 +939,7 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 			}
 			if blockID == "" {
 				if name, _ := block["name"].(string); name != "" {
-					blockID = sanitizeID(name)
+					blockID = sanitizeIDWithFallback(name, i)
 				} else {
 					blockID = fmt.Sprintf("block_%d", i)
 				}
@@ -810,7 +982,7 @@ func translateEditWorkflowArgs(args protocol.AdditionalPropertiesMap, toolToBloc
 			}
 			if blockID == "" {
 				if name, _ := opMap["name"].(string); name != "" {
-					blockID = sanitizeID(name)
+					blockID = sanitizeIDWithFallback(name, i)
 				} else {
 					blockID = fmt.Sprintf("block_%d", i)
 				}
@@ -885,6 +1057,17 @@ func sanitizeID(name string) string {
 		}
 	}
 	return result.String()
+}
+
+// sanitizeIDWithFallback sanitizes a block name and falls back to a generated
+// ID when the result is empty (e.g. all-Chinese names), so block_id is never
+// empty.
+func sanitizeIDWithFallback(name string, index int) string {
+	id := sanitizeID(name)
+	if id == "" {
+		return fmt.Sprintf("block_%d", index)
+	}
+	return id
 }
 
 // hasConnectionsArray reports whether the operation map has a non-empty
