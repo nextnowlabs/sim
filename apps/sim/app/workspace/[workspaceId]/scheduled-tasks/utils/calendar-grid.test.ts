@@ -84,9 +84,9 @@ describe('advanceAnchor', () => {
 
 describe('formatScopeLabel', () => {
   it('formats per scope', () => {
-    expect(formatScopeLabel('month', ANCHOR)).toBe('June 2026')
-    expect(formatScopeLabel('week', ANCHOR)).toBe('Jun 7 – 13, 2026')
-    expect(formatScopeLabel('day', ANCHOR)).toBe('June 10, 2026')
+    expect(formatScopeLabel('month', ANCHOR)).toBe('2026年6月')
+    expect(formatScopeLabel('week', ANCHOR)).toBe('2026年6月7日 – 6月13日')
+    expect(formatScopeLabel('day', ANCHOR)).toBe('2026年6月10日')
   })
 })
 
@@ -94,12 +94,12 @@ describe('hour helpers', () => {
   it('formats 24h slot times and 12h gutter labels', () => {
     expect(formatSlotTime(7)).toBe('07:00')
     expect(formatSlotTime(0)).toBe('00:00')
-    expect(formatHourLabel(0)).toBe('12 AM')
-    expect(formatHourLabel(13)).toBe('1 PM')
+    expect(formatHourLabel(0)).toBe('上午12:00')
+    expect(formatHourLabel(13)).toBe('下午1:00')
   })
 
   it('rotates weekday labels to Sunday-first', () => {
-    expect(WEEKDAY_LABELS[0]).toBe('Sun')
+    expect(WEEKDAY_LABELS[0]).toBe('周日')
     expect(WEEKDAY_LABELS).toHaveLength(7)
   })
 })

@@ -1,7 +1,13 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/lib/auth/auth-client', () => ({
+  useSession: () => ({ data: null, isPending: true }),
+  client: {},
+}))
+
 import type { ContentBlock } from '../../types'
 import { parseBlocks, shouldSmoothTextSegment } from './message-content'
 

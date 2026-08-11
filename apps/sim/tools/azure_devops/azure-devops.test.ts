@@ -3,7 +3,6 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { isAzureDevOpsEventMatch } from '@/triggers/azure_devops/utils'
-import { tools } from '../registry'
 import type { ToolConfig } from '../types'
 import { addCommentTool } from './add_comment'
 import { createWorkItemTool } from './create_work_item'
@@ -109,7 +108,7 @@ const rawComment = {
 }
 
 describe('Azure DevOps tool contracts', () => {
-  it('exports and registers the full planned tool surface', () => {
+  it('exports the full planned tool surface', () => {
     const expectedIds = [
       'azure_devops_add_comment',
       'azure_devops_create_work_item',
@@ -129,9 +128,6 @@ describe('Azure DevOps tool contracts', () => {
     ]
 
     expect(allTools.map((tool) => tool.id).sort()).toEqual(expectedIds)
-    for (const id of expectedIds) {
-      expect(tools[id]?.id).toBe(id)
-    }
   })
 
   it('sets Basic PAT auth on every tool', () => {

@@ -68,9 +68,9 @@ describe.concurrent('Blocks Module', () => {
     })
 
     it('should normalize hyphens to underscores', () => {
-      const block = getBlock('microsoft-teams')
+      const block = getBlock('microsoft-excel')
       expect(block).toBeDefined()
-      expect(block?.type).toBe('microsoft_teams')
+      expect(block?.type).toBe('microsoft_excel')
     })
   })
 
@@ -318,8 +318,8 @@ describe.concurrent('Blocks Module', () => {
     })
 
     it('should handle hyphenated versions of underscored types', () => {
-      expect(isValidBlockType('microsoft-teams')).toBe(true)
-      expect(isValidBlockType('google-calendar')).toBe(true)
+      expect(isValidBlockType('microsoft-excel')).toBe(true)
+      expect(isValidBlockType('image-generator')).toBe(true)
     })
   })
 
@@ -673,8 +673,8 @@ describe.concurrent('Blocks Module', () => {
     })
 
     it('should handle blocks with multiple tool access', () => {
-      const routerBlock = getBlock('router')
-      expect(routerBlock?.tools.access.length).toBeGreaterThan(1)
+      const a2aBlock = getBlock('a2a')
+      expect(a2aBlock?.tools.access.length).toBeGreaterThan(1)
     })
 
     it('should handle blocks with tools.config', () => {
@@ -684,8 +684,8 @@ describe.concurrent('Blocks Module', () => {
     })
 
     it('should handle blocks with triggerAllowed flag', () => {
-      const gmailBlock = getBlock('gmail')
-      expect(gmailBlock?.triggerAllowed).toBe(true)
+      const webhookBlock = getBlock('generic_webhook')
+      expect(webhookBlock?.triggerAllowed).toBe(true)
 
       const functionBlock = getBlock('function')
       expect(functionBlock?.triggerAllowed).toBeUndefined()

@@ -148,16 +148,14 @@ describe('isForkRequiredComplete', () => {
 
 describe('forkRequiredKindsLabel', () => {
   it('names credentials and secrets by kind, together or alone', () => {
-    expect(forkRequiredKindsLabel(new Set(['credential', 'env-var']))).toBe(
-      'credentials and secrets'
-    )
-    expect(forkRequiredKindsLabel(new Set(['credential']))).toBe('credentials')
-    expect(forkRequiredKindsLabel(new Set(['env-var']))).toBe('secrets')
+    expect(forkRequiredKindsLabel(new Set(['credential', 'env-var']))).toBe('凭据和密钥')
+    expect(forkRequiredKindsLabel(new Set(['credential']))).toBe('凭据')
+    expect(forkRequiredKindsLabel(new Set(['env-var']))).toBe('密钥')
   })
 
   it('falls back to "references" for any other (or empty) kind set', () => {
-    expect(forkRequiredKindsLabel(new Set(['table']))).toBe('references')
-    expect(forkRequiredKindsLabel(new Set())).toBe('references')
+    expect(forkRequiredKindsLabel(new Set(['table']))).toBe('引用')
+    expect(forkRequiredKindsLabel(new Set())).toBe('引用')
   })
 })
 

@@ -17,7 +17,7 @@ describe('FILTER_DEFINITIONS', () => {
     const levelFilter = FILTER_DEFINITIONS.find((f) => f.key === 'level')
 
     expect(levelFilter).toBeDefined()
-    expect(levelFilter?.label).toBe('Status')
+    expect(levelFilter?.label).toBe('状态')
     expect(levelFilter?.options).toHaveLength(2)
     expect(levelFilter?.options.map((o) => o.value)).toContain('error')
     expect(levelFilter?.options.map((o) => o.value)).toContain('info')
@@ -27,7 +27,7 @@ describe('FILTER_DEFINITIONS', () => {
     const costFilter = FILTER_DEFINITIONS.find((f) => f.key === 'cost')
 
     expect(costFilter).toBeDefined()
-    expect(costFilter?.label).toBe('Cost')
+    expect(costFilter?.label).toBe('费用')
     expect(costFilter?.options.length).toBeGreaterThan(0)
     expect(costFilter?.options.map((o) => o.value)).toContain('>0.01')
     expect(costFilter?.options.map((o) => o.value)).toContain('<0.005')
@@ -37,7 +37,7 @@ describe('FILTER_DEFINITIONS', () => {
     const dateFilter = FILTER_DEFINITIONS.find((f) => f.key === 'date')
 
     expect(dateFilter).toBeDefined()
-    expect(dateFilter?.label).toBe('Date')
+    expect(dateFilter?.label).toBe('日期')
     expect(dateFilter?.options.map((o) => o.value)).toContain('today')
     expect(dateFilter?.options.map((o) => o.value)).toContain('yesterday')
   })
@@ -57,19 +57,19 @@ describe('FILTER_DEFINITIONS', () => {
     const dateFilter = FILTER_DEFINITIONS.find((f) => f.key === 'date')
     const options = dateFilter?.options || []
 
-    const specificDate = options.find((o) => o.label === 'Specific date')
+    const specificDate = options.find((o) => o.label === '指定日期')
     expect(specificDate).toBeDefined()
     expect(specificDate?.value).toMatch(/^\d{4}-\d{2}-\d{2}$/)
 
-    const specificMonth = options.find((o) => o.label === 'Specific month')
+    const specificMonth = options.find((o) => o.label === '指定月份')
     expect(specificMonth).toBeDefined()
     expect(specificMonth?.value).toMatch(/^\d{4}-\d{2}$/)
 
-    const specificYear = options.find((o) => o.label === 'Specific year')
+    const specificYear = options.find((o) => o.label === '指定年份')
     expect(specificYear).toBeDefined()
     expect(specificYear?.value).toMatch(/^\d{4}$/)
 
-    const dateRange = options.find((o) => o.label === 'Date range')
+    const dateRange = options.find((o) => o.label === '日期范围')
     expect(dateRange).toBeDefined()
     expect(dateRange?.value).toMatch(/^\d{4}-\d{2}-\d{2}\.\.\d{4}-\d{2}-\d{2}$/)
   })
@@ -78,7 +78,7 @@ describe('FILTER_DEFINITIONS', () => {
     const durationFilter = FILTER_DEFINITIONS.find((f) => f.key === 'duration')
 
     expect(durationFilter).toBeDefined()
-    expect(durationFilter?.label).toBe('Duration')
+    expect(durationFilter?.label).toBe('时长')
     expect(durationFilter?.options.map((o) => o.value)).toContain('>5s')
     expect(durationFilter?.options.map((o) => o.value)).toContain('<1s')
   })
@@ -444,7 +444,7 @@ describe('SearchSuggestions', () => {
 
       expect(result).not.toBeNull()
       expect(result?.suggestions.some((s) => s.value === 'date:2024')).toBe(true)
-      expect(result?.suggestions.some((s) => s.label === 'Year 2024')).toBe(true)
+      expect(result?.suggestions.some((s) => s.label === '2024 年')).toBe(true)
     })
 
     it.concurrent('should suggest month format when typing YYYY-MM', () => {
@@ -453,7 +453,7 @@ describe('SearchSuggestions', () => {
 
       expect(result).not.toBeNull()
       expect(result?.suggestions.some((s) => s.value === 'date:2024-12')).toBe(true)
-      expect(result?.suggestions.some((s) => s.label === 'Dec 2024')).toBe(true)
+      expect(result?.suggestions.some((s) => s.label === '2024年12月')).toBe(true)
     })
 
     it.concurrent('should suggest single date and range start when typing full date', () => {
@@ -470,7 +470,7 @@ describe('SearchSuggestions', () => {
       const result = suggestions.getSuggestions('date:2024-01-01..')
 
       expect(result).not.toBeNull()
-      expect(result?.suggestions.some((s) => s.description?.includes('Type end date'))).toBe(true)
+      expect(result?.suggestions.some((s) => s.description?.includes('输入结束日期'))).toBe(true)
     })
 
     it.concurrent('should suggest complete range when both dates provided', () => {
@@ -479,7 +479,7 @@ describe('SearchSuggestions', () => {
 
       expect(result).not.toBeNull()
       expect(result?.suggestions.some((s) => s.value === 'date:2024-01-01..2024-01-15')).toBe(true)
-      expect(result?.suggestions.some((s) => s.description === 'Custom date range')).toBe(true)
+      expect(result?.suggestions.some((s) => s.description === '自定义日期范围')).toBe(true)
     })
 
     it.concurrent('should filter date options by partial keyword match', () => {

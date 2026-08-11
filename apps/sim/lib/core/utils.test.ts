@@ -149,22 +149,22 @@ describe('date formatting functions', () => {
   it.concurrent('should format datetime correctly', () => {
     const date = new Date('2023-05-15T14:30:00')
     const result = formatDateTime(date)
-    expect(result).toMatch(/May 15, 2023/)
-    expect(result).toMatch(/2:30 PM|14:30/)
+    expect(result).toMatch(/2023年5月15日/)
+    expect(result).toMatch(/2:30/)
   })
 
   it.concurrent('should format date correctly', () => {
     const date = new Date('2023-05-15T14:30:00')
     const result = formatDate(date)
-    expect(result).toMatch(/May 15, 2023/)
-    expect(result).not.toMatch(/2:30|14:30/)
+    expect(result).toMatch(/2023年5月15日/)
+    expect(result).not.toMatch(/2:30|下午|上午/)
   })
 
   it.concurrent('should format time correctly', () => {
     const date = new Date('2023-05-15T14:30:00')
     const result = formatTime(date)
-    expect(result).toMatch(/2:30 PM|14:30/)
-    expect(result).not.toMatch(/2023|May/)
+    expect(result).toMatch(/2:30/)
+    expect(result).not.toMatch(/2023|5月/)
   })
 })
 

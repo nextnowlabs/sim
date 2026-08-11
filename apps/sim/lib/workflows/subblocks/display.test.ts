@@ -47,9 +47,7 @@ describe('workflow selection labels', () => {
   })
 
   it('labels missing workflows as deleted only after the lookup is ready', () => {
-    expect(resolveWorkflowSelectionLabel(workflowSelector, 'wf-gone', lookup)).toBe(
-      'Deleted Workflow'
-    )
+    expect(resolveWorkflowSelectionLabel(workflowSelector, 'wf-gone', lookup)).toBe('已删除的工作流')
     expect(
       resolveWorkflowSelectionLabel(workflowSelector, 'wf-gone', { ...lookup, ready: false })
     ).toBeNull()
@@ -57,7 +55,7 @@ describe('workflow selection labels', () => {
 
   it('summarizes multi-select workflow ids with the deleted fallback', () => {
     expect(resolveWorkflowMultiSelectLabel(workflowMulti, ['wf-1', 'wf-gone'], lookup)).toBe(
-      'Billing, Deleted Workflow'
+      'Billing, 已删除的工作流'
     )
     expect(
       resolveWorkflowMultiSelectLabel(workflowMulti, ['wf-1'], { ...lookup, ready: false })

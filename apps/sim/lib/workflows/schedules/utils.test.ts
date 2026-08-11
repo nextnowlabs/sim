@@ -529,13 +529,13 @@ describe('Schedule Utilities', () => {
 
     it.concurrent('should include timezone information when provided', () => {
       const resultPT = parseCronToHumanReadable('0 9 * * *', 'America/Los_Angeles')
-      // Intl.DateTimeFormat returns PST or PDT depending on DST
-      expect(resultPT).toMatch(/\(P[SD]T\)/)
+      // zh-CN Intl.DateTimeFormat returns GMT offsets that shift with DST
+      expect(resultPT).toMatch(/\(GMT[-+]\d{1,2}\)/)
       expect(resultPT).toContain('9:00 AM')
 
       const resultET = parseCronToHumanReadable('30 14 * * *', 'America/New_York')
-      // Intl.DateTimeFormat returns EST or EDT depending on DST
-      expect(resultET).toMatch(/\(E[SD]T\)/)
+      // zh-CN Intl.DateTimeFormat returns GMT offsets that shift with DST
+      expect(resultET).toMatch(/\(GMT[-+]\d{1,2}\)/)
       expect(resultET).toContain('2:30 PM')
 
       const resultUTC = parseCronToHumanReadable('0 12 * * *', 'UTC')

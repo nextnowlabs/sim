@@ -150,16 +150,16 @@ describe('splitForkClearedRefs', () => {
 describe('forkBlockerResolution', () => {
   it('phrases each blocker reason with its actionable resolution', () => {
     expect(forkBlockerResolution(referenceRef('table', 'tbl-1'))).toBe(
-      'map it to a target or select it for copy'
+      '请映射到目标或选择复制'
     )
     expect(forkBlockerResolution(referenceRef('mcp-server', 'srv-1'))).toBe(
-      'map it to an MCP server in the target workspace'
+      '请映射到目标工作区中的 MCP 服务器'
     )
     expect(forkBlockerResolution(referenceRef('knowledge-base', 'kb-gone', 'KB', true))).toBe(
-      'deleted in the source — map it to an existing knowledge base in the target'
+      '已在源中删除 — 请映射到目标中的现有知识库'
     )
     expect(forkBlockerResolution(workflowRef('wf-other', 'Workflow'))).toBe(
-      'deploy "Source" in the source or remove the reference'
+      '请在源中发布 "Source" 或移除该引用'
     )
   })
 

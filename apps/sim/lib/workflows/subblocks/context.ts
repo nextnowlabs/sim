@@ -14,25 +14,10 @@ import {
  */
 export const SELECTOR_CONTEXT_FIELDS = new Set<keyof SelectorContext>([
   'oauthCredential',
-  'domain',
-  'teamId',
-  'projectId',
   'knowledgeBaseId',
-  'planId',
   'siteId',
-  'collectionId',
   'spreadsheetId',
   'driveId',
-  'fileId',
-  'baseId',
-  'datasetId',
-  'serviceDeskId',
-  'impersonateUserEmail',
-  'boardId',
-  'awsAccessKeyId',
-  'awsSecretAccessKey',
-  'awsRegion',
-  'logGroupName',
   'tableId',
 ])
 

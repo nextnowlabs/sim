@@ -1,7 +1,44 @@
 /**
  * @vitest-environment node
  */
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+
+vi.mock('@/tools/utils', () => ({
+  getTool: (toolId: string) =>
+    toolId === 'slack_message'
+      ? {
+          id: 'slack_message',
+          name: 'Slack Message',
+          description: 'Send messages to Slack channels or direct messages.',
+          version: '1.0.0',
+          oauth: { required: true, provider: 'slack' },
+          params: {
+            authMethod: { type: 'string', required: false, visibility: 'user-only' },
+            destinationType: { type: 'string', required: false, visibility: 'user-or-llm' },
+            botToken: { type: 'string', required: false, visibility: 'user-only' },
+            accessToken: { type: 'string', required: false, visibility: 'hidden' },
+            channel: { type: 'string', required: false, visibility: 'user-or-llm' },
+            dmUserId: { type: 'string', required: false, visibility: 'user-or-llm' },
+            text: { type: 'string', required: true, visibility: 'user-or-llm' },
+            threadTs: { type: 'string', required: false, visibility: 'user-or-llm' },
+            blocks: { type: 'json', required: false, visibility: 'user-or-llm' },
+            files: { type: 'file[]', required: false, visibility: 'user-only' },
+          },
+        }
+      : toolId === 'workflow_executor'
+        ? {
+            id: 'workflow_executor',
+            name: 'Workflow Executor',
+            description: 'Execute a workflow',
+            version: '1.0.0',
+            params: {
+              workflowId: { type: 'string', required: true, visibility: 'user-only' },
+              inputMapping: { type: 'object', required: false, visibility: 'user-or-llm' },
+            },
+          }
+        : undefined,
+}))
+
 import { indexWorkflowSearchMatches } from '@/lib/workflows/search-replace/indexer'
 import { buildWorkflowSearchReplacePlan } from '@/lib/workflows/search-replace/replacements'
 import {

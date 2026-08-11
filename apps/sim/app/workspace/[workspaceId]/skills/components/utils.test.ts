@@ -202,6 +202,6 @@ describe('extractSkillFromZip', () => {
 
   it('throws when no SKILL.md is found', async () => {
     const data = await makeZipBuffer({ 'README.md': 'No skill here' })
-    await expect(extractSkillFromZip(data)).rejects.toThrow('No SKILL.md file found')
+    await expect(extractSkillFromZip(data)).rejects.toThrow('ZIP 归档中未找到 SKILL.md 文件')
   })
 })

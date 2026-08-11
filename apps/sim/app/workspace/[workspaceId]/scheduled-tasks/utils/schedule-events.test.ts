@@ -80,7 +80,7 @@ describe('taskToCalendarEvent', () => {
     expect(truncated.title.length).toBeLessThan(longPrompt.length)
 
     const fallback = taskToCalendarEvent(makeTask({ prompt: '   ' }))
-    expect(fallback.title).toBe('Scheduled task')
+    expect(fallback.title).toBe('定时任务')
   })
 
   it('derives the same event shape for every status', () => {

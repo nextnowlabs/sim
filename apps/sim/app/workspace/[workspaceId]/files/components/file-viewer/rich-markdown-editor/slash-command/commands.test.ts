@@ -13,20 +13,20 @@ describe('filterSlashCommands', () => {
   })
 
   it('matches on title case-insensitively', () => {
-    expect(filterSlashCommands('HEAD').map((c) => c.title)).toEqual([
-      'Heading 1',
-      'Heading 2',
-      'Heading 3',
+    expect(filterSlashCommands('标题').map((c) => c.title)).toEqual([
+      '标题 1',
+      '标题 2',
+      '标题 3',
     ])
   })
 
   it('matches on alias', () => {
-    expect(filterSlashCommands('todo').map((c) => c.title)).toContain('Checklist')
-    expect(filterSlashCommands('hr').map((c) => c.title)).toContain('Divider')
+    expect(filterSlashCommands('todo').map((c) => c.title)).toContain('任务清单')
+    expect(filterSlashCommands('hr').map((c) => c.title)).toContain('分隔线')
   })
 
   it('trims whitespace in the query', () => {
-    expect(filterSlashCommands('  table ').map((c) => c.title)).toEqual(['Table'])
+    expect(filterSlashCommands('  表格 ').map((c) => c.title)).toEqual(['表格'])
   })
 
   it('returns empty for no match', () => {
@@ -35,11 +35,11 @@ describe('filterSlashCommands', () => {
 
   it('drops the Image command when image insertion is disallowed', () => {
     expect(filterSlashCommands('', { allowImages: false }).map((c) => c.title)).not.toContain(
-      'Image'
+      '图片'
     )
-    expect(filterSlashCommands('image', { allowImages: false })).toEqual([])
-    expect(filterSlashCommands('image', { allowImages: true }).map((c) => c.title)).toContain(
-      'Image'
+    expect(filterSlashCommands('图片', { allowImages: false })).toEqual([])
+    expect(filterSlashCommands('图片', { allowImages: true }).map((c) => c.title)).toContain(
+      '图片'
     )
   })
 })
@@ -70,7 +70,7 @@ describe('SLASH_COMMANDS registry', () => {
       state: { selection: { from: 7 } },
     } as unknown as Editor
 
-    const image = SLASH_COMMANDS.find((c) => c.title === 'Image')
+    const image = SLASH_COMMANDS.find((c) => c.title === '图片')
     expect(image).toBeDefined()
     image?.run({ editor, range: { from: 5, to: 6 } as Range })
 
@@ -86,7 +86,7 @@ describe('SLASH_COMMANDS registry', () => {
       state: { selection: { from: 0 } },
     } as unknown as Editor
     expect(() =>
-      SLASH_COMMANDS.find((c) => c.title === 'Image')?.run({
+      SLASH_COMMANDS.find((c) => c.title === '图片')?.run({
         editor,
         range: { from: 0, to: 1 } as Range,
       })
