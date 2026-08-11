@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
-import { LogoMark, SimWordmark } from '@/app/(landing)/components/navbar/components'
+import { LogoMark, SimWordmark } from '@/components/brand'
 
 interface AuthShellProps {
   /** Centered content column (the form, status copy, etc.). */

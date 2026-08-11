@@ -4,7 +4,6 @@
  * serialized projection of `BlockConfig` consumed by landing + workspace UIs.
  */
 
-import type { IntegrationLandingContent } from '@/app/(landing)/integrations/data/types'
 import type { BlockConfig, IntegrationTag } from '@/blocks/types'
 
 /** Normalized authentication mode surfaced in the catalog. */
@@ -62,7 +61,4 @@ export interface Integration {
    * OAuth service id from the block's `oauth-input` subBlock (a service key in
    * `OAUTH_PROVIDERS`). Present exactly when `authType` is `'oauth'`.
    */
-  oauthServiceId?: string
-  /** Hand-authored landing content baked in at generation time (see `landing-content.ts`). */
-  landingContent?: IntegrationLandingContent
-}
+  oauthServiceId?: string}

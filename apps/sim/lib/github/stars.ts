@@ -23,7 +23,7 @@ export function formatStarCount(num: number): string {
  * Fetches the Sim repository's GitHub star count, formatted for display.
  *
  * Server-only. The upstream fetch is cached for 1 hour via Next.js fetch
- * caching, so statically rendered pages (landing) and the `/api/stars`
+ * caching, so statically rendered pages and the `/api/stars`
  * route share one cached value. Falls back to a static count on failure —
  * never throws.
  */

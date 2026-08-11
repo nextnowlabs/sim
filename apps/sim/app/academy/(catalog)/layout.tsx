@@ -1,5 +1,5 @@
 import type React from 'react'
-import { LogoShell } from '@/app/(landing)/components'
+import { LogoShell } from '@/components/brand'
 
 /**
  * Academy catalog chrome — the shared light, logo-only {@link LogoShell} around

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { LogoShell } from '@/app/(landing)/components'
+import { LogoShell } from '@/components/brand'
 
 export const metadata: Metadata = {
   title: 'Page Not Found',

@@ -2,8 +2,8 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { SimWordmark } from '@/components/brand'
 import { GithubIcon } from '@/components/icons'
-import { SimWordmark } from '@/app/(landing)/components/navbar/components'
 import { useBrandConfig } from '@/ee/whitelabeling'
 
 interface ChatHeaderProps {

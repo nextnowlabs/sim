@@ -37,7 +37,7 @@ from the repo root). One pass (`generateAllBlockDocs`):
 3. **Trigger pass** (`generateAllTriggerDocs`) — reads `apps/sim/triggers/<provider>/` and
    **appends a `## Triggers` section** to that service's page, or writes a standalone page
    for trigger-only services.
-4. Writes `integrations/meta.json` and regenerates the landing page's `integrations.json`.
+4. Writes `integrations/meta.json` and regenerates the shared `integrations.json`.
 
 ### Hand-written pages it never touches
 

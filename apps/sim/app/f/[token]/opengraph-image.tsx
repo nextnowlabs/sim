@@ -1,5 +1,5 @@
+import { createBrandedOgImage } from '@/lib/og/og-image'
 import { resolveActiveShareByToken } from '@/lib/public-shares/share-manager'
-import { createLandingOgImage } from '@/app/(landing)/og-utils'
 import { buildProvenance } from '@/app/f/[token]/utils'
 
 export const dynamic = 'force-dynamic'
@@ -19,7 +19,7 @@ export default async function Image({ params }: { params: Promise<{ token: strin
   const resolved = await resolveActiveShareByToken(token)
 
   if (!resolved || resolved.share.authType !== 'public') {
-    return createLandingOgImage({
+    return createBrandedOgImage({
       eyebrow: 'Shared file',
       title: 'Protected file',
       subtitle: 'Authentication is required to view this file',
@@ -29,7 +29,7 @@ export default async function Image({ params }: { params: Promise<{ token: strin
   const { file, workspaceName, ownerName } = resolved
   const subtitle = buildProvenance(workspaceName, ownerName) || 'Shared via Sim'
 
-  return createLandingOgImage({
+  return createBrandedOgImage({
     eyebrow: 'Shared file',
     title: file.originalName,
     subtitle,

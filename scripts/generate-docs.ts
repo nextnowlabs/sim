@@ -1,7 +1,7 @@
 #!/usr/bin/env ts-node
 import fs from 'fs'
 import path from 'path'
-import { fileURLToPath, pathToFileURL } from 'url'
+import { fileURLToPath } from 'url'
 import { isVersionedType, stripVersionSuffix } from '@sim/utils/string'
 import { glob } from 'glob'
 import type { BlockCategory } from '../apps/sim/blocks/types'
@@ -25,10 +25,6 @@ const DOCS_OUTPUT_PATH = path.join(rootDir, 'apps/docs/content/docs/en/integrati
 const ICONS_PATH = path.join(rootDir, 'apps/sim/components/icons.tsx')
 const DOCS_ICONS_PATH = path.join(rootDir, 'apps/docs/components/icons.tsx')
 const INTEGRATIONS_DATA_PATH = path.join(rootDir, 'apps/sim/lib/integrations')
-const LANDING_INTEGRATIONS_DATA_PATH = path.join(
-  rootDir,
-  'apps/sim/app/(landing)/integrations/data'
-)
 const TRIGGERS_PATH = path.join(rootDir, 'apps/sim/triggers')
 // Integration triggers are merged into the same per-service page as the service's
 // actions (one block per integration: actions + an optional Trigger).
@@ -234,7 +230,6 @@ interface IntegrationEntry {
   category: BlockCategory
   integrationType: IntegrationType
   tags?: string[]
-  landingContent?: Record<string, unknown>
 }
 
 /**
@@ -775,18 +770,6 @@ async function writeIntegrationsJson(iconMapping: Record<string, string>): Promi
     const triggerRegistry = await buildTriggerRegistry()
     const { desc: toolDescMap, name: toolNameMap } = await buildToolDescriptionMap()
 
-    // Hand-authored, integration-specific landing content (install walkthrough,
-    // privacy blurb), keyed by slug. Imported as pure data — its only import is
-    // type-only and erased at runtime — and baked into the entries below so the
-    // landing page reads a single source instead of augmenting at render time.
-    const landingContentModule = await import(
-      pathToFileURL(path.join(LANDING_INTEGRATIONS_DATA_PATH, 'landing-content.ts')).href
-    )
-    const landingContentMap = (landingContentModule.INTEGRATION_LANDING_CONTENT ?? {}) as Record<
-      string,
-      Record<string, unknown>
-    >
-
     const integrations: IntegrationEntry[] = []
     const seenBaseTypes = new Set<string>()
     const blockFiles = (await glob(`${BLOCKS_PATH}/*.ts`)).sort()
@@ -909,7 +892,6 @@ async function writeIntegrationsJson(iconMapping: Record<string, string>): Promi
           category: 'tools',
           integrationType,
           ...(config.tags ? { tags: config.tags } : {}),
-          ...(landingContentMap[slug] ? { landingContent: landingContentMap[slug] } : {}),
         })
       }
     }

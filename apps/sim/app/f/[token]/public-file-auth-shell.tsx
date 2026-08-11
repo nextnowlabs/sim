@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
+import { LogoShell } from '@/components/brand'
 import { SupportFooter } from '@/app/(auth)/components/support-footer'
-import { LogoShell } from '@/app/(landing)/components'
 
 interface PublicFileAuthShellProps {
   title: string
