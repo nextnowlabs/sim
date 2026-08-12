@@ -80,7 +80,7 @@ export function isPrivateOrReservedIP(ip: string): boolean {
 export async function validateUrlWithDNS(
   url: string | null | undefined,
   paramName = 'url',
-  options: { allowHttp?: boolean } = {}
+  options: { allowHttp?: boolean; allowPrivateIPs?: boolean } = {}
 ): Promise<AsyncValidationResult> {
   const basicValidation = validateExternalUrl(url, paramName, options)
   if (!basicValidation.isValid) {
@@ -114,7 +114,11 @@ export async function validateUrlWithDNS(
         return ip === '127.0.0.1' || ip === '::1'
       })()
 
-    if (isPrivateOrReservedIP(address) && !(isLocalhost && resolvedIsLoopback && !isHosted)) {
+    if (
+      isPrivateOrReservedIP(address) &&
+      !options.allowPrivateIPs &&
+      !(isLocalhost && resolvedIsLoopback && !isHosted)
+    ) {
       logger.warn('URL resolves to blocked IP address', {
         paramName,
         hostname,

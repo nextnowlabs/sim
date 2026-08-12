@@ -1693,7 +1693,10 @@ async function executeToolRequest(
             }
           }
         } else {
-          const urlValidation = await validateUrlWithDNS(fullUrl, 'toolUrl')
+          const urlValidation = await validateUrlWithDNS(fullUrl, 'toolUrl', {
+            allowHttp: true,
+            allowPrivateIPs: true,
+          })
           if (!urlValidation.isValid) {
             throw new Error(`Invalid tool URL: ${urlValidation.error}`)
           }

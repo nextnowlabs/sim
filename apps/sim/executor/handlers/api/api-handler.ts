@@ -42,7 +42,10 @@ export class ApiBlockHandler implements BlockHandler {
         }
       }
 
-      const urlValidation = await validateUrlWithDNS(urlToValidate, 'url')
+      const urlValidation = await validateUrlWithDNS(urlToValidate, 'url', {
+        allowHttp: true,
+        allowPrivateIPs: true,
+      })
       if (!urlValidation.isValid) {
         throw new Error(urlValidation.error)
       }

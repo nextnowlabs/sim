@@ -699,7 +699,7 @@ export function validateJiraIssueKey(
 export function validateExternalUrl(
   url: string | null | undefined,
   paramName = 'url',
-  options: { allowHttp?: boolean } = {}
+  options: { allowHttp?: boolean; allowPrivateIPs?: boolean } = {}
 ): ValidationResult {
   if (!url || typeof url !== 'string') {
     return {
@@ -753,7 +753,7 @@ export function validateExternalUrl(
     }
   }
 
-  if (!isLocalhost && ipaddr.isValid(cleanHostname)) {
+  if (!isLocalhost && ipaddr.isValid(cleanHostname) && !options.allowPrivateIPs) {
     if (isPrivateOrReservedIP(cleanHostname)) {
       return {
         isValid: false,
